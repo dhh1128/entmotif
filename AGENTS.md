@@ -1,180 +1,115 @@
-<!-- BEGIN AGENTPREP MANAGED BLOCK -->
-## AgentPrep AI Operating Rules
+# AI Behavioral Rules & Orientation
 
-Use of AI in conjunction with this repository is governed by
-[AgentPrep](https://github.com/provenant-dev/agentprep).
+All AI agents (including Gemini, Claude, and GitHub Copilot) working on the `entviz` project MUST adhere to these rules. These rules are designed to ensure that code is a byproduct of comprehension, not a replacement for it.
 
-As an AI, you will need to know how to identify yourself to the
-agentprep tool. Canonical ai_agent_name values are:
+## 1. Core Principles
 
-    `claude`, `codex`, `copilot`, `cursor`, `gemini`, or `openclaw`
+- **Comprehension is the primary output, not code.** You must genuinely understand the *why* before writing the *how*.
+- **Intent is a first-class artifact.** Every major decision, tradeoff, and goal must be recorded in `this.i`.
+- **The "How" of interaction determines skill.** Use AI for conceptual inquiry and reasoning. Avoid blind code delegation.
+- **True TDD.** Never modify code without a failing test, and never leave code in a state where tests do not pass.
 
-If you are one of these tools, great; use the appropriate ai_agent_name
-with agentprep. If you are an AI but your name is not in this
-list, stop immediately and tell the user to manually edit this AGENTS.md
-file so you recognize your name in the list above.
+## 2. The Intent Layer (`this.i`)
 
-Once you can name yourself canonically, **before starting any task that
-will involve a git commit**, run:
+We maintain a file named `this.i` in the root of the repository. This file uses a structured, hierarchical format to track the project's purpose.
 
-```bash
-agentprep verify --agent <ai_agent_name>   # or: export AGENTPREP_AGENT=<ai_agent_name>
+- **Structure:** Use the indented YAML-like format (see `this.i` for current state).
+- **Updates:** Every time you make a significant design decision or identify a new constraint/tech debt, update `this.i`.
+- **IDs:** Assign unique, 8-character alphanumeric IDs (e.g., `r4nk2mp8`) to every goal, decision, or constraint.
+- **Intent Checks:** Before starting any implementation task, perform an "intent check": read `this.i` and `docs/spec.md` to ensure your plan aligns with the established vision.
+
+## 3. Engineering Discipline
+
+### TDD (Test Driven Development)
+1. **Red:** Write a test that fails for the new feature or bug fix.
+2. **Green:** Write the minimal code to make the test pass.
+3. **Refactor:** Clean up the code while keeping the tests green.
+
+### Naming & Metaphor
+Code is a human language.
+- **High-Quality Names:** Avoid generic names like `Manager` or `data`. Use names that reflect the semantics (e.g., `Nucleus`, `Edge`, `Quant`).
+- **Metaphorical Integrity:** Adhere to the project's visual metaphors (Cells, Nucleus, Edge, CRC). If a new concept is introduced, find a consistent metaphor for it.
+- **Refactoring:** If you find a name that is misleading or weak, refactor it immediately.
+
+## 4. Operational Workflow
+
+1. **Research & Strategy:** Use `grep_search` and `read_file` to understand the context.
+2. **Intent Update:** If the task involves a design choice, update `this.i` first.
+3. **Implementation (TDD):** Create a test, verify failure, implement, verify success.
+4. **Validation:** Run all project tests to ensure no regressions.
+5. **Regenerate the gallery:** Any time a change can alter rendered output — anything in `src/entviz/` touching tokenization, geometry, color, layout, or SVG emission, or any spec change that flows into the renderer — regenerate the visual gallery with `uv run python scripts/gallery.py` and commit the updated `docs/gallery.html` and `docs/assets/gallery/*.svg` alongside the code. The gallery is the project's visual regression surface; stale SVGs hide rendering changes from review. Skip this step only for changes that provably cannot affect output (pure docs, comments, test-only edits). This is enforced: `tests/test_gallery.py` regenerates every gallery SVG in-process and fails CI if it drifts from the committed file, if the committed file set no longer matches the generator's, or if `gallery.html` is not stamped with the current `SPEC_VERSION` + library version. (Note: `scripts/release.py` regenerates the gallery automatically, since the gallery title embeds the library version.)
+6. **Regenerate the documentation figures (paper + spec):** Every figure in `docs/assets/paper/` (the academic paper) and the channel/geometry/schematic figures in `docs/assets/` (the spec) is *generated* from the live renderer via the shared `scripts/figlib.py`, by `scripts/paper_figures.py` and `scripts/spec_figures.py` respectively (each wraps a real `render()` call or a gallery SVG, or is computed from `figlib.geometry()` — see [[paper-figure-house-style]]). They are **not** hand-drawn and must never be edited by hand. After any change that can alter rendered output (the same trigger as the gallery step) **or** after bumping `SPEC_VERSION`, re-run both generators (`PYTHONPATH=src .venv/bin/python scripts/paper_figures.py` and `… scripts/spec_figures.py`; deps: the `render` group) and commit the updated SVGs (and the paper's `*.png`). This is enforced: `tests/test_figures.py` regenerates every figure's SVG in-process and fails CI if it drifts from the committed file, if a figure's embedded `data-spec-version` no longer matches the current `SPEC_VERSION`, or if `figlib.geometry()` diverges from the renderer. When the version check fires on a spec bump, also **eyeball the hardcoded annotation labels** in the generators (e.g. "fingerprint bit *i* fills box *i*") against the new spec — the byte-diff catches pixel drift, but only a human catches a caption whose *meaning* went stale.
+7. **Regenerate the repo self-image (README + social card):** The repo's own "logo" — `docs/assets/root-commit-entviz.svg` (shown in `README.md` and atop the docs) and the GitHub social-preview card `docs/assets/social-card.{svg,png}` — embeds an entviz of this repo's root commit SHA (the tool applied to itself), so it goes stale on the same trigger as the gallery/figures. After any output-altering change, run `uv run python scripts/social_card.py` (it renders the mark in-process via the library — no `entviz` console script on PATH required; `cairosvg` is still needed for the PNG step, via the `render` group) and commit the three regenerated files. **This is now guarded** (since 2026-06-19): `tests/test_social_card.py` regenerates `root-commit-entviz.svg` and `social-card.svg` in-process and fails CI if either drifts (the PNG is checked only for canvas size and the 1 MB cap, since raster bytes aren't stable across cairosvg/font versions). But `scripts/release.py` still does **not** regenerate the social card (it only re-stamps the gallery's version), so CI will now *catch* a stale card without fixing it — regenerate it yourself. This is how v0.9.1 shipped old art, *before* the guard existed. The `social-card.png` must *additionally* be re-uploaded by hand under repo **Settings → Social preview** (see README); regenerating the file does not update the GitHub setting.
+
+## 5. Defect Management (GitHub Issues)
+
+This repo tracks defects as **GitHub Issues** on `dhh1128/entviz`, managed with the `gh` CLI (no issue tracker MCP server is used). Issues are enabled and the standard `bug` label exists.
+
+**Logging a bug.** When a maintainer says "log a bug about X" (or an agent discovers a defect worth tracking), create the issue immediately — do not wait for further confirmation — and report the issue number and URL:
+
+```
+gh issue create --repo dhh1128/entviz --label bug \
+  --title "<concise summary of the defect>" \
+  --body "$(cat <<'EOF'
+## Summary
+<one-paragraph description>
+
+## Steps to reproduce
+1. ...
+
+## Expected
+<what should happen>
+
+## Actual
+<what happens instead>
+
+## Environment
+<version / OS / config relevant to the bug, if any>
+
+## Notes
+<logs, stack traces, suspected cause, related issues>
+EOF
+)"
 ```
 
-If verification fails with `verify failed: missing .ai-safety-check.*`, **stop
-and tell the user before writing any files**. A git pre-commit hook (committed to
-`.githooks/pre-commit` and installed automatically to `.git/hooks/pre-commit` by
-`agentprep init` and `agentprep certify`) will block every commit you attempt until
-the user runs `agentprep certify --agent <name>` to attest a correct config. Do not
-attempt the task until the user confirms they've certified. Then cache the lease timestamp produced by `agentprep verify` once
-verification succeeds; you do not need to re-verify within the same session.
+Fill in every section you can; omit a section's body only when it genuinely does not apply. The only triage label is `bug` — no severity/priority labels. Use milestones or comments if prioritization is needed later.
 
-The following operations are reserved for humans. The `.agent-bin` shims
-installed in this repository will block them if an agent attempts them:
+**Fixing a bug.** When a maintainer says "let's fix bug X":
 
-- `git push` to protected branches (defaults: `dev`, `main`, `master` — `dev` is included because it is a shared integration branch, not a personal feature branch) and destructive push modes (`--delete`, `--all`, `--mirror`)
-- `gh pr merge` — merging a pull request
-- `gh repo delete` — deleting the repository
+1. Resolve X to an issue: `gh issue list --repo dhh1128/entviz --label bug --state open --search "X"`, or `gh issue view <n>` if given a number. Confirm the match before proceeding.
+2. Branch `fix/<issue#>-<short-slug>` off the default branch.
+3. Fix it TDD-style per §3 (failing test first, then the minimal fix, then refactor).
+4. If the fix can alter rendered output, regenerate the gallery per §4 step 5 and commit the updated SVGs alongside the code.
+5. Reference `Fixes #<n>` in the commit message and/or PR body so the issue auto-closes when the change merges to the default branch.
 
-Creating, viewing, and updating pull requests is permitted (`gh pr create`,
-`gh pr edit`), as is pushing feature branches for PR workflows.
+**Finding bugs.** `gh issue list --repo dhh1128/entviz --label bug --state open` lists the open defect backlog; `gh issue view <n>` shows one.
 
-Place `.agent-bin` at the front of PATH in agent shells so the shims are active:
+## 6. Task tracking: `tick`
 
-```bash
-export PATH="$PWD/.agent-bin:$PATH"
-```
+This repo tracks tasks, tech debt, and ideas in a local [`tick`](https://github.com/dhh1128/tick)
+ledger (an orphan `tick` branch; the `tick` CLI is the interface). Reads are plain
+files — do **not** use an external API for task tracking.
 
-The `.agent-bin/git` and `.agent-bin/gh` shims are thin pass-throughs: they
-make a quick allow/block decision and then `exec` the real binary with the
-original arguments. They do not scan the working tree, read project files, or
-inspect git history. If a `git` or `gh` invocation is unexpectedly slow, the
-shim is not the cause — diagnose the underlying tool. In particular, slow
-`git add -A` usually means a multi-thousand-file directory (e.g. `.venv/`,
-`node_modules/`, `build/`) is not covered by `.gitignore`; fix `.gitignore`
-or stage explicit paths instead. Run `agentprep doctor` to surface common
-gitignore-hygiene problems.
-## Testing Protocol
+- **A tick mark is `~` + a digit-first 4-char id**, e.g. `~4mz3`. It pins a tick
+  to a code location.
+- **Before editing a file**, grep it for marks and read what they reference:
+  `rg '~[2-7][a-z2-7]{3}' <file>` then `tick show <id>`. A mark means recorded
+  context exists for that spot — read it first.
+- **Search** existing ticks with `tick grep <text>`; **list** with `tick ls`.
+- **Capture** new work with `tick add "<title>"` and place the printed `~<id>`
+  mark at the relevant code spot.
+- When your change **resolves** a tick, run `tick off <id>` and **delete the
+  mark(s)** it reports still in the code.
+- A tick that turns out to be a real design decision should **graduate** into
+  `this.i` when closed (the ledger is the workshop; `this.i` is the showroom).
 
-This repository appears to have no test suite yet. Before writing feature code
-or fixing bugs, propose an appropriate testing framework for this project type
-and add a single trivially-passing test to confirm the setup works. In the
-same commit, propose to change AGENTS.md to replace this instruction with one
-that instructs agents to follow strict TDD from now on: write failing tests
-that capture happy path and edge cases/unhappy paths for each requirement,
-observe them fail, implement until tests pass, never checkin without proving
-that all tests pass, aim for 100% of all new code, and always leave existing
-code better tested than it was before you touched it.
+## 7. Navigation
 
-## CI and Documentation
-
-This repo has no CI workflows. Until it does, any time you make code
-changes to the user, propose an appropriate set of GitHub actions (e.g.,
-`.github/workflows/ci.yml`) that builds and runs tests on every push and
-pull request. Propose to remove this instruction from AGENTS.md on the
-same commit.
-
-When writing or modifying GitHub Actions workflows, always use the latest
-stable release of each action. Avoid versions pinned to Node.js 16 or
-Node.js 20 (both deprecated by GitHub). In 2026, this meant to prefer Node.js
-24-compatible versions, but the standard may evolve over time. Check the GitHub
-Marketplace for each action's current release.
-
-## Origin Platform Context
-
-This codebase is part of the Origin platform ecosystem. Other origin-related
-repositories likely exist as siblings in the parent directory (e.g.,
-`../origin-auth-lib`, `../origin-common-lib`, `../origin-deployment`); they
-definitely exist as sibling repos under https://github.com/provenant-dev/.
-Each sibling repo typically has `README.md` and a `docs/` folder containing
-design docs with important metadata. This knowledge is available to you and
-you should consult it (making sure the local code is current and on its
-default branch) if you need broader context than the current repo.
-
-The `../origin-platform/` sibling is the platform-wide knowledge base. Its
-`docs/origin-platform/` directory contains platform-wide architecture guides, API
-conventions, security requirements, deployment specifications, and cross-cutting
-platform decisions. Before making changes that could touch platform conventions —
-authentication, URL design, error formats, data models, Kafka topics, deployment
-patterns, or testing strategy — consult the relevant doc in
-`../origin-platform/docs/origin-platform/`. Start with
-`general-origin-characteristics.md`; follow links there to more specific guides.
-
-When a proposed change has platform-wide implications, check whether relevant
-sibling repos' `docs/` folders offer useful constraints before proceeding.
-
-The `../origin-platform/prompts/` directory contains reusable AI reviewer prompts
-designed for Origin platform codebases. They create named and dated reports in a
-/reviews folder in this repo and constitute prioritized next steps or action items
-for improving the code. Consider recommending one or more of these to the user after
-significant changes, before a release, or during onboarding:
-
-- **`platform-architect.md`** — Reviews alignment with platform-wide API, auth,
-  data, and communication conventions; flags drift that creates integration problems.
-- **`security-hawk.md`** — Adversarial security review: auth bypasses, authorization
-  holes, injection paths, replay attacks, and secret exposure.
-- **`compliance-auditor.md`** — SOC-2 / regulatory readiness: audit trails, access
-  controls, evidence of consistently operating controls.
-- **`maintainability-expert.md`** — Identifies intent boundaries, missing rationale,
-  and patterns likely to be incorrectly "fixed" by future developers or AI agents.
-- **`testability-hawk.md`** — Finds structural testability gaps across all test layers;
-  surfaces classes of missing tests rather than individual cases.
-- **`devops-engineer.md`** — Deployment, CI/CD, Docker/Helm correctness, Kubernetes
-  health probes, and local development ergonomics.
-- **`ux-guru.md`** — UX and frontend architecture review (skip for pure backend repos).
-- **`generate-arch-doc.md`** — Generates or refreshes `docs/architecture.md`.
-
-To use a prompt, open the file in your AI tool's context and run it against the
-current workspace. Periodic runs of `platform-architect.md` and `security-hawk.md`
-are especially recommended as the platform evolves. Once the action items in a report
-have all been triaged, they should be deleted (but remain in git history to show
-what was done).
-
-If this repo does not have a docs/architecture.md file, always propose creating one
-using `generate-arch-doc.md`.
-
-## Methodology
-
-This repo should have a file called `this.i` at the root. It records the *why* behind every design
-decision as a tree of `goal:`, `decision:`, `constraint:`, and `tension:` nodes. It is the
-most important file in the repo for understanding why things are built the way they are. The
-file is YAML and should be parsed as YAML; do not pattern-match indentation.
-
-Adopt this stance toward it:
-
-1. **The intent tree describes a destination, not just current state.** Nodes may describe
-   completed stages or planned futures; read stage-status fields to distinguish them.
-2. **Tension resolutions are binding.** Implement consistently with recorded resolutions.
-   Do not re-open them or silently resolve them differently.
-3. **`why` fields are primary evidence.** When making any decision touching a node, the `why`
-   is the most important thing to read.
-4. **`deviation:` nodes are the complete list of approved gaps.** Discovery is by node type
-   (every `deviation:` node in `this.i`), not by a numbered list; any gap not represented by a
-   `deviation:` node is a defect requiring Daniel's approval before it can be accepted.
-5. **Before making any decision that meets the trigger criteria, record it in `this.i` first.**
-   The concrete trigger list is in `docs/methodology.md §3` (vendor that file into this repo
-   first if it isn't present yet — see below).
-
-For the full context of what `.i` files are, the intellectual lineage of this system, what makes
-a `why` field adequate, and what triggers a required `this.i` update, read `docs/methodology.md`
-This repo is meant to carry its own vendored copy of that file: if `docs/methodology.md` is not
-present, copy it in from `../origin-platform/docs`, commit it, and then read it. The checked-in
-copy is only a starting point — adapt it to this repo as the methodology evolves here; it is
-deliberately not kept in sync with the origin-platform original.
-
-DO NOT modify code here without understanding the methodology. You should have a clear idea of
-what a "speculative interview" is, how it's done, and where its output is recorded; what a "tension"
-is in intent; how "marks" work; how we use Fowler's _Refactoring_ discipline to continually improve
-DRY, encapsulation, and names in code.
-
-If you don't see a `this.i` in this repo's root, you must create one. To understand how, study one in
-a sibling repo (`../origin-sip-policy-admin` has an excellent example). Notice how it relates to code
-but explains things that are often missing from the code. Then use sources like the code, `README.md`,
-and `docs/*.md` (possibly creating `docs/architecture.md` using the `generate-arch-doc.md` prompt if
-needed) to form theories about design decisions in this codebase. Then interview the user to confirm
-or disprove your theories, and write a starter `this.i` when you're done. (If the codebase is empty,
-just ask the user about their intentions for it, and begin building from there.)
-<!-- END AGENTPREP MANAGED BLOCK -->
+- [README.md](README.md) - Developer onboarding.
+- [docs/spec.md](docs/spec.md) - Algorithm specification (current: v9).
+- [this.i](this.i) - The "Why" behind the project.
+- [CLAUDE.md](CLAUDE.md) - Summary for Claude.
+- [GEMINI.md](GEMINI.md) - Summary for Gemini.
 
 <!-- >>> tick stanza >>> (managed by `tick init`) -->
 
