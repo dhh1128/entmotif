@@ -984,3 +984,44 @@ staccato articulation (only the comp is articulated so far); then data-derived c
 (`this.i:v8k2m1p0`). The persistent creative-technique ceiling — the melody restates+orbits
 rather than taking a real ARCH-contour journey with development on return — is untouched by
 this cycle and remains the top taste item.
+
+## Flywheel cycle fw8 — three more DAG edges: emotion→style, emotion→groove/development, METER (2026-06-24)
+
+Continuing the conditional DAG (`this.i:d2k9m4p1`) from fw7. Three more edges, each
+STRICT-TDD; all reweight independent draws or are behavior-preserving, so determinism +
+avalanche held. Scores → `scores-v0.14.md`; audio → `~/winhome/Downloads/entmotif-v0.14-listen/`.
+
+**Edge 4 — emotion→style priors** (`arrangement.py`). Emotion is now drawn UPSTREAM of
+style and tilts which idiom is chosen: `STYLE_AFFECT` tags each style with the affects its
+idiom carries, and `style_weights(emotion)` lifts the matching styles ~3x while every style
+keeps its base weight (all reachable). Realized over a 3k probe: sad→blues/bossa/tango,
+happy→funk/ragtime/swing, peaceful→reggae/bossa/classical, triumphant→classical/gospel/
+march, tender→blues/reggae/bossa. 11/12 golden drifted.
+
+**Edge 5 — emotion→groove + development** (`arrangement.py`, `melody.py`). The comp/bass
+groove-variant draw is reweighted by the emotion's `groove` cue (busy affect → syncopated
+variant, calm → steady signature; realized 31% vs 15% non-signature variant), and the
+germ-transform draw by its `angular` cue (tense → invert/fragment/diminish; sad/peaceful/
+tender → sequence/augment; identity stays rare). 7/12 golden drifted.
+
+**Edge 6 — METER beyond 4/4** (`this.i:m4k0p2v9`; model/melody/arrangement/abc/engine). The
+engine was hardcoded 4/4. **Phase A** threaded a `beats` parameter (default 4) through every
+bar-aware function — line/figures, the transform tiler + metric anchor (now per-meter
+`strong_beats`/`metric_targets`), cadence, grooves, arrange, ABC — verified **golden
+byte-identical** (a pure refactor). **Phase B** added a **WALTZ** style (3/4): oom-pah-pah
+comp, waltz bass (root-1/fifth-3), 3-beat figure pools, the meter in meta + the ABC `M:3/4`
+header. Metric conservation holds in triple meter (integer 3-beat bars, on-grid, bass on the
+downbeat). Only the waltz declares a meter; the other 14 default to 4/4. 11/12 golden drifted
+(the 15th style reshuffled the style draws; no waltz landed in the frozen corpus).
+
+Also strengthened `destutter` to a two-tier neighbour pick (a same-pitch run at the scale
+ceiling is now always broken — the cap-at-2 is a hard guarantee), and made two brittle
+12-input sanity proxies (lead-suited, register-spread) probe-based so they track the real
+~0.80 P(signature) / instrument-conditioned register spread instead of a fixed sample the
+new style reshuffled.
+
+**STILL OPEN on the DAG:** emotion→meter, lead staccato articulation, emotion→harmonic-rhythm,
+6/8 + odd meters, more 3/4 styles; then data-derive the conditionals (`this.i:v8k2m1p0`) —
+replace the hand-tuned weight tables with the mined feature vectors. The creative-technique
+ceiling (the melody restates/orbits rather than taking a real ARCH-contour journey) is still
+untouched and remains the top taste item.

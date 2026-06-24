@@ -535,9 +535,17 @@ Entmotif = goal:
         all 14 styles (was 0.35-0.71), corpus style-suited 6/12 -> 11/12. (3) the EMOTION
         master [[a7k0m3p9]] landed (see that node). All three are PURE post-draw / reweight
         changes (each Chooser label hashes independently), so determinism + avalanche held
-        and only the golden corpus re-baselined. STILL OPEN on the DAG: meter [[m4k0p2v9]]
-        as an upstream edge; emotion->style priors; groove/development conditioned on
-        emotion; then data-derived conditionals [[v8k2m1p0]].
+        and only the golden corpus re-baselined.
+        IMPLEMENTED (fw8, 2026-06-24): three more DAG edges, each STRICT-TDD. (4) EMOTION->
+        STYLE — emotion is drawn UPSTREAM of style and tilts the idiom (STYLE_AFFECT +
+        style_weights(): sad->blues/tango/bossa, triumphant->classical/gospel/march), all
+        styles still reachable. (5) emotion->GROOVE + DEVELOPMENT — the comp/bass groove
+        variant (busy affect -> syncopated) and the germ transform (tense -> invert/
+        fragment/diminish; calm -> sequence/augment) are reweighted by emotion. (6) METER
+        [[m4k0p2v9]] as the upstream meter edge — the waltz (3/4) is the first non-4/4 idiom.
+        STILL OPEN on the DAG: emotion->meter, lead staccato articulation, emotion->harmonic-
+        rhythm, more meters/styles; then data-derive the conditionals [[v8k2m1p0]] (replace
+        the hand-tuned weight tables with mined feature vectors).
 
     Corpus Mined Feature Vectors = decision:
       id: v8k2m1p0
@@ -578,3 +586,16 @@ Entmotif = goal:
         generalize off the 16th-in-4/4 grid), and the ABC M: header. A prerequisite for
         non-4/4 styles and for sitar raga / chant ([[p6m2v9k0]], tick ~55y2). Relates to
         [[z0m4p81q]], [[d2k9m4p1]].
+        IMPLEMENTED (fw8, 2026-06-24): the FIRST non-4/4 meter. `beats` (beats-per-bar) is
+        now a per-piece value, conditioned on style (S["meter"], default 4/4), threaded
+        through every bar-aware function — melody line/figures, render_transform tiling +
+        the metric anchor (model.strong_beats()/metric_targets() generalize the strong-beat
+        map and the whole-bar cell-length targets off the 4/4 grid), cadence_bar, tag_call,
+        the comp/bass/percussion grooves, arrange_unit, and the ABC exporter (M: header +
+        bar lining). Phase A was a behavior-preserving refactor (4/4 golden byte-identical);
+        Phase B added a WALTZ style (meter=(3,4)): oom-pah-pah comp + waltz bass + 3-beat
+        figure pools (FIGURES_3/HOOKS_3). Determinism + metric conservation [[m9p3k7a2]]
+        hold in 3/4 (integer 3-beat bars, on-grid). STILL OPEN: 6/8 and compound meters
+        (the beat unit changes, denominator still /4 here), odd meters (5/4, 7/8), more 3/4
+        styles (minuet/mazurka/jazz-waltz), and a per-style meter CHOICE (some styles in
+        both 3 and 4); raga/chant still need drone harmony [[p6m2v9k0]].

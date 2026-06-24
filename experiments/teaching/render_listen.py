@@ -21,6 +21,20 @@ os.makedirs(outdir, exist_ok=True)
 corpus = [ln.strip() for ln in open(os.path.join(HERE, "corpus.txt"))
           if ln.strip() and not ln.startswith("#")]
 
+# The frozen corpus is all 4/4, so a non-4/4 idiom (the 3/4 waltz, this.i:m4k0p2v9) never
+# appears in it. Deterministically probe a few distinct-emotion waltz inputs and append
+# them so the maintainer can hear the new meter (DEMO only — not part of the frozen corpus).
+_waltz_demo, _seen = [], set()
+for i in range(8000):
+    v = "meter-%d" % i
+    _, m = motif.generate(v)
+    if m["style"] == "waltz" and m["emotion"] not in _seen:
+        _seen.add(m["emotion"])
+        _waltz_demo.append(v)
+        if len(_waltz_demo) >= 4:
+            break
+corpus = corpus + _waltz_demo
+
 index = []
 for i, v in enumerate(corpus, 1):
     notes, m = motif.generate(v)
