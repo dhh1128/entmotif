@@ -104,9 +104,14 @@ round-4 list).
   ties/broken rhythm, unified climax, texture envelope); see `engine-log.md` round-5
   build entry for what's full vs. deferred-to-v0.9. Golden re-baselined; both suites
   green; `scores-v0.8.md` regenerated.
-- **PAUSED before grading** — the maintainer listens to the v0.8 audio first; then
-  the round-5 faculty + Codex panel runs (`docs/engine-log.md` round-5 grades + v0.9
-  list still to be filled in).
+- **Round-5 verdict recorded = the maintainer's listening review** (formal faculty
+  panel skipped — the ear is ground truth). Full per-input notes, the proof that
+  selection is genuinely SHA-512-driven (not text-driven), the harmony/voicing/
+  velocity/register technical diagnosis, and the ranked **v0.9 fix list** are in
+  `docs/engine-log.md` round-5 entry. Headline v0.9: **harmony overhaul**
+  (voice-leading, fat/open voicings, comp velocity, legato, tame texture flicker) +
+  **palette/style breadth** (AGENTS.md §0 — percussion/horns/world, varied comp/bass
+  programs, a genre master-dimension) + wider tempo/register + rhythm–phrase synergy.
 - **Branches not yet merged to main** — `main` holds only the baseline snapshot;
   `refactor/engine-to-src` then `feat/engine-v0.8` stack the work (small signed-off
   commits, steps not collapsed). Merge order: refactor → v0.8 (no squash).

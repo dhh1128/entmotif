@@ -373,6 +373,80 @@ v0.8 list:
    v0.7 carry over; minimal-motion voicing + approach-tone bass are the next step.
 
 Determinism + avalanche green; both suites green on the v0.8 golden baseline.
-**Grades not yet recorded** — the maintainer listens to the v0.8 audio first
-(`make_scores.py` → `scores-v0.8.md`; render via FluidSynth), then the round-5
-faculty + Codex panel runs and the grades + the v0.9 fix list land here.
+
+**Round-5 verdict = the maintainer's listening review (2026-06-24)** — taken as
+ground truth in lieu of the faculty panel for this round (the ear is the ground
+truth; the panel exists to approximate it, and the maintainer reviewed all 12).
+Per-input: 01 recognizable but quiet/boring, *harmony comes and goes weirdly*;
+02 answer too unlike the call (rhythm+octave variation broke recognizability),
+melody feels similar to 01; 03 slightly better, rhythm varied but feels *random,
+not synergistic* (cf. Beethoven 5: short=tension, long=land); 04 harmony off &
+too quiet under the melody; 05 flute welcome, but comp enters *discordant/ugly*;
+06 meh, rhythm unrelated to phrases; **07 best — simple**; 08 solid melody, harmony
+"random accordion puffing," adds nothing; **09 strongest**, harmony wasted; 10
+strong melody, harmony "dumb"; 11 sounds unresolved + boring monophonic flute; 12
+too long for its development (strong first half). General: instruments boring (no
+percussion/horns/world), only 2 voices, narrow bass/harmony range; tempo range too
+small (want up to ~200–220); why never harmony on the *same* instrument as the lead? **(follow-up)** no legato,
+no fat chords, no stylistic variation — "almost pure 2-instrument classical
+arrangements, one carrying melody and the other a *faint suggestion* of harmony."
+
+**Selection is genuinely SHA-512-driven (not text-driven) — verified, NOT a bug.**
+The maintainer suspected we might be selecting from the lowercase-ASCII input text;
+proof: one-char-apart inputs scatter across the palette, and lead choice is ~uniform
+over 2000 inputs (≈400/415/404/376/401 across the 5 leads). The monotony is the
+**tiny palette**, not the entropy path: 5 orchestral leads, comp *always* program 48
+(strings), bass *always* 32. AGENTS.md §0 (style/genre as the broad master
+dimension — sitar/oud/drums/horns/world) is essentially unimplemented.
+
+**Technical diagnosis grounding the harmony complaints (from the corpus):**
+- comp velocity is **flat per piece and far below the melody** (comp 34–42 vs lead
+  78–110) → "too quiet," no dynamic shaping. (engine/arrangement.)
+- **Clustered voicings** when fat=2/3 (added 7th/9th land a 2nd apart): #12 18/72,
+  #1 9/36, #9 3/12 stacked intervals <3 semitones → "muddy/ugly accordion." The
+  spread-voicing rule doesn't constrain the added extensions.
+- **No voice-leading**: comp re-voices from scratch each bar (leaps); bass not
+  goal-directed. (Deferred in v0.8 — now the top audible defect.)
+- **Texture envelope reads as "harmony comes and goes"** (#1): dropping comp at the
+  intro/final cadence is heard as the harmony flickering, not as phrasing.
+- tempos cluster mid-range (only 5 distinct across the corpus, max 160 < the 184
+  ceiling); ceiling itself too low.
+
+**Round-6 (v0.9) fix list — ranked by audible impact:**
+1. **HARMONY OVERHAUL (top priority).** Real voice-leading (comp picks the inversion
+   nearest the previous voicing — minimal motion; goal-directed bass approaching the
+   next root); kill clustered extensions (drop/space the added 7th/9th, or voice them
+   open); raise + shape comp velocity to sit *with* the melody (not 30 below); make
+   the comp actually decorate/reinforce/counterpoint the line. Tame the texture
+   envelope so harmony doesn't flicker (smoother entrances, sustain through phrases).
+2. **PALETTE / STYLE BREADTH (AGENTS.md §0 master dimension).** Expand far beyond 5
+   orchestral leads: add percussion/drum-kit grooves, horns, and world timbres
+   (sitar/oud, marimba/koto, etc.); vary the **comp + bass programs** (incl. an
+   option to comp on the *same* instrument as the lead); pick a **genre/style family**
+   from the fingerprint that conditions palette + groove + harmonic language
+   coherently. (Bit-budget: style family is a discrete master-dimension carrier.)
+3. **Tempo range** up to ~200–220 with flatter weighting (don't cluster mid-range).
+4. **Rhythm–phrase synergy** (not random): tie rhythmic density to tension/release —
+   shorter values build into the climax, longer values land cadences (Beethoven-5
+   logic). A teacher/lens should analyze rhythm for synergy vs. randomness.
+5. **Call/answer recognizability** (#02): the consequent must stay clearly related to
+   the antecedent — constrain the transform (avoid octave displacement + heavy rhythm
+   change at once) so the answer still "rhymes" with the call.
+6. **Cross-input melodic variety + register** (#01≈#02): ensure different inputs yield
+   audibly different *melodic characters*, not just different notes in the same mold.
+   Melodic range feels stuck ~**C4–C6 for every input/instrument** — the per-lead
+   register windows barely differentiate (all leads sit mid); widen and *vary* the
+   tessitura per instrument/style (flute high, bass-clef timbres low, etc.) and use
+   register as a stronger discriminator across inputs.
+7. **Form length vs development** (#12): cap or earn length — don't emit 16 bars
+   without enough transformation to justify it.
+8. **Resolution** (#11 sounds unresolved): revisit — possibly the bare monophonic
+   ending; "incompleteness as a feature" still open for debate.
+
+**Grading-lens gap surfaced by the maintainer's "which teacher studies harmony?":**
+harmony/counterpoint/voice-leading currently lives mostly under **arrangement**
+(texture/voicing) + **creative-technique** (harmonic language/color), with **Codex**
+as the de-facto cross-voice harmony auditor (it caught the v0.5 key-transposition and
+v0.6 bass-quality bugs). No lens does *deep* voice-leading/counterpoint or
+rhythm–phrase-synergy analysis — sharpen the arrangement lens (or add a dedicated
+harmony+counterpoint lens and a rhythm-synergy lens) for round-6 grading.
