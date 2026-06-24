@@ -9,8 +9,8 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"C" !mf! =C2 =G2 =C4 =E6 =C2 | "C" =E4 =C2 =A,2 =C4 z4 | "G" !f! =B =c =F2 =A3 =F =G2 =E =C =E4 | "C" =E4 =D4 =C8 |]
+"C" !mf! =C2 =G2 =C4 =E6 =C2 | "C" =E4 =C2 =A,2 =C4 z4 | "F" !f! =c =c =F2 =A3 =F =A2 =F =D =F4 | "C" =F4 =D4 =C8 |]
 V:2
-z4 [=C=E=G]3 z5 [=C=E=G]3 z | z4 [=C=E=G]3 z5 [=C=E=G]3 z | z4 [=G,=B,=D]3 z5 [=G,=B,=D]3 z | z4 [=C=E=G]3 z5 [=C=E=G]3 z |]
+z4 [=C=E=G]3 z5 [=C=E=G]3 z | z4 [=C=E=G]3 z5 [=C=E=G]3 z | z4 [=F=A=c]3 z5 [=F=A=c]3 z | z4 [=C=E=G]3 z5 [=C=E=G]3 z |]
 V:3
-=C,,4 z4 =G,,4 z4 | =C,,4 z4 =G,,4 z4 | =G,,4 z4 =D,,4 z4 | =C,,4 z4 =G,,4 z4 |]
+=C,,4 z4 =G,,4 z4 | =C,,4 z4 =G,,4 z4 | =F,,4 z4 =C,,4 z4 | =C,,4 z4 =G,,4 z4 |]

@@ -39,8 +39,8 @@ def build_form(form, res, ch, color):
     # maintainer found more interesting, or a PLAGAL IV->I ("amen", resolved). The
     # half-open (ends on V, unresolved) ending is dropped from FINALS — the maintainer
     # wants variety that still resolves; half cadences remain mid-phrase only.
-    final = ch.weighted("final", ["authentic", "deceptive", "plagal"], [5, 2, 2])
-    chords = {"authentic": ["V", "I"], "deceptive": ["V", "vi"], "plagal": ["IV", "I"]}[final]
+    final = ch.weighted("final", ["authentic", "plagal"], [3, 2])   # maintainer: no deceptive finals
+    chords = {"authentic": ["V", "I"], "plagal": ["IV", "I"]}[final]
     units[-1] = Phrase(role, chords, final, dv)
     return units
 
