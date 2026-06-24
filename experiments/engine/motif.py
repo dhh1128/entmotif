@@ -30,11 +30,14 @@ Run:  python3 motif.py   |   Test:  python3 test_motif.py
 
 import hashlib
 import math
+import os
 import struct
+import sys
 
-DIV = 480                       # MIDI ticks per quarter note
-BEATS_PER_BAR = 4               # 4/4 throughout
-WEIGHT_SCALE = 1_000_000        # fixed-point resolution for Chooser.weighted
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
+from entmotif.model import (  # noqa: E402
+    DIV, BEATS_PER_BAR, WEIGHT_SCALE, NoteEvent, VoiceRole, PitchRange, Development, Phrase)
+
 COMP_PROGRAM = 48               # GM "String Ensemble" — the comp voice (channel 1)
 BASS_PROGRAM = 32               # GM "Acoustic Bass" — the bass voice (channel 2)
 SUSTAIN_GAP = 6                 # ticks trimmed off held comp/bass notes (avoid overlap)
@@ -73,8 +76,8 @@ MAXLEAP = {0: 3, 1: 5, 2: 8}
 SIGMA = {0: 1.0, 1: 1.8, 2: 3.0}
 LEADS = [0, 73, 40, 56, 12]
 LEAD_NAMES = {0: "piano", 73: "flute", 40: "violin", 56: "trumpet", 12: "marimba"}
-LEAD_RANGE = {0: (50, 81, 64), 73: (62, 88, 76), 40: (55, 86, 69),
-              56: (54, 80, 67), 12: (53, 84, 72)}
+LEAD_RANGE = {0: PitchRange(50, 81, 64), 73: PitchRange(62, 88, 76), 40: PitchRange(55, 86, 69),
+              56: PitchRange(54, 80, 67), 12: PitchRange(53, 84, 72)}
 ANSWER_INSTR = {0: 40, 73: 56, 40: 73, 56: 73, 12: 56}
 LEAP_NAMES = {0: "stepwise", 1: "moderate", 2: "jumpy"}
 KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -195,7 +198,7 @@ def line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, c
                         if alt:
                             s = min(alt, key=lambda m: abs(m - cur))
                     cur = s
-            notes.append([chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)])
+            notes.append(NoteEvent(chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
             pos += dur
     return notes
 
@@ -210,7 +213,7 @@ def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
         figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
     out, pos = [], 0.0
     for pitch, dur in figs:
-        out.append([chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)])
+        out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
         pos += dur
     return out
 
@@ -242,31 +245,31 @@ def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, figr, bassfig, comp_o
             voic = voice_chord(pcs, fat, top)
             if figr == "block":
                 for m in voic:
-                    out.append((1, m, BLOCK_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
+                    out.append(NoteEvent(VoiceRole.COMP,m, BLOCK_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
             elif figr == "stabs":
                 for beat in (0, 2):
                     for m in voic:
-                        out.append((1, m, STAB_VEL, base + beat * DIV, DIV - SUSTAIN_GAP))
+                        out.append(NoteEvent(VoiceRole.COMP,m, STAB_VEL, base + beat * DIV, DIV - SUSTAIN_GAP))
             elif figr == "arp":
                 seqv = voic + voic[-2::-1]
                 for i in range(8):
-                    out.append((1, seqv[i % len(seqv)], ARP_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
+                    out.append(NoteEvent(VoiceRole.COMP,seqv[i % len(seqv)], ARP_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
             else:                                             # alberti
                 pat = [voic[0], voic[-1], voic[len(voic) // 2], voic[-1]]
                 for i in range(8):
-                    out.append((1, pat[i % 4], ALBERTI_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
+                    out.append(NoteEvent(VoiceRole.COMP,pat[i % 4], ALBERTI_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
         if bass_on:
             bt = lambda pc: 36 + pc                            # bass register (C2..B2); always a chord tone
             root, third, fifth = bt(pcs[0]), bt(pcs[1]), bt(pcs[2])
             if bassfig == "pedal":
-                out.append((2, root, PEDAL_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
+                out.append(NoteEvent(VoiceRole.BASS,root, PEDAL_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
             elif bassfig == "walking":
                 ws = [root, third, fifth, third]               # walk the actual chord tones (quality-correct)
                 for i in range(4):
-                    out.append((2, ws[i], WALK_VEL, base + i * DIV, DIV - SUSTAIN_GAP))
+                    out.append(NoteEvent(VoiceRole.BASS,ws[i], WALK_VEL, base + i * DIV, DIV - SUSTAIN_GAP))
             else:                                              # root + the chord's actual fifth
-                out.append((2, root, ROOT_VEL, base, 2 * DIV))
-                out.append((2, fifth, FIFTH_VEL, base + 2 * DIV, 2 * DIV))
+                out.append(NoteEvent(VoiceRole.BASS,root, ROOT_VEL, base, 2 * DIV))
+                out.append(NoteEvent(VoiceRole.BASS,fifth, FIFTH_VEL, base + 2 * DIV, 2 * DIV))
     return out
 
 
@@ -294,16 +297,17 @@ def build_form(form, res, ch, color):
                  ("idea", ["I", "vi"], None, 1), ("answer", ["ii", "V"], "half", 0),
                  ("contrast", ["IV", "I"], None, 0), ("contrast", ["ii", "V"], None, 0),
                  ("idea", ["I", "vi"], None, 2), ("answer", P, res, 0)]
+    units = [Phrase(*u) for u in units]
     role, _chs, _cad, dv = units[-1]                           # round 4: terminal cadence ALWAYS resolves
-    units[-1] = (role, ["V", "I"], "authentic", dv)            # (clean closure; no half/abrupt final)
+    units[-1] = Phrase(role, ["V", "I"], "authentic", dv)      # (clean closure; no half/abrupt final)
     return units
 
 
 def transform_for(devslot, ch):
     if devslot == 0:
-        return 0, False
-    return ch.weighted("dev%d" % devslot, [(2, False), (-2, False), (0, True), (1, False)],
-                       [3, 2, 2, 1])
+        return Development(0, False)
+    return Development(*ch.weighted("dev%d" % devslot, [(2, False), (-2, False), (0, True), (1, False)],
+                                    [3, 2, 2, 1]))
 
 
 def generate(value):
@@ -356,29 +360,29 @@ def generate(value):
             mel = []
         elif role == "idea":
             mel = line(idea, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-                       "idea", offset, invert, sig, 0, vel)
+                       "idea", offset, invert, sig, VoiceRole.LEAD, vel)
         elif role == "answer":
             if cr_answer:                                     # lead RESOLVES the phrase (never tacet);
-                mel = cadence_bar(cad, key, mode, lo, hi, bar0 + 1, 0, vel)   # antiphon answers below
+                mel = cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)   # antiphon answers below
             else:
                 mel = line([ans_fig], [chm[0]], mode, key, base, lo, hi, bar0, center, tendency,
-                           leap, ch, "idea", offset, invert, sig, 0, vel)
-                mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, 0, vel)
+                           leap, ch, "idea", offset, invert, sig, VoiceRole.LEAD, vel)
+                mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
         else:
             mel = line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-                       "other", 0, False, None, 0, max(40, vel - 6))
+                       "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6))
         if u != nU - 1 and mel:                               # breath: trim the LAST note (phrase boundary only)
             br = ch.choice("breath%d" % u, BREATHS)
-            if br and mel[-1][4] - int(br * DIV) >= int(0.5 * DIV):
-                mel[-1][4] -= int(br * DIV)
-        notes += [tuple(n) for n in mel]
+            if br and mel[-1].dur - int(br * DIV) >= int(0.5 * DIV):
+                mel[-1] = mel[-1]._replace(dur=mel[-1].dur - int(br * DIV))
+        notes += mel
 
         if cr_answer:                                         # antiphonal DEVELOPED response on V:4:
             frag = idea[0][:3] or idea[0]                     #   a hook fragment SEQUENCED up a third
             ans = line([frag], [chm[0]], mode, key, base, lo, hi, bar0, center, tendency, leap,
-                       ch, "ans%d" % u, 2, False, sig, 3, max(40, vel - 18))
+                       ch, "ans%d" % u, 2, False, sig, VoiceRole.ANSWER, max(40, vel - 18))
             used_v4 = used_v4 or bool(ans)
-            notes += [tuple(n) for n in ans]
+            notes += ans
 
         comp_on = template in ("solo_bed", "lead_counter", "call_resp")
         bass_on = True
@@ -386,13 +390,12 @@ def generate(value):
             comp_on = u >= 1
         if template == "call_resp":
             comp_on = role != "idea"
-        notes += [tuple(n) for n in arrange_unit(chm, mode, key, lo, bar0, fat, figr,
-                                                 bassfig, comp_on, bass_on)]
+        notes += arrange_unit(chm, mode, key, lo, bar0, fat, figr, bassfig, comp_on, bass_on)
         if template == "lead_counter" and role == "idea":     # real contrary-motion counter (V:4)
             cm = line([idea[0]], [chm[0]], mode, key, base, lo - 7, hi - 9, bar0,
-                      center - 9, -tendency, 0, ch, "ctr", 0, True, None, 3, 72)
+                      center - 9, -tendency, 0, ch, "ctr", 0, True, None, VoiceRole.ANSWER, 72)
             used_v4 = used_v4 or bool(cm)
-            notes += [tuple(n) for n in cm]
+            notes += cm
 
     meta = {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "lead": LEAD_NAMES[lead],
             "lead_prog": lead, "ans_prog": ans_instr, "leap": LEAP_NAMES[leap], "res": resolution,
