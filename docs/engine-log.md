@@ -782,3 +782,62 @@ arrangement 79 · Codex(gpt-5.5) 71.
    line's *pitches*, not just supply idiomatic rhythm under it.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
    emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
+
+---
+
+## Flywheel cycle fw5 — Group B #4: input-derived cadence (kill cadential interchangeability) (2026-06-24)
+
+**Group B #4 (memorability)**, under strict TDD. With Group A items 1–3 already DONE/green,
+this cycle took the strongest convergent prior finding: **cadential interchangeability is the
+#1 memorability killer.** The engine ended almost every piece with the IDENTICAL approach to
+the tonic (authentic = 3-2-1 down-2/down-2; plagal = 4-2-1), so two different inputs were
+indistinguishable by their endings — verified empirically: every authentic final shared the
+same interval+rhythm cell.
+
+**Change (strict TDD):**
+- `src/entmotif/melody.py` — `cadence_bar()` gained an `approach` parameter and a new
+  `CADENCE_APPROACHES` family table: 8 authentic + 8 plagal + 4 deceptive + 4 half variants
+  (leap-to-tonic, leading-tone resolution, anacrusis turn, appoggiatura, high-reach,
+  falling-fourth, etc.). Every authentic/plagal figure still ends on degree 1 (tonic) and
+  fills exactly the bar (metric conservation `this.i:m9p3k7a2`).
+- `src/entmotif/engine.py` — draws an input-derived approach id (`ch.int("cad_app%d", 8)`)
+  and passes it to both `cadence_bar` call sites. No frozen Chooser label literal was renamed
+  (only a new label added).
+
+**TDD:** added a FAILING assertion block to `experiments/engine/test_motif.py` FIRST (cadence
+approach must be input-derived: ≥4 distinct figures over 8 ids; deterministic per id; every
+authentic/plagal approach still resolves on tonic; corpus resolving finals show ≥3 distinct
+approach shapes). Confirmed it failed (`TypeError: unexpected kwarg 'approach'`), then
+implemented the minimal change to green.
+
+**Result:** corpus endings now vary genuinely (octave-ish reaches, leading-tone approaches,
+anacrusis turns) instead of the uniform down-2/down-2 stamp, while all still resolve.
+Determinism + avalanche green. Golden drift was confined to cadence bars only (eyeballed diff
+#3: final bar `^A4 ^G4 ^F8` → `^c4 ^D4 ^F8`), `--update`'d. Both `test_motif.py` and
+`test_golden.py` end with 0 failures at the committed SHA. Regenerated `scores-fw5.md`.
+
+**Panel grades (/100):** lyricism 79 · memorability 74 · creative-technique 77 ·
+arrangement 63 · Codex(gpt-5.5) 74.
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a real
+  ARCH-contour journey with development on return — the persistent ceiling. Varied cadences
+  helped the endings, but the body still doesn't *transform* on return; this remains the top
+  item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the comp's *pitch* relationship to the lead is the
+  next gap (arrangement lowest at 63 this cycle).
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- Cadential interchangeability is **closed** — finals are now input-derived and audibly
+  distinct (lyricism/creative up), while every authentic/plagal close still resolves on the
+  tonic.
+
+**Chosen next-fix list (ranked):**
+1. **Melodic development on return** (Group B #4, deeper half) — real ARCH contour, multi-pitch
+   HOOK reuse, repetition-WITH-development so restatements *transform*, not just recur; plus
+   anacrusis/syncopation. Highest leverage.
+2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the line's
+   *pitches*, not just supply idiomatic rhythm under it.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an emotion,
+   then align mode>tempo>dynamics>register>articulation>dissonance coherently.
