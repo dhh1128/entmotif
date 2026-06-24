@@ -876,6 +876,22 @@ never tripped the cap), so no `--update` was needed — the fix only changes the
 short/jumpy lines, exactly as intended. Both `test_motif.py` and `test_golden.py` end with 0
 failures. Regenerated `scores-fw6.md`.
 
+**Panel grades (/100):** lyricism 78 · memorability 79 · creative-technique 74 ·
+arrangement 71 · Codex(gpt-5.5) 77.
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a real
+  ARCH-contour journey with development on return — the persistent ceiling (creative-technique
+  lowest at 74). De-stuttering removed a singability defect, but the body still doesn't
+  *transform* on return; this remains the top item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the comp's *pitch* relationship to the lead is the
+  next gap (arrangement lowest at 71).
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- The "machine-gun repeated note" / unsingable patter that drove this cycle is **closed** —
+  the lead never sounds the same pitch 3+ times in a row; the singability defect is gone.
+
 **Chosen next-fix list (ranked, carried forward):**
 1. **Melodic development on return** (Group B #4, deeper half) — real ARCH contour, multi-pitch
    HOOK reuse, repetition-WITH-development; plus anacrusis/syncopation. Highest leverage.
