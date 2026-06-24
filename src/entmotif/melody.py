@@ -166,6 +166,42 @@ def breathe(notes, every=BREATH_EVERY):
     return seq
 
 
+# --------------------------------------------------- de-stutter --------------
+# fw6 (singability, convergent prior finding "machine-gun repeated note / unsingable
+# patter"): even with the strong-beat anti-repeat (snap_chord_tone), the jumpy/patter
+# generation paths and cell-tiling can leave a run of 3+ identical lead pitches
+# ("=c =c =c", an octave-toggle that collapses, a re-snapped tag) — a register-stutter
+# no voice would phrase. `destutter` is a PURE post-pass on one voice's line: when a
+# 3rd consecutive identical pitch appears it nudges that note to an ADJACENT scale tone
+# (onset + duration untouched, so the 16th grid and metric conservation hold,
+# this.i:m9p3k7a2). It prefers the neighbour that moves TOWARD the register center
+# (keeping the contour sane) and never re-collides with the note on either side, so the
+# cap is a hard <=2 consecutive same-pitch repeats without disturbing rhythm.
+def destutter(notes, scale, center):
+    """Cap consecutive same-pitch repeats in one voice at 2 by nudging the 3rd+ note to
+    an adjacent scale tone. Pure (pitch-only); onsets/durations are never touched."""
+    if len(notes) < 3 or not scale:
+        return notes
+    seq = sorted(notes, key=lambda n: n.start)
+    lo, hi = scale[0], scale[-1]
+    for i in range(2, len(seq)):
+        if seq[i].pitch != seq[i - 1].pitch or seq[i - 1].pitch != seq[i - 2].pitch:
+            continue
+        p = seq[i].pitch
+        j = min(range(len(scale)), key=lambda k: abs(scale[k] - p))
+        up = scale[min(len(scale) - 1, j + 1)]
+        down = scale[max(0, j - 1)]
+        nxt = seq[i + 1].pitch if i + 1 < len(seq) else None
+        # prefer the neighbour toward the register center; fall back to the other; never
+        # equal to the previous note (would extend the run) or the following note.
+        order = [down, up] if center < p else [up, down]
+        for cand in order:
+            if cand != p and cand != seq[i - 1].pitch and cand != nxt:
+                seq[i] = seq[i]._replace(pitch=cand)
+                break
+    return seq
+
+
 def _lay_figure(figs, bar0, chan, vel):
     """Lay a sequence of ``(pitch, beats)`` onto consecutive onsets starting at
     ``bar0``, returning NoteEvents. Shared by the singable cells (`tag_call`,

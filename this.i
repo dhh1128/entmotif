@@ -440,6 +440,26 @@ Entmotif = goal:
         biggest lyricism lever before any pitch change. Refines [[e9k2m4p1]],
         [[f7a2k930]]; conserves [[m9p3k7a2]]; serves [[h0v4k7m2]].
 
+    Lead De-Stutter (singability cap on same-pitch repeats) = decision:
+      id: d5t8m2k7
+      why: >
+        Convergent prior finding (fw6, multiple graders): the LEAD emits "machine-gun
+        repeated note" / unsingable patter — runs of 3+ identical pitches no voice
+        could phrase (e.g. "=c =c =c", a jumpy octave-toggle that collapses on snap, a
+        re-snapped tag). The strong-beat anti-repeat ([[snap_chord_tone]]) only guards
+        beats 1 & 3; the jumpy/patter contour paths and cell-tiling still produce 3-6
+        identical pitches in a row off the strong beats. FIX: a PURE post-render
+        `destutter` pass over the LEAD voice (melody.py) caps consecutive same-pitch
+        repeats at 2 by nudging the 3rd+ note to an ADJACENT scale tone — onset and
+        duration are NEVER touched, so the 16th grid and metric conservation hold
+        [[m9p3k7a2]]. It prefers the neighbour toward the register center (keeps the
+        contour sane) and never re-collides with the note on either side. Runs
+        alongside (before) `breathe` [[b3r8k1m7]] — pitch-only vs duration-only, the
+        two passes don't interact. ANALOG layer (exact pitch, [[e9k2m4p1]]): carries
+        no Model-B recall bits but makes every line singable. Determinism + avalanche
+        untouched (pure function of the already-chosen notes). Refines [[b3r8k1m7]],
+        [[e9k2m4p1]]; conserves [[m9p3k7a2]]; serves [[h0v4k7m2]].
+
     Emotional Register Master Dimension = decision:
       id: a7k0m3p9
       why: >

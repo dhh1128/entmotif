@@ -841,3 +841,44 @@ arrangement 63 · Codex(gpt-5.5) 74.
    *pitches*, not just supply idiomatic rhythm under it.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an emotion,
    then align mode>tempo>dynamics>register>articulation>dissonance coherently.
+
+---
+
+## Flywheel cycle fw6 — singability: lead de-stutter (cap same-pitch repeats) (2026-06-24)
+
+Group A items 1–3 are all DONE/green, so this cycle took the strongest convergent,
+WELL-SPECIFIED prior finding (conservative, mechanical, not taste-heavy): the LEAD emits
+"machine-gun repeated note" / unsingable patter — runs of 3+ identical pitches no voice
+could phrase. Verified empirically: across a spread of short inputs the lead stuttered the
+same pitch up to **6 times in a row** (e.g. "deadbeef"), with 12 instances of 3+ consecutive
+repeats. The strong-beat anti-repeat (`snap_chord_tone`) only guards beats 1 & 3; the
+jumpy/patter contour paths and cell-tiling still collapse to identical off-beat pitches.
+
+**Change (strict TDD), this.i:d5t8m2k7:**
+- `src/entmotif/melody.py` — new PURE `destutter(notes, scale, center)` post-pass: caps
+  consecutive same-pitch repeats in one voice at 2 by nudging the 3rd+ note to an ADJACENT
+  scale tone. Onset + duration are NEVER touched, so the 16th grid and metric conservation
+  hold (this.i:m9p3k7a2). It prefers the neighbour toward the register center (keeps the
+  contour sane) and never re-collides with the note on either side.
+- `src/entmotif/engine.py` — applies `destutter` to the LEAD voice right before `breathe`
+  (pitch-only vs duration-only; the two passes don't interact). No frozen Chooser label was
+  added or renamed — `destutter` is a pure function of the already-chosen notes, so it draws
+  ZERO fingerprint bits and leaves determinism + avalanche untouched.
+
+**TDD:** added a FAILING assertion to `experiments/engine/test_motif.py` FIRST — the LEAD must
+never sound the same pitch 3+ times in a row, probed across the golden corpus AND a wider
+spread of short inputs (which hit the patter paths the long high-entropy IDs happen to dodge).
+Confirmed RED (`deadbeef` stutters 6×, `motif` 3×), then implemented the minimal fix to green.
+
+**Result:** worst same-pitch run capped at 2 across all probed inputs; no off-grid onsets;
+no metric drift. The 12-input GOLDEN corpus is **byte-identical** (those high-entropy IDs
+never tripped the cap), so no `--update` was needed — the fix only changes the pathological
+short/jumpy lines, exactly as intended. Both `test_motif.py` and `test_golden.py` end with 0
+failures. Regenerated `scores-fw6.md`.
+
+**Chosen next-fix list (ranked, carried forward):**
+1. **Melodic development on return** (Group B #4, deeper half) — real ARCH contour, multi-pitch
+   HOOK reuse, repetition-WITH-development; plus anacrusis/syncopation. Highest leverage.
+2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the line's
+   *pitches*, not just supply idiomatic rhythm under it.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`).

@@ -98,8 +98,13 @@ phrase-length/meter are broadly human.
    a post-render `breathe` pass opens comma-length rests in the LEAD as a function of
    phrase length (after at most ~12 sounded notes), by shortening note durations
    (onsets unmoved → grid + metric conservation untouched). Lead runs dropped from
-   24-48 wall-to-wall notes to <=12 between breaths. STILL OPEN: ARCH contour journey,
-   multi-pitch HOOK reuse, repetition-WITH-development, anacrusis/syncopation.
+   24-48 wall-to-wall notes to <=12 between breaths.
+   PROGRESS (fw6, this.i:d5t8m2k7): the "machine-gun repeated note / unsingable patter"
+   finding landed — a pure `destutter` post-pass caps consecutive same-pitch LEAD repeats
+   at 2 (nudging the 3rd+ note to an adjacent scale tone; onsets/durations untouched →
+   grid + metric conservation held; draws zero bits → determinism/golden untouched).
+   STILL OPEN: ARCH contour journey, multi-pitch HOOK reuse, repetition-WITH-development,
+   anacrusis/syncopation, post-skip gap-fill for the jumpy setting.
 5. **Emotional register master dimension** (`this.i:a7k0m3p9`): pick an emotion, then
    coherently align mode>tempo>dynamics>register>articulation>dissonance (Gabrielsson
    & Lindström order) so motifs feel sad/tense/mischievous/triumphant, not flat.

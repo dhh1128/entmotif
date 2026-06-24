@@ -12,7 +12,8 @@ from entmotif.theory import snap, sym
 from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
     unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform,
-    breathe)
+    breathe, destutter)
+from entmotif.theory import scale_tones
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
@@ -152,7 +153,10 @@ def generate(value):
     lead_notes = [n for n in notes if int(n[0]) == VoiceRole.LEAD]
     if lead_notes:
         rest = [n for n in notes if int(n[0]) != VoiceRole.LEAD]
-        notes = list(breathe(lead_notes)) + rest
+        # de-stutter (fw6, singability): cap consecutive same-pitch lead repeats at 2
+        # (pitch-only) BEFORE breathing (duration-only) — the two passes don't interact.
+        deStut = destutter(lead_notes, scale_tones(mode, key, lo, hi), arc_center(0))
+        notes = list(breathe(deStut)) + rest
 
     # ---- percussion: the style's groove across the piece (skip the groove-build intro) ----
     perc_start = 2 if template == "groove_first" else 0

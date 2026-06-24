@@ -388,6 +388,24 @@ _second = sorted(n[3] - _bar for n in _dn if n[3] >= _bar)
 check(len(_first) > 0 and _first == _second,
       "diminished cell not bar-aligned (stress drift): bar0=%s bar1=%s" % (_first, _second))
 
+# --- fw6 (singability: "machine-gun repeated note" / unsingable patter, convergent
+#     prior finding): the LEAD must never sound the SAME pitch 3+ times in a row. A run
+#     of >=3 identical pitches is a register-stutter no voice would phrase. Cap at 2.
+#     Probed across the golden corpus AND a wider spread of short inputs (which hit the
+#     jumpy/patter generation paths the long high-entropy IDs happen to dodge). ---
+_STUTTER_PROBE = CORPUS + ["hello", "world", "abc123", "test", "foobar", "xyz",
+                           "The quick brown fox", "42", "deadbeef", "music",
+                           "entmotif", "quux", "a", "ab", "zzz", "motif"]
+for v in _STUTTER_PROBE:
+    notes, m = motif.generate(v)
+    lead = sorted((n for n in notes if int(n[0]) == 0), key=lambda n: n[3])
+    run, worst = 1, 1
+    for a, b in zip(lead, lead[1:]):
+        run = run + 1 if b[1] == a[1] else 1
+        worst = max(worst, run)
+    check(worst <= 2,
+          "lead stutters same pitch %d times in a row (unsingable patter): %s" % (worst, v))
+
 print("CORPUS=%d   FAILURES=%d" % (len(CORPUS), len(fails)))
 for f in fails[:50]:
     print("  -", f)
