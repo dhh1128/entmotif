@@ -172,6 +172,27 @@ for v in CORPUS:
     lows.append(min(n[1] for n in notes if int(n[0]) == 0))
 check(max(lows) - min(lows) >= 7, "melodic register barely varies across inputs (range %d)" % (max(lows) - min(lows)))
 
+# --- v0.12 regression (metric conservation, this.i:m9p3k7a2): no PITCHED-voice
+#     onset is off the sixteenth grid. The diminution/climax halving 0.75->0.375
+#     used to drift every later onset off the beat. Percussion (ch9) may swing. ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    for n in notes:
+        if int(n[0]) in (0, 1, 2, 3):
+            check(n[3] % (DIV // 4) == 0,
+                  "off-grid onset: %s chan%d tick %d" % (v, int(n[0]), n[3]))
+
+# --- v0.12 regression: a diminished cell that tiles must be metrically ANCHORED so
+#     its repeat starts on the downbeat (else stressed<->unstressed flips each repeat).
+#     A germ with a 0.75 note (halves to an off-integer total) is the failing case. ---
+_germ = ([1, -1, 1, -1, 1, -1, 1, -1, 1], [0.5, 0.5, 1, 1.5, 0.5, 0.75, 0.25, 1, 1, 1])
+_dn = motif.render_transform(_germ, "diminish", "major", 0, 48, 84, 0, ["I", "I"], 0, 80, 64)
+_bar = 4 * DIV
+_first = sorted(n[3] for n in _dn if n[3] < _bar)
+_second = sorted(n[3] - _bar for n in _dn if n[3] >= _bar)
+check(len(_first) > 0 and _first == _second,
+      "diminished cell not bar-aligned (stress drift): bar0=%s bar1=%s" % (_first, _second))
+
 print("CORPUS=%d   FAILURES=%d" % (len(CORPUS), len(fails)))
 for f in fails[:50]:
     print("  -", f)

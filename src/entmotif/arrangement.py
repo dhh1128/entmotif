@@ -47,7 +47,7 @@ STYLES = {
                           color_w=[2, 4, 2], fat_w=[1, 3, 3, 1], mode_w=[2, 2], legato=False),
     "ragtime":       dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="stride", bass_pat="stride",
                           perc="none", perc_vel=0, reg=PitchRange(55, 82, 65),
-                          tempos=[120, 132, 144, 156], tempo_w=[2, 3, 3, 2],
+                          tempos=[128, 144, 160], tempo_w=[2, 3, 2],   # lively (recordings 116-182); ~4at7
                           color_w=[2, 4, 2], fat_w=[2, 3, 2, 1], mode_w=[4, 1], legato=False),
     "boogie_woogie": dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="none", bass_pat="boogie",
                           perc="shuffle", perc_vel=92, reg=PitchRange(55, 82, 65),
@@ -67,7 +67,7 @@ STYLES = {
                           color_w=[0, 2, 4], fat_w=[0, 2, 3, 3], mode_w=[3, 2], legato=False),
     "samba":         dict(leads=[73, 56, 24, 11], lead_w=[3, 3, 3, 2], comp=24, bass=32,
                           comp_pat="bossa", bass_pat="samba", perc="samba", perc_vel=100,
-                          reg=PitchRange(55, 83, 66), tempos=[152, 168, 184, 200], tempo_w=[2, 3, 3, 2],
+                          reg=PitchRange(55, 83, 66), tempos=[132, 150, 168], tempo_w=[2, 3, 2],
                           color_w=[1, 3, 3], fat_w=[1, 2, 3, 2], mode_w=[3, 2], legato=False),
     "salsa":         dict(leads=[56, 61, 65, 73], lead_w=[4, 2, 3, 2], comp=0, bass=32,
                           comp_pat="montuno", bass_pat="tumbao", perc="salsa", perc_vel=98,
@@ -87,7 +87,7 @@ STYLES = {
                           color_w=[1, 2, 4], fat_w=[0, 2, 3, 3], mode_w=[2, 3], legato=False),
     "gospel":        dict(leads=[0, 19, 53, 56], lead_w=[4, 3, 2, 2], comp=19, bass=33,
                           comp_pat="comp4", bass_pat="walking", perc="backbeat", perc_vel=96,
-                          reg=PitchRange(52, 79, 62), tempos=[76, 88, 100], tempo_w=[3, 4, 3],
+                          reg=PitchRange(52, 79, 62), tempos=[84, 100, 120, 138], tempo_w=[3, 3, 2, 2],
                           color_w=[1, 3, 4], fat_w=[0, 1, 3, 4], mode_w=[4, 1], legato=True),
     "march":         dict(leads=[56, 61, 57, 72, 71], lead_w=[4, 3, 3, 3, 2], comp=61, bass=58,
                           comp_pat="oompah", bass_pat="stride", perc="march", perc_vel=96,
@@ -224,6 +224,8 @@ def voice_chord(pcs, fat, top, prev=None):
             out = [x - 12 for x in out]
         while tgt - out[-1] > 6:
             out = [x + 12 for x in out]
+    while out and out[0] < 50:                                # NEVER comp in the bass register (D3 floor):
+        out = [x + 12 for x in out]                           # sub-bass voicings were muddy "ugly off-beat thunks"
     return sorted(out)
 
 

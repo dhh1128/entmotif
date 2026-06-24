@@ -163,6 +163,13 @@ def choose_transform(ch, label):
     return ch.weighted(label, TRANSFORMS, TRANSFORM_W)
 
 
+def _q16(beats):
+    """Snap a duration to the sixteenth-note grid (>= one sixteenth). Halving an
+    odd value (0.75 -> 0.375) would otherwise land OFF the grid and the tiling would
+    accumulate the fraction, drifting every later onset off the beat."""
+    return max(0.25, round(beats * 4) / 4.0)
+
+
 def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
                      register_center, climax=False):
     """Realize a restatement: apply `op` to the germ shape, place it near
@@ -177,14 +184,21 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
     d = [-x for x in deltas] if op == "invert" else list(deltas)
     du = list(durs)
     if op == "augment":
-        du = [min(BEATS_PER_BAR * 1.0, x * 2) for x in du]
+        du = [min(BEATS_PER_BAR * 1.0, x * 2) for x in du]    # doubling stays on-grid
     elif op == "diminish":
-        du = [max(0.25, x * 0.5) for x in du]
+        du = [_q16(x * 0.5) for x in du]                      # halving must re-snap to the 16th grid
     pat = [(0, du[0])] + [(d[i], du[i + 1]) for i in range(len(d))]
     if op == "fragment":
         pat = pat[:3] if len(pat) >= 3 else pat
-    if climax:                                                # rhythmic activity at the peak
-        pat = [(dl, max(0.25, dr * 0.5)) for dl, dr in pat]
+    if climax:                                                # rhythmic activity at the peak (grid-quantized)
+        pat = [(dl, _q16(dr * 0.5)) for dl, dr in pat]
+    # METRIC ANCHOR: pad/trim the statement to a whole, strong-beat-aligned length
+    # (1/2/4/8 beats) so when it repeats to fill the span, every repeat starts on a
+    # down/strong beat — otherwise a compressed cell (e.g. 4.25 beats) shifts the
+    # accents off the beat on each repeat (the "stressed<->unstressed flip").
+    total = sum(dr for _, dr in pat)
+    target = min((1.0, 2.0, 4.0, 8.0), key=lambda t: abs(t - total))
+    pat[-1] = (pat[-1][0], max(0.25, pat[-1][1] + (target - total)))
     start_idx = (len(scale) - 1) if climax else _nearest_index(scale, register_center)
     start_idx = max(0, min(len(scale) - 1, start_idx + _SEQ_SHIFT.get(op, 0)))
 

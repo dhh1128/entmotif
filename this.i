@@ -341,6 +341,24 @@ Entmotif = goal:
         [[k20f9a3x]], [[f7a2k930]], [[z0m4p81q]], [[d4m1z8p0]], [[c2k9p0a4]],
         [[e9k2m4p1]], [[f3a0k9m2]], [[7c4m1k0p]].
 
+    Metric Conservation In Rhythm Transforms = constraint:
+      id: m9p3k7a2
+      why: >
+        Maintainer lesson (2026-06-24), learned from a real bug: "if you add a
+        flourish in one place, you have to SUBTRACT to compensate somewhere else."
+        Every rhythmic transformation (subdivision, diminution, augmentation,
+        ornament, swing) MUST CONSERVE the bar's total duration: time added by
+        splitting a note must be removed elsewhere so the barline never moves. Two
+        sub-rules the bug violated: (1) GRID — transformed durations snap to the
+        sixteenth grid (halving 0.75->0.375 drifted every later onset off the beat);
+        (2) METRIC ANCHOR — a repeated/tiled cell must total a whole, strong-beat-
+        aligned length (1/2/4/8 beats) so each repeat starts on a down/strong beat
+        (a 4.25-beat cell flipped stressed<->unstressed on every repeat). Enforced by
+        regression tests in test_motif.py (no off-grid pitched onsets; diminished
+        cells bar-aligned). When melodic triplets / swung-eighth melodies are added
+        later, they must obey the same conservation (a triplet group fills its beat
+        exactly). Relates to [[9k3f0a72]] (whole-motif integrity), [[h0v4k7m2]].
+
     Texture Model Beyond Lead Plus Comp = decision:
       id: p6m2v9k0
       why: >
