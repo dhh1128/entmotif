@@ -32,7 +32,17 @@ import hashlib
 import math
 import struct
 
-DIV = 480
+DIV = 480                       # MIDI ticks per quarter note
+BEATS_PER_BAR = 4               # 4/4 throughout
+WEIGHT_SCALE = 1_000_000        # fixed-point resolution for Chooser.weighted
+COMP_PROGRAM = 48               # GM "String Ensemble" — the comp voice (channel 1)
+BASS_PROGRAM = 32               # GM "Acoustic Bass" — the bass voice (channel 2)
+SUSTAIN_GAP = 6                 # ticks trimmed off held comp/bass notes (avoid overlap)
+ARP_GAP = 4                     # ticks trimmed off arpeggiated/running notes
+# comp figuration velocities (per pattern)
+BLOCK_VEL, STAB_VEL, ARP_VEL, ALBERTI_VEL = 34, 42, 40, 38
+# bass figuration velocities
+PEDAL_VEL, WALK_VEL, ROOT_VEL, FIFTH_VEL = 56, 56, 60, 50
 
 MAJOR_SCALE = [0, 2, 4, 5, 7, 9, 11]
 MINOR_SCALE = [0, 2, 3, 5, 7, 8, 10]
@@ -97,7 +107,7 @@ class Chooser:
 
     def weighted(self, label, opts, wts):
         total = float(sum(wts))
-        r = (self.v(label) % 1_000_000) / 1_000_000.0 * total
+        r = (self.v(label) % WEIGHT_SCALE) / float(WEIGHT_SCALE) * total
         acc = 0.0
         for o, w in zip(opts, wts):
             acc += w
@@ -161,7 +171,7 @@ def line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, c
     for b, fig in enumerate(figs):
         cp = cpcs(chords2[b], mode, key)
         for dur in fig:
-            beat = pos - b * 4
+            beat = pos - b * BEATS_PER_BAR
             if cur is None:
                 cur = snap(base, cp, lo, hi)
                 if offset:
@@ -185,7 +195,7 @@ def line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, c
                         if alt:
                             s = min(alt, key=lambda m: abs(m - cur))
                     cur = s
-            notes.append([chan, cur, vel, int((bar0 * 4 + pos) * DIV), int(dur * DIV)])
+            notes.append([chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)])
             pos += dur
     return notes
 
@@ -200,7 +210,7 @@ def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
         figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
     out, pos = [], 0.0
     for pitch, dur in figs:
-        out.append([chan, pitch, vel, int((bar0 * 4 + pos) * DIV), int(dur * DIV)])
+        out.append([chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)])
         pos += dur
     return out
 
@@ -227,36 +237,36 @@ def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, figr, bassfig, comp_o
     out, top = [], melody_lo - 4
     for b, s in enumerate(chords2):
         pcs = cpcs(s, mode, key)
-        base = (bar0 + b) * 4 * DIV
+        base = (bar0 + b) * BEATS_PER_BAR * DIV
         if comp_on:
             voic = voice_chord(pcs, fat, top)
             if figr == "block":
                 for m in voic:
-                    out.append((1, m, 34, base, 4 * DIV - 6))
+                    out.append((1, m, BLOCK_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
             elif figr == "stabs":
                 for beat in (0, 2):
                     for m in voic:
-                        out.append((1, m, 42, base + beat * DIV, DIV - 6))
+                        out.append((1, m, STAB_VEL, base + beat * DIV, DIV - SUSTAIN_GAP))
             elif figr == "arp":
                 seqv = voic + voic[-2::-1]
                 for i in range(8):
-                    out.append((1, seqv[i % len(seqv)], 40, base + i * (DIV // 2), DIV // 2 - 4))
+                    out.append((1, seqv[i % len(seqv)], ARP_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
             else:                                             # alberti
                 pat = [voic[0], voic[-1], voic[len(voic) // 2], voic[-1]]
                 for i in range(8):
-                    out.append((1, pat[i % 4], 38, base + i * (DIV // 2), DIV // 2 - 4))
+                    out.append((1, pat[i % 4], ALBERTI_VEL, base + i * (DIV // 2), DIV // 2 - ARP_GAP))
         if bass_on:
             bt = lambda pc: 36 + pc                            # bass register (C2..B2); always a chord tone
             root, third, fifth = bt(pcs[0]), bt(pcs[1]), bt(pcs[2])
             if bassfig == "pedal":
-                out.append((2, root, 56, base, 4 * DIV - 6))
+                out.append((2, root, PEDAL_VEL, base, BEATS_PER_BAR * DIV - SUSTAIN_GAP))
             elif bassfig == "walking":
                 ws = [root, third, fifth, third]               # walk the actual chord tones (quality-correct)
                 for i in range(4):
-                    out.append((2, ws[i], 56, base + i * DIV, DIV - 6))
+                    out.append((2, ws[i], WALK_VEL, base + i * DIV, DIV - SUSTAIN_GAP))
             else:                                              # root + the chord's actual fifth
-                out.append((2, root, 60, base, 2 * DIV))
-                out.append((2, fifth, 50, base + 2 * DIV, 2 * DIV))
+                out.append((2, root, ROOT_VEL, base, 2 * DIV))
+                out.append((2, fifth, FIFTH_VEL, base + 2 * DIV, 2 * DIV))
     return out
 
 
@@ -427,7 +437,7 @@ def _rest(ticks):
 def _voice(ch_notes, total_bars, chords=None, dyns=None):
     out = []
     for b in range(total_bars):
-        lo_t, hi_t = b * 4 * DIV, (b + 1) * 4 * DIV
+        lo_t, hi_t = b * BEATS_PER_BAR * DIV, (b + 1) * BEATS_PER_BAR * DIV
         toks = ['"%s"' % chords[b]] if chords else []
         if dyns and b in dyns:
             toks.append("!%s!" % dyns[b])
@@ -477,10 +487,11 @@ def abc_export(value, notes, meta):
 
 
 # --------------------------------------------------------------- MIDI --------
-def write_midi(notes, tempo, lead_prog, ans_prog, path):
+def encode_midi(notes, tempo, lead_prog, ans_prog):
+    """Pure: render notes to the canonical MIDI file bytes (no file I/O)."""
     ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", int(60_000_000 / tempo))[1:]),
-          (0, 1, bytes([0xC0, lead_prog])), (0, 1, bytes([0xC1, 48])),
-          (0, 1, bytes([0xC2, 32])), (0, 1, bytes([0xC3, ans_prog]))]
+          (0, 1, bytes([0xC0, lead_prog])), (0, 1, bytes([0xC1, COMP_PROGRAM])),
+          (0, 1, bytes([0xC2, BASS_PROGRAM])), (0, 1, bytes([0xC3, ans_prog]))]
     for chn, pitch, vel, start, dur in notes:
         ev.append((start, 2, bytes([0x90 | chn, pitch, vel])))
         ev.append((start + max(1, dur), 0, bytes([0x80 | chn, pitch, 0])))
@@ -496,9 +507,13 @@ def write_midi(notes, tempo, lead_prog, ans_prog, path):
         q.reverse()
         track += bytes(q) + data
     track += b"\x00\xff\x2f\x00"
+    return (b"MThd" + struct.pack(">IHHH", 6, 0, 1, DIV) +
+            b"MTrk" + struct.pack(">I", len(track)) + bytes(track))
+
+
+def write_midi(notes, tempo, lead_prog, ans_prog, path):
     with open(path, "wb") as f:
-        f.write(b"MThd" + struct.pack(">IHHH", 6, 0, 1, DIV) +
-                b"MTrk" + struct.pack(">I", len(track)) + bytes(track))
+        f.write(encode_midi(notes, tempo, lead_prog, ans_prog))
 
 
 def slug(s):
