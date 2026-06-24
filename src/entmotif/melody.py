@@ -10,7 +10,7 @@ NOTE (refactor debt, deferred to the v0.8 onset-rhythm rewrite): the public
 MelodyContext parameter object. Bundling it now would be churn — Phase 2 replaces
 this rhythm model wholesale, which is the right moment to introduce the context.
 """
-from entmotif.model import DIV, BEATS_PER_BAR, NoteEvent
+from entmotif.model import DIV, BEATS_PER_BAR, NoteEvent, strong_beats, metric_targets
 from entmotif.theory import cpcs, snap, snap_chord_tone, step, scale_tones, degree
 
 FIGURES = [
@@ -22,6 +22,25 @@ HOOKS = [                                                      # signature idea-
     [1.5, 0.5, 1, 1], [0.5, 1.5, 1, 1], [1, 0.5, 0.5, 2],
     [0.75, 0.25, 1, 2], [0.5, 0.5, 1, 1.5, 0.5], [2, 0.5, 0.5, 1],
 ]
+# Triple-meter (3/4) figure pools — each fills exactly a 3-beat bar (metric conservation,
+# this.i:m9p3k7a2, off the 4/4 grid). Selected by meter so a waltz line phrases in 3.
+FIGURES_3 = [
+    [1, 1, 1], [2, 1], [1, 2], [1.5, 0.5, 1], [1, 1.5, 0.5],
+    [0.5, 0.5, 1, 1], [1, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 0.5, 1],
+]
+HOOKS_3 = [                                                    # 3/4 signature idea-bar rhythms (lilting/dotted)
+    [1.5, 0.5, 1], [1, 0.5, 0.5, 1], [0.5, 1, 1.5], [1, 1, 1], [0.75, 0.25, 2], [2, 0.5, 0.5],
+]
+
+
+def figures_for(beats):
+    """The melodic figure pool that fills one bar of `beats` beats (4/4 vs 3/4)."""
+    return FIGURES_3 if beats == 3 else FIGURES
+
+
+def hooks_for(beats):
+    """The signature idea-bar hook pool for the meter."""
+    return HOOKS_3 if beats == 3 else HOOKS
 SIG_STEPS = {0: [2, -2, 3, -3], 1: [3, 4, -3, 5, -4], 2: [4, 5, 7, -5, -4]}
 BREATHS = [0, 0, 0.5, 1, 1, 1.5]
 MAXLEAP = {0: 3, 1: 5, 2: 8}
@@ -85,12 +104,13 @@ def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
 
 
 def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-                          tag, offset, invert, sig, chan, vel):
+                          tag, offset, invert, sig, chan, vel, beats=BEATS_PER_BAR):
     notes, cur, pos, k, prevd = [], None, 0.0, 0, 0
+    strong = strong_beats(beats)
     for b, fig in enumerate(figs):
         cp = cpcs(chords2[b], mode, key)
         for dur in fig:
-            beat = pos - b * BEATS_PER_BAR
+            beat = pos - b * beats
             if cur is None:
                 cur = snap(base, cp, lo, hi)
                 if offset:
@@ -106,13 +126,13 @@ def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, 
                 cur = step(cur, d, mode, key, lo, hi)
                 prevd = d
                 k += 1
-                if beat in (0.0, 2.0):
+                if beat in strong:
                     s = snap(cur, cp, lo, hi)
                     if notes:
                         s = snap_chord_tone(cur, cp, scale_tones(mode, key, lo, hi),
                                             s, notes[-1][1])
                     cur = s
-            notes.append(NoteEvent(chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+            notes.append(NoteEvent(chan, cur, vel, int((bar0 * beats + pos) * DIV), int(dur * DIV)))
             pos += dur
     return notes
 
@@ -203,28 +223,32 @@ def destutter(notes, scale, center):
         down = scale[max(0, j - 1)]
         nxt = seq[i + 1].pitch if i + 1 < len(seq) else None
         # prefer the neighbour toward the register center; fall back to the other; never
-        # equal to the previous note (would extend the run) or the following note.
+        # equal to the previous note (would extend the run). Avoid the following note too
+        # when possible, but breaking THIS run takes priority: at the scale ceiling the only
+        # free neighbour can coincide with `nxt`, so a second tier drops that constraint
+        # rather than leave a 3-run uncapped (it leaves at most a fresh 2-run with `nxt`).
         order = [down, up] if center < p else [up, down]
-        for cand in order:
-            if cand != p and cand != seq[i - 1].pitch and cand != nxt:
-                seq[i] = seq[i]._replace(pitch=cand)
-                break
+        chosen = next((c for c in order if c != p and c != seq[i - 1].pitch and c != nxt), None)
+        if chosen is None:
+            chosen = next((c for c in order if c != p and c != seq[i - 1].pitch), None)
+        if chosen is not None:
+            seq[i] = seq[i]._replace(pitch=chosen)
     return seq
 
 
-def _lay_figure(figs, bar0, chan, vel):
+def _lay_figure(figs, bar0, chan, vel, beats=BEATS_PER_BAR):
     """Lay a sequence of ``(pitch, beats)`` onto consecutive onsets starting at
     ``bar0``, returning NoteEvents. Shared by the singable cells (`tag_call`,
     `cadence_bar`) that fill a bar from a fixed pitch/duration figure."""
     out, pos = [], 0.0
     for pitch, dur in figs:
         out.append(NoteEvent(chan, pitch, vel,
-                             int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+                             int((bar0 * beats + pos) * DIV), int(dur * DIV)))
         pos += dur
     return out
 
 
-def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
+def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel, beats=BEATS_PER_BAR):
     """A singable CALL figure for the antiphony ('tag') bar of a call/response form.
 
     Replaces the dead whole-bar sustain (the v12 / earworm "static held-note bars
@@ -238,8 +262,8 @@ def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
     nbr = step(tag, 1, mode, key, lo, hi)                     # upper scale neighbour
     if nbr == tag:                                            # at the ceiling: lean down instead
         nbr = step(tag, -1, mode, key, lo, hi)
-    figs = [(tag, 1), (nbr, 1), (tag, 2)]                     # call: tone, neighbour, settle back (no dead hold)
-    return _lay_figure(figs, bar0, chan, vel)
+    figs = [(tag, 1), (nbr, 1), (tag, beats - 2)]            # call: tone, neighbour, settle for the rest of the bar
+    return _lay_figure(figs, bar0, chan, vel, beats)
 
 
 # fw5 (Group B #4, "cadential interchangeability is the #1 memorability killer"):
@@ -288,16 +312,19 @@ CADENCE_APPROACHES = {
 }
 
 
-def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel, approach=0):
+def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel, approach=0, beats=BEATS_PER_BAR):
     """Render the cadential bar. `approach` selects from a small family of valid,
     resolving approach figures (input-derived by the engine) so the cadence is a
     per-piece signature rather than a shared stamp. Authentic/plagal approaches all
-    land on the tonic (degree 1); each figure fills exactly the bar."""
+    land on the tonic (degree 1); each figure fills exactly the bar (the resolution
+    note's value stretches/shrinks so the figure totals `beats` — a no-op in 4/4)."""
     d = lambda n: degree(n, key, mode, lo, hi)
     fam = CADENCE_APPROACHES.get(res, CADENCE_APPROACHES["half"])
     deg_figs = fam[approach % len(fam)]
-    figs = [(d(n), beats) for n, beats in deg_figs]
-    return _lay_figure(figs, bar0, chan, vel)
+    figs = [(d(n), dur) for n, dur in deg_figs]
+    pre = sum(dur for _, dur in figs[:-1])
+    figs[-1] = (figs[-1][0], max(0.5, beats - pre))           # resolution tone fills the rest of the bar
+    return _lay_figure(figs, bar0, chan, vel, beats)
 
 
 # --------------------------------------------------- motivic transformation --
@@ -364,7 +391,7 @@ def _q16(beats):
 
 
 def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
-                     register_center, climax=False):
+                     register_center, climax=False, beats=BEATS_PER_BAR):
     """Realize a restatement: apply `op` to the germ shape, place it near
     `register_center` (or at the registral peak if `climax`), tile/truncate to fill
     the spanned bars, and snap strong beats to chord tones for singability.
@@ -373,11 +400,12 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
     scale = scale_tones(mode, key, lo, hi)
     if not scale or not durs:
         return []
-    span_beats = len(chords2) * BEATS_PER_BAR
+    span_beats = len(chords2) * beats
+    strong, targets = strong_beats(beats), metric_targets(beats)
     d = [-x for x in deltas] if op == "invert" else list(deltas)
     du = list(durs)
     if op == "augment":
-        du = [min(BEATS_PER_BAR * 1.0, x * 2) for x in du]    # doubling stays on-grid
+        du = [min(beats * 1.0, x * 2) for x in du]            # doubling stays on-grid (capped to the bar)
     elif op == "diminish":
         du = [_q16(x * 0.5) for x in du]                      # halving must re-snap to the 16th grid
     pat = [(0, du[0])] + [(d[i], du[i + 1]) for i in range(len(d))]
@@ -386,11 +414,11 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
     if climax:                                                # rhythmic activity at the peak (grid-quantized)
         pat = [(dl, _q16(dr * 0.5)) for dl, dr in pat]
     # METRIC ANCHOR: pad/trim the statement to a whole, strong-beat-aligned length
-    # (1/2/4/8 beats) so when it repeats to fill the span, every repeat starts on a
+    # (per-meter `targets`) so when it repeats to fill the span, every repeat starts on a
     # down/strong beat — otherwise a compressed cell (e.g. 4.25 beats) shifts the
     # accents off the beat on each repeat (the "stressed<->unstressed flip").
     total = sum(dr for _, dr in pat)
-    target = min((1.0, 2.0, 4.0, 8.0), key=lambda t: abs(t - total))
+    target = min(targets, key=lambda t: abs(t - total))
     pat[-1] = (pat[-1][0], max(0.25, pat[-1][1] + (target - total)))
     start_idx = (len(scale) - 1) if climax else _nearest_index(scale, register_center)
     start_idx = _clamp_index(scale, start_idx + _SEQ_SHIFT.get(op, 0))
@@ -404,9 +432,9 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
             idx = _clamp_index(scale, idx + delta)
         first = False
         pitch = scale[idx]
-        beat = pos - int(pos // BEATS_PER_BAR) * BEATS_PER_BAR
-        if beat in (0.0, 2.0):                                # strong beat: snap to a chord tone
-            b = min(int(pos // BEATS_PER_BAR), len(chords2) - 1)
+        beat = pos - int(pos // beats) * beats
+        if beat in strong:                                    # strong beat: snap to a chord tone
+            b = min(int(pos // beats), len(chords2) - 1)
             cp = cpcs(chords2[b], mode, key)
             s = snap(pitch, cp, lo, hi)
             if notes:                                         # anti-repeat on strong beats
@@ -414,7 +442,7 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
             pitch = s
             idx = _nearest_index(scale, pitch)
         notes.append(NoteEvent(chan, pitch, vel,
-                               int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+                               int((bar0 * beats + pos) * DIV), int(dur * DIV)))
         pos += dur
         i += 1
     return notes

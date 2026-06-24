@@ -403,13 +403,15 @@ for st in arr.STYLE_NAMES:
         top = s["leads"][s["lead_w"].index(max(s["lead_w"]))]
         bot = s["leads"][s["lead_w"].index(min(s["lead_w"]))]
         check(wmap[top] > wmap[bot], "lead_w affinity ignored within signature: %s" % st)
-# corpus: most leads are now style-suited (the "only ~2/12 style-suited" failure) ---
-_suited = 0
-for v in CORPUS:
-    _n, _m = motif.generate(v)
-    if _m["lead_prog"] in set(arr.STYLES[_m["style"]]["leads"]):
-        _suited += 1
-check(_suited >= 9, "too few corpus leads style-suited: %d/12 (want >=9)" % _suited)
+# most leads are now style-suited across a probe (the "only ~2/12 style-suited" failure);
+# probe-based (not the 12 fixed inputs) so it tracks the ~0.80 P(signature), robust to which
+# styles a small fixed sample happens to hit.
+_suited = _stot = 0
+for i in range(400):
+    _n, _m = motif.generate("suited-probe-%d" % i)
+    _stot += 1
+    _suited += _m["lead_prog"] in set(arr.STYLES[_m["style"]]["leads"])
+check(_suited / _stot >= 0.7, "too few leads style-suited across a probe: %.2f (want >=0.70)" % (_suited / _stot))
 
 # --- fw7 (this.i:a7k0m3p9, EMOTION as the upstream master in the DAG d2k9m4p1): pick an
 #     emotion, then COHERENTLY condition the affective cues (Gabrielsson precedence:
@@ -530,12 +532,48 @@ for i in range(3000):
 check(_bt and _ct and _bv / _bt > _cv / _ct + 0.05,
       "realized comp groove not conditioned: busy %.3f !> calm %.3f +0.05" % (_bv / max(1, _bt), _cv / max(1, _ct)))
 
-# --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
+# --- fw8 (this.i:m4k0p2v9, METER beyond 4/4 — the DAG's upstream meter edge): meter is a
+#     per-style property (the waltz is 3/4, the rest 4/4) that reparameterizes the bar grid,
+#     grooves, strong-beat map and the ABC M: header. Triple meter must conserve the bar
+#     (3 beats) exactly as 4/4 conserves 4. ---
+# (a) every non-waltz style stays 4/4; the waltz declares 3/4.
+for st in arr.STYLE_NAMES:
+    check(arr.STYLES[st].get("meter", (4, 4))[0] == (3 if st == "waltz" else 4),
+          "unexpected meter for %s" % st)
+# (b) the waltz is reachable and is genuinely 3/4 end to end, with a 3/4 ABC header.
+_wfound, _wchecked = False, 0
+for i in range(4000):
+    v = "meter-%d" % i
+    n, m = motif.generate(v)
+    if m["style"] != "waltz":
+        continue
+    if not _wfound:
+        _wfound = True
+        check(m["beats"] == 3 and m["meter"] == "3/4", "waltz not 3/4: beats=%s meter=%s" % (m["beats"], m["meter"]))
+        check("\nM:3/4\n" in motif.abc_export(v, n, m), "waltz ABC missing M:3/4 header")
+    # (c) metric conservation in 3/4: the piece is an integer number of 3-beat bars, every
+    #     pitched onset is on the 16th grid, and bass/comp downbeats land on 3-beat boundaries
+    #     (no 4/4 grid leakage).
+    barlen = 3 * DIV
+    check(max(x[3] + x[4] for x in n) <= m["bars"] * barlen, "waltz overruns its bars: %s" % v)
+    for x in n:
+        if int(x[0]) in (0, 1, 2, 3):
+            check(x[3] % (DIV // 4) == 0, "waltz off-grid onset: %s tick %d" % (v, x[3]))
+    check(any(int(x[0]) == 2 and x[3] % barlen == 0 for x in n), "waltz bass misses the downbeat: %s" % v)
+    _wchecked += 1
+    if _wchecked >= 30:
+        break
+check(_wfound, "waltz (3/4) never reached from the fingerprint")
+
+# --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window). Probe-based
+#     (not the 12 fixed inputs): with register now conditioned on the instrument (fix #1), a
+#     small fixed sample can cluster on mid-register timbres, so assert real spread over a
+#     wider probe — a piccolo/glockenspiel sits an octave+ above a cello/bassoon. ---
 lows = []
-for v in CORPUS:
-    notes, m = motif.generate(v)
+for i in range(300):
+    notes, m = motif.generate("reg-probe-%d" % i)
     lows.append(min(n[1] for n in notes if int(n[0]) == 0))
-check(max(lows) - min(lows) >= 7, "melodic register barely varies across inputs (range %d)" % (max(lows) - min(lows)))
+check(max(lows) - min(lows) >= 12, "melodic register barely varies across inputs (range %d)" % (max(lows) - min(lows)))
 
 # --- v0.12 regression (metric conservation, this.i:m9p3k7a2): no PITCHED-voice
 #     onset is off the sixteenth grid. The diminution/climax halving 0.75->0.375

@@ -1,6 +1,6 @@
 X:1
 T:0x742d35cc6634c0532925a3b844bc454e4438f44e
-C:entmotif [funk] B major, 116bpm, lead=square-lead, perc=funk, form=period, arr=call_resp
+C:entmotif [march] B major, 116bpm, lead=oboe, perc=march, form=period, arr=call_resp
 M:4/4
 L:1/16
 Q:1/4=116
@@ -10,10 +10,10 @@ V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"B" !mp! ^F,2 =B,2 ^F,4 =B,6 ^F,2 | "G#m" =B,3 ^G, ^A,4 ^G,2 z2 ^A,4 | "E" !mf! =E4 ^F4 =E8 | "F#" =B,4 ^D4 ^C6 z2 | "B" !f! =B =B ^F2 =B z2 ^F =B2 ^G ^A2 ^G2 ^A | "G#m" =B =B ^F z =B3 ^F =B2 ^G ^A2 ^G2 ^A | "F#" !mf! ^C4 ^D2 z2 ^C8 | "B" =B,2 ^D2 ^C4 =B,8 |]
+"B" !mp! =B,2 =E2 =B,4 ^D6 ^A,2 | "G#m" =B,3 ^C ^D4 =B,2 z2 ^C4 | "C#" !mf! =F4 ^F4 =F8 | "F#" =B,4 ^D4 ^C6 z2 | "B" !f! =B =B ^F2 ^A z2 =E ^F2 ^G ^A2 ^F2 ^G | "G#m" =B =B ^F z ^A3 =E ^G2 ^A =B2 ^G2 ^A | "F#" !mf! ^F4 ^G2 z2 ^F8 | "B" =B,2 ^D2 ^C4 =B,8 |]
 V:2
-[=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z [=B,^D^F=A] z | [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z [^G,=B,^D^F] z | [=E,^G,=B,=D] z2 [=E,^G,=B,=D] z2 [=E,^G,=B,=D] z2 [=E,^G,=B,=D] z2 [=E,^G,=B,=D] z [=E,^G,=B,=D] z | [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z [^F,^A,^C=E] z | [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z [=B,^D^F=A] z | [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z2 [^G,=B,^D^F] z [^G,=B,^D^F] z | [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z [^F,^A,^C=E] z | [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z2 [=B,^D^F=A] z [=B,^D^F=A] z |]
+z4 [^D^F=A]3 z5 [^D^F=A]3 z | z4 [=B,^D^F]3 z5 [=B,^D^F]3 z | z4 [=F^G=B]3 z5 [=F^G=B]3 z | z4 [^A^c=e]3 z5 [^A^c=e]3 z | z4 [^d^f=a]3 z5 [^d^f=a]3 z | z4 [=B^d^f]3 z5 [=B^d^f]3 z | z4 [^A^c=e]3 z5 [^A^c=e]3 z | z4 [^d^f=a]3 z5 [^d^f=a]3 z |]
 V:3
-=B,,2 z =B,, z2 =B,, z ^F,,2 z =B,, z2 ^F,,2 | ^G,,2 z ^G,, z2 ^G,, z ^D,,2 z ^G,, z2 ^G,,2 | =E,,2 z =E,, z2 =E,, z =B,,2 z =E,, z2 =E,,2 | ^F,,2 z ^F,, z2 ^F,, z ^C,,2 z ^F,, z2 ^F,,2 | =B,,2 z =B,, z2 =B,, z ^F,,2 z =B,, z2 ^F,,2 | ^G,,2 z ^G,, z2 ^G,, z ^D,,2 z ^G,, z2 ^G,,2 | ^F,,2 z ^F,, z2 ^F,, z ^C,,2 z ^F,, z2 ^A,,2 | =B,,2 z =B,, z2 =B,, z ^F,,2 z =B,, z2 =B,,2 |]
+=B,,4 z4 ^F,,4 z4 | ^G,,4 z4 ^D,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | =B,,4 z4 ^F,,4 z4 | ^G,,4 z4 ^D,,4 z4 | ^F,,4 z4 ^C,,4 z4 | =B,,4 z4 ^F,,4 z4 |]
 V:4
-z16 | z16 | =E2 ^A2 =E4 =B6 ^F2 | z16 | z16 | z16 | ^C2 ^F2 ^C4 ^A,2 ^D2 ^A,4 | z16 |]
+z16 | z16 | ^G2 =B2 ^F4 ^G6 ^D2 | z16 | z16 | z16 | ^F2 =B2 ^F4 ^A2 =B2 ^F4 | z16 |]

@@ -13,8 +13,30 @@ from typing import NamedTuple, Optional
 
 # --- timing / fixed-point constants -----------------------------------------
 DIV = 480                       # MIDI ticks per quarter note
-BEATS_PER_BAR = 4               # 4/4 throughout
+BEATS_PER_BAR = 4               # the 4/4 DEFAULT; meter is now per-piece (this.i:m4k0p2v9),
+#   threaded as `beats` (beats-per-bar, quarter-note beat) so 4/4 stays byte-identical and
+#   triple-meter idioms (waltz, 3/4) render correctly. Denominator stays /4 for now (the
+#   beat is a quarter); compound 6/8-as-dotted is a later track.
 WEIGHT_SCALE = 1_000_000        # fixed-point resolution for weighted choice
+
+# Per-meter metric maps. STRONG_BEATS = the accented beat positions (where the melody
+# snaps to a chord tone); METRIC_TARGETS = the whole, strong-beat-aligned cell lengths a
+# tiled/diminished motif is padded/trimmed to so every repeat starts on a downbeat
+# (metric conservation, this.i:m9p3k7a2, generalized off the 4/4 grid). Triple meter has a
+# single strong beat (the downbeat) and aligns cells to whole bars (3 or 6 beats), never a
+# sub-bar length that would flip the stress on each repeat.
+_STRONG_BEATS = {2: (0.0,), 3: (0.0,), 4: (0.0, 2.0), 6: (0.0, 3.0)}
+_METRIC_TARGETS = {2: (1.0, 2.0, 4.0), 3: (3.0, 6.0), 4: (1.0, 2.0, 4.0, 8.0), 6: (3.0, 6.0, 12.0)}
+
+
+def strong_beats(beats):
+    """The accented beat positions for a bar of `beats` quarter-note beats."""
+    return _STRONG_BEATS.get(beats, (0.0,))
+
+
+def metric_targets(beats):
+    """The strong-beat-aligned cell lengths (in beats) a tiled motif snaps to."""
+    return _METRIC_TARGETS.get(beats, (float(beats), float(beats) * 2))
 
 
 def climax_unit(num_units):

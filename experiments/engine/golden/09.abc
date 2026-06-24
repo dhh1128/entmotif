@@ -1,6 +1,6 @@
 X:1
 T:did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK
-C:entmotif [funk] C# major, 116bpm, lead=od-guitar, perc=funk, form=period, arr=solo_bed
+C:entmotif [tango] C# minor, 116bpm, lead=harmonica, perc=none, form=period, arr=solo_bed
 M:4/4
 L:1/16
 Q:1/4=116
@@ -9,8 +9,8 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"C#" !mp! ^G,3 =C ^A,4 ^G,8 | "A#m" ^A,4 ^F,4 ^A,2 ^G,2 ^A,2 z2 | "F#" !mf! ^F3 ^A ^G4 ^F8 | "G#" ^C4 ^F4 ^D6 z2 | "C#" !f! ^c2 ^c =c2 ^A2 z2 =c2 ^G2 =c ^A =c | "A#m" ^c2 ^c =c2 ^A2 z2 =c2 ^G2 =c ^A =c | "G#" !mf! ^G3 =c ^A4 ^G6 z2 | "C#" ^D2 ^C2 =F4 ^C8 |]
+"C#m" !mp! ^C3 =E ^C4 ^G,8 | "A" =A,4 ^G,4 =A,2 ^G,2 =A,2 z2 | "F#m" !mf! =A3 ^c =A4 ^F8 | "G#" ^C4 ^F4 ^D6 z2 | "C#m" !f! ^c2 ^c =A2 =E2 z2 ^F2 =E2 ^F =E ^F | "A" =E2 ^G =E2 =B,2 z2 ^C2 =B,2 ^C =B, ^C | "G#" !mf! ^G3 =B ^G4 ^D6 z2 | "C#m" ^D2 ^C2 =E4 ^C8 |]
 V:2
-z [^C=F^G=B] z [^C=F^G=B] z [^C=F^G=B] z2 [^C=F^G=B] z2 [^C=F^G=B] z [^C=F^G=B] z2 | z [^A,^C=F^G] z [^A,^C=F^G] z [^A,^C=F^G] z2 [^A,^C=F^G] z2 [^A,^C=F^G] z [^A,^C=F^G] z2 | z [^F,^A,^C=E] z [^F,^A,^C=E] z [^F,^A,^C=E] z2 [^F,^A,^C=E] z2 [^F,^A,^C=E] z [^F,^A,^C=E] z2 | z [^G,=C^D^F] z [^G,=C^D^F] z [^G,=C^D^F] z2 [^G,=C^D^F] z2 [^G,=C^D^F] z [^G,=C^D^F] z2 | z [^C=F^G=B] z [^C=F^G=B] z [^C=F^G=B] z2 [^C=F^G=B] z2 [^C=F^G=B] z [^C=F^G=B] z2 | z [^A,^C=F^G] z [^A,^C=F^G] z [^A,^C=F^G] z2 [^A,^C=F^G] z2 [^A,^C=F^G] z [^A,^C=F^G] z2 | z [^G,=C^D^F] z [^G,=C^D^F] z [^G,=C^D^F] z2 [^G,=C^D^F] z2 [^G,=C^D^F] z [^G,=C^D^F] z2 | z [^C=F^G=B] z [^C=F^G=B] z [^C=F^G=B] z2 [^C=F^G=B] z2 [^C=F^G=B] z [^C=F^G=B] z2 |]
+z4 [^C=E^G=B]3 z5 [^C=E^G=B]3 z | z4 [=A,^C=E=G]3 z5 [=A,^C=E=G]3 z | z4 [^F,=A,^C=E]3 z5 [^F,=A,^C=E]3 z | z4 [^G,=C^D^F]3 z5 [^G,=C^D^F]3 z | z4 [^C=E^G=B]3 z5 [^C=E^G=B]3 z | z4 [=A,^C=E=G]3 z5 [=A,^C=E=G]3 z | z4 [^G,=C^D^F]3 z5 [^G,=C^D^F]3 z | z4 [^C=E^G=B]3 z5 [^C=E^G=B]3 z |]
 V:3
-^C,,2 z ^C,, z2 ^C,, z ^G,,2 z ^C,, z2 ^G,,2 | ^A,,2 z ^A,, z2 ^A,, z =F,,2 z ^A,, z2 ^A,,2 | ^F,,2 z ^F,, z2 ^F,, z ^C,,2 z ^F,, z2 ^F,,2 | ^G,,2 z ^G,, z2 ^G,, z ^D,,2 z ^G,, z2 ^G,,2 | ^C,,2 z ^C,, z2 ^C,, z ^G,,2 z ^C,, z2 ^G,,2 | ^A,,2 z ^A,, z2 ^A,, z =F,,2 z ^A,, z2 ^A,,2 | ^G,,2 z ^G,, z2 ^G,, z ^D,,2 z ^G,, z2 =C,,2 | ^C,,2 z ^C,, z2 ^C,, z ^G,,2 z ^C,, z2 ^C,,2 |]
+^C,,6 ^C,,2 ^G,,4 ^G,,4 | =A,,6 =A,,2 =E,,4 =E,,4 | ^F,,6 ^F,,2 ^C,,4 ^C,,4 | ^G,,6 ^G,,2 ^D,,4 ^D,,4 | ^C,,6 ^C,,2 ^G,,4 ^G,,4 | =A,,6 =A,,2 =E,,4 =E,,4 | ^G,,6 ^G,,2 ^D,,4 ^D,,4 | ^C,,6 ^C,,2 ^G,,4 ^G,,4 |]

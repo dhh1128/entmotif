@@ -37,12 +37,12 @@ def _rest(ticks):
     return ("z" + (str(n) if n != 1 else "")) if n >= 1 else ""
 
 
-def _split_at_bars(evs):
+def _split_at_bars(evs, beats=BEATS_PER_BAR):
     """Split any note that crosses a bar line into per-bar segments, marking every
     segment but the last as TIED (rendered with ABC '-'). A long note (e.g. an
     augmented motif) thus notates correctly across the barline. evs: (start, dur,
     pitch) tuples; returns (start, dur, pitch, tied) sorted by start."""
-    bar = BEATS_PER_BAR * DIV
+    bar = beats * DIV
     out = []
     for st, dur, pitch in evs:
         while True:
@@ -56,11 +56,11 @@ def _split_at_bars(evs):
     return sorted(out)
 
 
-def _voice(ch_notes, total_bars, chords=None, dyns=None):
-    evs_all = _split_at_bars(sorted(ch_notes))
+def _voice(ch_notes, total_bars, chords=None, dyns=None, beats=BEATS_PER_BAR):
+    evs_all = _split_at_bars(sorted(ch_notes), beats)
     out = []
     for b in range(total_bars):
-        lo_t, hi_t = b * BEATS_PER_BAR * DIV, (b + 1) * BEATS_PER_BAR * DIV
+        lo_t, hi_t = b * beats * DIV, (b + 1) * beats * DIV
         toks = ['"%s"' % chords[b]] if chords else []
         if dyns and b in dyns:
             toks.append("!%s!" % dyns[b])
@@ -89,6 +89,7 @@ def _voice(ch_notes, total_bars, chords=None, dyns=None):
 
 def abc_export(value, notes, meta):
     nb, key, mode = meta["bars"], meta["key"], meta["mode"]
+    beats = meta.get("beats", BEATS_PER_BAR)
     chords = [chord_name(s, key, mode) for s in meta["bar_chords"]]
 
     def pick(chs):
@@ -98,7 +99,7 @@ def abc_export(value, notes, meta):
               "C:entmotif [%s] %s %s, %dbpm, lead=%s, perc=%s, form=%s, arr=%s" %
               (meta.get("style", "?"), KEY_NAMES[key], mode, meta["tempo"], meta.get("lead", "?"),
                meta.get("percussion", "none"), meta["form"], meta["arr"]),
-              "M:4/4", "L:1/16", "Q:1/4=%d" % meta["tempo"]]
+              "M:%d/4" % beats, "L:1/16", "Q:1/4=%d" % meta["tempo"]]
     voices = [("1", "lead", pick([0])), ("2", "comp", pick([1])), ("3", "bass", pick([2]))]
     if meta["v4"]:
         voices.append(("4", "answer/counter", pick([3])))
@@ -107,5 +108,5 @@ def abc_export(value, notes, meta):
     body = []
     for n, _nm, data in voices:
         body += ["V:%s" % n, _voice(data, nb, chords if n == "1" else None,
-                                    dyns if n == "1" else None)]
+                                    dyns if n == "1" else None, beats)]
     return "\n".join(header) + "\n" + "\n".join(body) + "\n"

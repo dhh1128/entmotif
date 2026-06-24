@@ -94,9 +94,16 @@ STYLES = {
                           comp_pat="oompah", bass_pat="stride", perc="march", perc_vel=96,
                           reg=PitchRange(55, 82, 66), tempos=[108, 116, 124], tempo_w=[3, 4, 2],
                           color_w=[3, 3, 1], fat_w=[1, 3, 3, 1], mode_w=[4, 1], legato=False),
+    # --- 3/4 TRIPLE METER (this.i:m4k0p2v9): the waltz — oom-pah-pah, the first non-4/4
+    #     idiom. meter=(3,4) reparameterizes the bar grid, grooves, strong-beat map + ABC. ---
+    "waltz":         dict(leads=[40, 73, 0, 21, 71], lead_w=[4, 3, 3, 3, 2], comp=48, bass=32,
+                          comp_pat="waltz", bass_pat="waltz", perc="none", perc_vel=0,
+                          reg=PitchRange(55, 84, 66), tempos=[132, 150, 168], tempo_w=[2, 3, 2],
+                          color_w=[2, 4, 2], fat_w=[1, 3, 3, 1], mode_w=[3, 2], legato=True,
+                          meter=(3, 4)),
 }
 STYLE_NAMES = list(STYLES.keys())
-STYLE_W = [3, 2, 3, 3, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2]         # all reachable; classics + grooves common
+STYLE_W = [3, 2, 3, 3, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2, 2]      # all reachable; classics + grooves common (waltz last)
 KEYBOARD_BED_STYLES = {"ragtime", "boogie_woogie"}           # bed IS the keyboard (stride/ostinato): comp stays
 #   piano even when the lead is also piano (solo ragtime) — but the lead may still be a
 #   capable non-piano timbre (clarinet/banjo/synth) played OVER that piano bed.
@@ -136,12 +143,12 @@ EMOTION_W = [3, 3, 2, 2, 2, 2]                               # all reachable; co
 # stays reachable for every emotion (base STYLE_W floor), so this biases without locking —
 # a tense tango / triumphant march become common, a peaceful funk stays rare-but-possible.
 STYLE_AFFECT = {
-    "happy":      {"ragtime", "boogie_woogie", "samba", "salsa", "swing", "march", "gospel", "funk"},
+    "happy":      {"ragtime", "boogie_woogie", "samba", "salsa", "swing", "march", "gospel", "funk", "waltz"},
     "sad":        {"blues", "tango", "bossa_nova"},
-    "peaceful":   {"bossa_nova", "reggae", "classical", "baroque"},
+    "peaceful":   {"bossa_nova", "reggae", "classical", "baroque", "waltz"},
     "tense":      {"tango", "funk", "salsa"},
-    "triumphant": {"march", "gospel", "swing", "salsa", "ragtime", "classical"},
-    "tender":     {"bossa_nova", "blues", "reggae", "swing", "gospel"},
+    "triumphant": {"march", "gospel", "swing", "salsa", "ragtime", "classical", "waltz"},
+    "tender":     {"bossa_nova", "blues", "reggae", "swing", "gospel", "waltz"},
 }
 STYLE_AFFECT_BOOST = 3                                       # a style suiting the affect is ~3x likelier
 
@@ -284,7 +291,7 @@ LEAD_AGILITY = {
 STYLE_MIN_AGILE = {                                           # what the idiom demands of its lead
     "ragtime": 2, "boogie_woogie": 2, "funk": 2, "samba": 2, "salsa": 2,
     "swing": 1, "blues": 1, "bossa_nova": 1, "march": 1, "reggae": 1, "tango": 1,
-    "classical": 0, "baroque": 0, "gospel": 0,
+    "classical": 0, "baroque": 0, "gospel": 0, "waltz": 1,
 }
 
 
@@ -409,6 +416,7 @@ COMP_PAT_VARIANTS = {
     "skank":    (["skank", "skank_double"],          [PAT_SIG_W, PAT_VAR_W]),
     "funk16":   (["funk16", "funk16_synco"],         [PAT_SIG_W, PAT_VAR_W]),
     "shuffle":  (["shuffle", "shuffle_jab"],         [PAT_SIG_W, PAT_VAR_W]),
+    "waltz":    (["waltz", "waltz_synco"],           [PAT_SIG_W, PAT_VAR_W]),
 }
 BASS_PAT_VARIANTS = {
     "root5":    (["root5", "root5_arp"],             [PAT_SIG_W, PAT_VAR_W]),
@@ -419,6 +427,7 @@ BASS_PAT_VARIANTS = {
     "reggae":   (["reggae", "reggae_drop"],          [PAT_SIG_W, PAT_VAR_W]),
     "tumbao":   (["tumbao", "tumbao_anticipate"],    [PAT_SIG_W, PAT_VAR_W]),
     "habanera": (["habanera", "habanera_dotted"],    [PAT_SIG_W, PAT_VAR_W]),
+    "waltz":    (["waltz", "waltz_arp"],             [PAT_SIG_W, PAT_VAR_W]),
 }
 
 
@@ -533,12 +542,12 @@ def _bn(pcs, role):
 
 
 # --------------------------------------------------------------- comp grooves -
-def comp_groove(pat, voic, base, vel, legato):
+def comp_groove(pat, voic, base, vel, legato, beats=BEATS_PER_BAR):
     """Render one bar of comp (chords) in the style's idiom. base = bar start tick."""
     if pat == "none" or not voic:
         return []
     out = []
-    full = BEATS_PER_BAR * B
+    full = beats * B
     gap = 0 if legato else SUSTAIN_GAP
     top, bot, mid = voic[-1], voic[0], voic[len(voic) // 2]
 
@@ -554,13 +563,18 @@ def comp_groove(pat, voic, base, vel, legato):
         seq = [bot, mid, top, mid]
         for i in range(8):
             out.append(NoteEvent(VoiceRole.COMP, seq[i % 4], vel - 8, base + i * (B // 2), B // 2 - 4))
+    elif pat == "waltz":                                      # 3/4: light "pah" chords on beats 2 & 3 (oom-PAH-PAH)
+        chord(1, 0.9, vel - 4)
+        chord(2, 0.9, vel - 6)
+    elif pat == "waltz_synco":                                 # 3/4 variant: anticipate the 3rd "pah"
+        chord(1, 0.9, vel - 4); chord(2, 0.5, vel - 6); chord(2.5, 0.5, vel - 8)
     elif pat == "continuo":                                   # baroque chord on each beat
-        for beat in range(BEATS_PER_BAR):
+        for beat in range(beats):
             chord(beat, 1)
     elif pat == "continuo_synco":                             # baroque: sustained 1, syncopated push to 2& and 4
         chord(0, 1.5); chord(1.5, 0.5); chord(2, 1); chord(3, 1)
     elif pat == "comp4":                                      # swing/gospel light 4-to-the-bar chunks
-        for beat in range(BEATS_PER_BAR):
+        for beat in range(beats):
             chord(beat, 0.5, vel - 6)
     elif pat == "charleston":                                 # the classic jazz Charleston: 1 + and-of-2
         chord(0, 1, vel - 4); chord(1.5, 0.5, vel - 4); chord(2.5, 1.5, vel - 8)
@@ -582,8 +596,8 @@ def comp_groove(pat, voic, base, vel, legato):
             chord(beat, dur, vel - 4)
     elif pat in ("montuno", "montuno_synco"):                 # salsa piano: arpeggiated offbeats
         seq = voic + voic[-2::-1]
-        beats = [0.5, 1, 1.5, 2.5, 3, 3.5] if pat == "montuno" else [0, 0.5, 1.5, 2, 3, 3.5]
-        for i, beat in enumerate(beats):
+        positions = [0.5, 1, 1.5, 2.5, 3, 3.5] if pat == "montuno" else [0, 0.5, 1.5, 2, 3, 3.5]
+        for i, beat in enumerate(positions):
             out.append(NoteEvent(VoiceRole.COMP, seq[i % len(seq)], vel - 4,
                                  base + int(beat * B), B // 2 - 4))
     elif pat == "skank":                                      # reggae offbeat stabs
@@ -607,7 +621,7 @@ def comp_groove(pat, voic, base, vel, legato):
 
 
 # --------------------------------------------------------------- bass grooves -
-def bass_groove(pat, pcs, next_root_pc, base, vel):
+def bass_groove(pat, pcs, next_root_pc, base, vel, beats=BEATS_PER_BAR):
     """Render one bar of bass in the style's idiom; beat 1 is always the root (so the
     harmony is grounded) — mid-bar notes may be idiomatic 6th/b7/passing tones."""
     out = []
@@ -619,7 +633,12 @@ def bass_groove(pat, pcs, next_root_pc, base, vel):
     aim = min(("root", "third", "fifth"),
               key=lambda r: min((_bn(pcs, r) - (36 + next_root_pc)) % 12,
                                 ((36 + next_root_pc) - _bn(pcs, r)) % 12))
-    if pat == "root5":
+    if pat == "waltz":                                        # 3/4 "oom": root on beat 1, fifth on beat 3
+        note("root", 0, 1); note("fifth", 2, 1)
+    elif pat == "waltz_arp":                                   # 3/4 arpeggiated bass: root-third-fifth up the bar
+        for i, r in enumerate(["root", "third", "fifth"]):
+            note(r, i, 1)
+    elif pat == "root5":
         note("root", 0, 2); note("fifth", 2, 2)
     elif pat == "root5_arp":                                  # root-fifth arpeggiated to quarters
         for i, r in enumerate(["root", "fifth", "root", "fifth"]):
@@ -669,7 +688,7 @@ def bass_groove(pat, pcs, next_root_pc, base, vel):
         note("root", 0, 0.5); note("root", 0.75, 0.25); note(pcs[0] + 12, 1.5, 0.25)
         note("fifth", 2, 0.5); note("root", 2.75, 0.25); note(aim, 3.5, 0.5)
     else:
-        note("root", 0, 4)
+        note("root", 0, beats)
     return out
 
 
@@ -678,7 +697,7 @@ def _hit(note, vel, start, dur=B // 4):
     return NoteEvent(VoiceRole.PERCUSSION, note, vel, start, dur)
 
 
-def percussion_groove(pattern, bar0, nbars, vel):
+def percussion_groove(pattern, bar0, nbars, vel, beats=BEATS_PER_BAR):
     """One percussion groove per style, drawing on the idiomatic instruments — kits
     AND hand/Latin/orchestral percussion (congas, timbales, agogo, claves, cowbell,
     guiro, shaker, tambourine, woodblock, surdo, cuica…), not a generic drum kit."""
@@ -686,10 +705,15 @@ def percussion_groove(pattern, bar0, nbars, vel):
         return []
     out, half = [], B // 2
     for b in range(nbars):
-        base = (bar0 + b) * BEATS_PER_BAR * B
+        base = (bar0 + b) * beats * B
         first = (bar0 + b) == 0
-        if pattern in ("rock", "backbeat"):                   # kit; gospel adds tambourine
-            for beat in range(BEATS_PER_BAR):
+        if pattern == "waltz":                                # 3/4: bass drum on 1, brush/snare on 2 & 3
+            out += [_hit(KICK, vel, base), _hit(SNARE, vel - 14, base + B), _hit(SNARE, vel - 16, base + 2 * B),
+                    _hit(HHC, vel - 26, base + B), _hit(HHC, vel - 28, base + 2 * B)]
+            if first:
+                out.append(_hit(CRASH, vel - 8, base))
+        elif pattern in ("rock", "backbeat"):                 # kit; gospel adds tambourine
+            for beat in range(beats):
                 out.append(_hit(HHC, vel - 24, base + beat * B))
                 out.append(_hit(HHC, vel - 30, base + beat * B + half))
             out += [_hit(KICK, vel, base), _hit(KICK, vel - 8, base + 2 * B),
@@ -699,20 +723,20 @@ def percussion_groove(pattern, bar0, nbars, vel):
             if first:
                 out.append(_hit(CRASH, vel, base))
         elif pattern == "swing":                              # ride + hi-hat foot on 2 & 4
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(RIDE, vel - 16, base + beat * B))
                 if beat in (0, 2):
                     out.append(_hit(RIDE, vel - 30, base + beat * B + B * 2 // 3))
             out += [_hit(HHC, vel - 14, base + B), _hit(HHC, vel - 14, base + 3 * B),
                     _hit(KICK, vel - 18, base), _hit(SNARE, vel - 12, base + 2 * B)]
         elif pattern == "shuffle":                            # blues shuffle kit
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(HHC, vel - 20, base + beat * B))
                 out.append(_hit(HHC, vel - 30, base + beat * B + B * 2 // 3))
             out += [_hit(KICK, vel - 6, base), _hit(SNARE, vel - 4, base + B),
                     _hit(KICK, vel - 10, base + 2 * B), _hit(SNARE, vel - 4, base + 3 * B)]
         elif pattern == "one_drop":                           # reggae: kick+rim together on beat 3
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(HHC, vel - 24, base + beat * B + half))
             out += [_hit(KICK, vel, base + 2 * B), _hit(SIDE, vel - 4, base + 2 * B)]
         elif pattern == "funk":                               # tight kit + open-hat accents
@@ -721,7 +745,7 @@ def percussion_groove(pattern, bar0, nbars, vel):
             out += [_hit(KICK, vel, base), _hit(KICK, vel - 6, base + B + half),
                     _hit(SNARE, vel - 2, base + B), _hit(SNARE, vel - 2, base + 3 * B)]
         elif pattern == "four":
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(KICK, vel, base + beat * B))
                 out.append(_hit(HHO, vel - 26, base + beat * B + half))
         elif pattern == "bossa":                              # soft: rim cross-stick + shaker/cabasa
@@ -737,7 +761,7 @@ def percussion_groove(pattern, bar0, nbars, vel):
                     _hit(AGOGO_H, vel - 12, base + half), _hit(AGOGO_L, vel - 16, base + B + half),
                     _hit(CUICA, vel - 18, base + 3 * B)]
         elif pattern == "salsa":                              # clave + congas + timbale + cowbell + guiro
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(COWBELL, vel - 16, base + beat * B))
             for beat, n in [(0, CONGA_H), (1.5, CONGA_L), (2, CONGA_M), (3.5, CONGA_L)]:
                 out.append(_hit(n, vel - 12, base + int(beat * B)))
@@ -751,7 +775,7 @@ def percussion_groove(pattern, bar0, nbars, vel):
             if first:
                 out.append(_hit(CRASH, vel, base))
         elif pattern == "hand":                               # bongos + congas
-            for beat in range(BEATS_PER_BAR):
+            for beat in range(beats):
                 out.append(_hit(BONGO_H if beat % 2 else CONGA_L, vel - 10, base + beat * B))
                 out.append(_hit(BONGO_L, vel - 24, base + beat * B + half))
         elif pattern == "soft":                               # brushy: kick + cross-stick + triangle
@@ -762,7 +786,7 @@ def percussion_groove(pattern, bar0, nbars, vel):
 
 # --------------------------------------------------------------- arrange unit -
 def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, comp_pat, bass_pat,
-                 comp_on, bass_on, vel_base, legato, prev_voicing):
+                 comp_on, bass_on, vel_base, legato, prev_voicing, beats=BEATS_PER_BAR):
     """Render the comp + bass for a 2-bar unit in the style's groove. comp velocity
     tracks vel_base (sits with the melody); voicings voice-lead from prev_voicing.
     Returns (notes, last_voicing)."""
@@ -772,11 +796,11 @@ def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, comp_pat, bass_pat,
     roots = [cpcs(s, mode, key)[0] for s in chords2]
     for b, s in enumerate(chords2):
         pcs = cpcs(s, mode, key)
-        base = (bar0 + b) * BEATS_PER_BAR * B
+        base = (bar0 + b) * beats * B
         if comp_on:
             voicing = voice_chord(pcs, fat, top, voicing)
-            out += comp_groove(comp_pat, voicing, base, comp_vel, legato)
+            out += comp_groove(comp_pat, voicing, base, comp_vel, legato, beats)
         if bass_on:
             out += bass_groove(bass_pat, pcs, roots[b + 1] if b + 1 < len(roots) else pcs[0],
-                               base, bass_vel)
+                               base, bass_vel, beats)
     return out, voicing

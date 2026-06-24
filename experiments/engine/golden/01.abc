@@ -1,9 +1,9 @@
 X:1
 T:550e8400-e29b-41d4-a716-446655440000
-C:entmotif [march] E major, 124bpm, lead=brass, perc=march, form=aaba, arr=lead_counter
+C:entmotif [ragtime] E major, 128bpm, lead=piano, perc=none, form=aaba, arr=lead_counter
 M:4/4
 L:1/16
-Q:1/4=124
+Q:1/4=128
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
@@ -12,7 +12,7 @@ K:C
 V:1
 "E" !mp! =B,2 =A,2 ^C4 =E6 ^D2 | "C#m" =E8 ^C2 =B,2 ^C2 z2 | "F#" !mp! ^F2 =E2 ^G4 ^A6 ^G2 | "B" =A4 ^G4 ^F6 z2 | "E" !mp! =B,2 =A,2 ^C4 =E6 ^D2 | "C#m" =E8 ^C2 =B,2 ^C2 z2 | "F#m" !mp! ^F2 =E2 ^G4 =A6 ^G2 | "B" =E4 =A4 ^F6 z2 | "A" !mf! ^C2 ^D2 ^G4 =E8 | "E" ^G6 z2 =B6 =A2 | "F#m" !f! ^C2 ^D2 ^G4 ^F8 | "B" =B6 z2 ^d6 ^c2 | "E" !mp! ^G2 ^F2 =A4 =B6 =A2 | "C#m" ^c6 z2 ^G2 ^F2 ^G2 z2 | "B" !mf! =B2 =A2 ^c4 ^d6 ^c2 | "E" =A4 ^F4 =E8 |]
 V:2
-z4 [^G,=B,=D]2 z4 [^G,=B,=D]2 [^G,=B,=D]3 z | z4 [=E^G=B]2 z4 [=E^G=B]2 [=E^G=B]3 z | z4 [^A^c=e]2 z4 [^A^c=e]2 [^A^c=e]3 z | z4 [^d^f=a]2 z4 [^d^f=a]2 [^d^f=a]3 z | z4 [^g=b=d']2 z4 [^g=b=d']2 [^g=b=d']3 z | z4 [=e^g=b]2 z4 [=e^g=b]2 [=e^g=b]3 z | z4 [=a^c'=e']2 z4 [=a^c'=e']2 [=a^c'=e']3 z | z4 [^d'^f'=a']2 z4 [^d'^f'=a']2 [^d'^f'=a']3 z | z4 [^c'=e'=g']2 z4 [^c'=e'=g']2 [^c'=e'=g']3 z | z4 [^g=b=d']2 z4 [^g=b=d']2 [^g=b=d']3 z | z4 [=a^c'=e']2 z4 [=a^c'=e']2 [=a^c'=e']3 z | z4 [^d'^f'=a']2 z4 [^d'^f'=a']2 [^d'^f'=a']3 z | z4 [^g'=b'=d'']2 z4 [^g'=b'=d'']2 [^g'=b'=d'']3 z | z4 [=e'^g'=b']2 z4 [=e'^g'=b']2 [=e'^g'=b']3 z | z4 [^d'^f'=a']2 z4 [^d'^f'=a']2 [^d'^f'=a']3 z | z4 [^g'=b'=d'']2 z4 [^g'=b'=d'']2 [^g'=b'=d'']3 z |]
+z4 [=E,^G,=B,=D]3 z5 [=E,^G,=B,=D]3 z | z4 [^C=E^G=B]3 z5 [^C=E^G=B]3 z | z4 [^F^A^c=e]3 z5 [^F^A^c=e]3 z | z4 [=B^d^f=a]3 z5 [=B^d^f=a]3 z | z4 [=e^g=b=d']3 z5 [=e^g=b=d']3 z | z4 [^c=e^g=b]3 z5 [^c=e^g=b]3 z | z4 [^f=a^c'=e']3 z5 [^f=a^c'=e']3 z | z4 [=b^d'^f'=a']3 z5 [=b^d'^f'=a']3 z | z4 [=a^c'=e'=g']3 z5 [=a^c'=e'=g']3 z | z4 [=e^g=b=d']3 z5 [=e^g=b=d']3 z | z4 [^f=a^c'=e']3 z5 [^f=a^c'=e']3 z | z4 [=b^d'^f'=a']3 z5 [=b^d'^f'=a']3 z | z4 [=e'^g'=b'=d'']3 z5 [=e'^g'=b'=d'']3 z | z4 [^c'=e'^g'=b']3 z5 [^c'=e'^g'=b']3 z | z4 [=b^d'^f'=a']3 z5 [=b^d'^f'=a']3 z | z4 [=e'^g'=b'=d'']3 z5 [=e'^g'=b'=d'']3 z |]
 V:3
 =E,,4 z4 =E,,4 z4 | ^C,,4 z4 ^C,,4 z4 | ^F,,4 z4 ^F,,4 z4 | =B,,4 z4 =B,,4 z4 | =E,,4 z4 =E,,4 z4 | ^C,,4 z4 ^C,,4 z4 | ^F,,4 z4 ^F,,4 z4 | =B,,4 z4 =B,,4 z4 | =A,,4 z4 =A,,4 z4 | =E,,4 z4 =E,,4 z4 | ^F,,4 z4 ^F,,4 z4 | =B,,4 z4 =B,,4 z4 | =E,,4 z4 =E,,4 z4 | ^C,,4 z4 ^C,,4 z4 | =B,,4 z4 =B,,4 z4 | =E,,4 z4 =E,,4 z4 |]
 V:4

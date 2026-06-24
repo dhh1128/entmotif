@@ -10,7 +10,7 @@ from entmotif.model import DIV, BEATS_PER_BAR, VoiceRole, NoteEvent, Motif, clim
 from entmotif.entropy import Chooser, fingerprint_text
 from entmotif.theory import snap, sym
 from entmotif.melody import (
-    FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
+    SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL, figures_for, hooks_for,
     unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform,
     transform_weights, breathe, destutter)
 from entmotif.theory import scale_tones
@@ -36,6 +36,8 @@ def generate(value):
     EMO = EMOTIONS[emotion]                                    # style so it can tilt the idiom (d2k9m4p1 DAG edge)
     style = ch.weighted("style", STYLE_NAMES, style_weights(emotion))  # idiom biased toward the affect, all reachable
     S = STYLES[style]
+    beats = S.get("meter", (4, 4))[0]                         # METER (this.i:m4k0p2v9), conditioned on style: the
+    FIGS, HKS = figures_for(beats), hooks_for(beats)          # waltz is 3/4, the rest 4/4 — reparameterizes the bar
     mode = ch.weighted("mode", ["major", "minor"], mode_weights(style, emotion))  # style idiom x emotion affect
     key = ch.int("key", 12)
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
@@ -69,8 +71,8 @@ def generate(value):
     xform_w = transform_weights(EMO["angular"])               # development character conditioned on affect
     sig = ch.choice("sig", SIG_STEPS[leap])                   # signature opening interval
 
-    idea = [ch.choice("hook", HOOKS), ch.choice("im1", FIGURES)]
-    other = [ch.choice("om0", FIGURES), ch.choice("om1", FIGURES)]
+    idea = [ch.choice("hook", HKS), ch.choice("im1", FIGS)]   # meter-appropriate figure pools (3/4 vs 4/4)
+    other = [ch.choice("om0", FIGS), ch.choice("om1", FIGS)]
 
     units = build_form(form, resolution, ch, color)
     nU = len(units)
@@ -84,7 +86,7 @@ def generate(value):
     # EXPLICIT transformation of its realized shape (v0.8 headline) — never verbatim.
     g_chm = [sym(c, mode) for c in units[0].chords]
     germ_notes = line(idea, g_chm, mode, key, base, lo, hi, 0, arc_center(0), tendency, leap, ch,
-                      "idea", 0, False, sig, VoiceRole.LEAD, DYN_VEL[unit_dyn(0, nU, peak)])
+                      "idea", 0, False, sig, VoiceRole.LEAD, DYN_VEL[unit_dyn(0, nU, peak)], beats)
     germ_shape = motif_shape(germ_notes, mode, key, lo, hi)
 
     def render_lead(u, role, chm, cad, bar0, center, vel, at_peak, cr_answer):
@@ -97,20 +99,20 @@ def generate(value):
                 return list(germ_notes)
             op = choose_transform(ch, "xform%d" % u, xform_w)  # RESTATEMENT = affect-conditioned op on the germ
             return render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
-                                    VoiceRole.LEAD, vel, center, climax=at_peak)
+                                    VoiceRole.LEAD, vel, center, climax=at_peak, beats=beats)
         if role == "answer":
             cad_app = ch.int("cad_app%d" % u, 8)              # fw5: input-derived cadence approach (per-piece
             #   signature, not a shared 3-2-1 stamp); the cadence still resolves on the tonic
             if cr_answer:                                     # lead CALLS through the antiphony bar (singable
-                mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel)
+                mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel, beats)
                 #   figure, not a dead whole-bar hold — fw3, the "static held-note" fix)
-                return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app)
+                return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app, beats)
             op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
             mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, [chm[0]],
-                                   VoiceRole.LEAD, vel, center, climax=at_peak)
-            return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app)
+                                   VoiceRole.LEAD, vel, center, climax=at_peak, beats=beats)
+            return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app, beats)
         return line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-                    "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6))
+                    "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6), beats)
 
     dyn_bars = {}
     notes, used_v4, prev_voicing = [], False, None
@@ -136,7 +138,7 @@ def generate(value):
             op = choose_transform(ch, "ans%d" % u, xform_w)
             ans = render_transform(germ_shape, op if op != "identity" else "fragment",
                                    mode, key, lo, hi, bar0, [chm[0]],
-                                   VoiceRole.ANSWER, max(40, vel - 18), center)
+                                   VoiceRole.ANSWER, max(40, vel - 18), center, beats=beats)
             used_v4 = used_v4 or bool(ans)
             notes += ans
 
@@ -150,13 +152,13 @@ def generate(value):
         if style in ("classical", "baroque") and template in ("solo_bed", "lead_counter") and u == 0:
             comp_on = False                                   # art-style lead states the theme unaccompanied
         anotes, prev_voicing = arrange_unit(chm, mode, key, lo, bar0, fat, pal.comp_pat, pal.bass_pat,
-                                            comp_on, bass_on, vel, legato, prev_voicing)
+                                            comp_on, bass_on, vel, legato, prev_voicing, beats)
         notes += anotes
 
         if template == "lead_counter" and role == "idea":     # DEVELOPED counter on V:4 = inversion of the germ
             clo = max(LEAD_RANGE[lead].lo, lo - 7)             # counter sits ~an octave below the lead but never
             cm = render_transform(germ_shape, "invert", mode, key, clo, hi - 9, bar0, chm,  # below the instrument
-                                  VoiceRole.ANSWER, 72, center - 9)                         # floor (d2k9m4p1)
+                                  VoiceRole.ANSWER, 72, center - 9, beats=beats)            # floor (d2k9m4p1)
             used_v4 = used_v4 or bool(cm)
             notes += cm
 
@@ -164,11 +166,11 @@ def generate(value):
 
     # ---- percussion: the style's groove across the piece (skip the groove-build intro) ----
     perc_start = 2 if template == "groove_first" else 0
-    perc = percussion_groove(pal.perc, perc_start, nU * 2 - perc_start, pal.perc_vel)
+    perc = percussion_groove(pal.perc, perc_start, nU * 2 - perc_start, pal.perc_vel, beats)
     notes += perc
 
     meta = _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
-                         form, nU, fat, template, perc, units, color, used_v4, dyn_bars, emotion)
+                         form, nU, fat, template, perc, units, color, used_v4, dyn_bars, emotion, beats)
     return notes, meta
 
 
@@ -189,11 +191,11 @@ def _polish_lead_phrasing(notes, mode, key, lo, hi, germ_center):
 
 
 def _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
-                  form, num_units, fat, template, perc, units, color, used_v4, dyn_bars, emotion):
+                  form, num_units, fat, template, perc, units, color, used_v4, dyn_bars, emotion, beats):
     """Assemble the decision/structure metadata dict that travels alongside the notes
     (consumed by the exporters and the test suite). Pure aggregation — no choices."""
     return {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "style": style,
-            "emotion": emotion,
+            "emotion": emotion, "beats": beats, "meter": "%d/4" % beats,
             "lead": gm_name(lead), "lead_prog": lead, "comp_prog": pal.comp_program,
             "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
             "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": num_units * 2,
