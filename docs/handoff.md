@@ -106,12 +106,21 @@ round-4 list).
   green; `scores-v0.8.md` regenerated.
 - **Round-5 verdict recorded = the maintainer's listening review** (formal faculty
   panel skipped — the ear is ground truth). Full per-input notes, the proof that
-  selection is genuinely SHA-512-driven (not text-driven), the harmony/voicing/
-  velocity/register technical diagnosis, and the ranked **v0.9 fix list** are in
-  `docs/engine-log.md` round-5 entry. Headline v0.9: **harmony overhaul**
-  (voice-leading, fat/open voicings, comp velocity, legato, tame texture flicker) +
-  **palette/style breadth** (AGENTS.md §0 — percussion/horns/world, varied comp/bass
-  programs, a genre master-dimension) + wider tempo/register + rhythm–phrase synergy.
+  selection is genuinely SHA-512-driven (not text-driven), and the ranked v0.9 fix
+  list are in `docs/engine-log.md` round-5 entry.
+- **v0.9 engine BUILT** (`feat/engine-v0.9`, off v0.8) — **STYLE as the master
+  dimension: 14 real 4/4 idioms** (classical, baroque, ragtime, boogie-woogie, swing,
+  blues, bossa nova, samba, salsa, tango, reggae, funk, gospel, march), each with its
+  own idiomatic groove (comp+bass+**percussion**, the full GM percussion family, not a
+  kit); **harmony overhaul** (cluster-free open voicings, comp velocity sitting with
+  the melody, octave voice-leading, goal-directed walking bass, legato); wider tempo
+  (to 208) + per-style register; recognizable call/answer. All 14 reachable; both
+  suites green; golden re-baselined; `scores-v0.9.md` + audio rendered. See
+  `engine-log.md` round-6 entry. **Grading PENDING the maintainer's listen.**
+- **NORTH STAR recorded on disk** (`this.i:h0v4k7m2` + project memory): consume every
+  SHA-512 bit via musically-valid decisions; rich broad spread; reject simplifications.
+  v0.9 is a big step toward it, not the finish (much of the hash is still unconsumed;
+  raga/chant/waltz need meter + drone harmony; analog-layer stack still to come).
 - **Branches not yet merged to main** — `main` holds only the baseline snapshot;
   `refactor/engine-to-src` then `feat/engine-v0.8` stack the work (small signed-off
   commits, steps not collapsed). Merge order: refactor → v0.8 (no squash).

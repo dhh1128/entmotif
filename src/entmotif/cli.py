@@ -19,17 +19,16 @@ def main():
             "GhostKey-2026", "did:example:alice"]
     print("entmotif v0.8 — real motivic transformation (sequence/inversion/fragment/"
           "augment/diminish), developed V:4, unified climax, texture envelope, ties:\n")
-    print("  # | input              | key/mode | tempo | lead    | form        | bars "
-          "| arr          | fat | res")
-    print("  --+--------------------+----------+-------+---------+-------------+------+-"
-          "-------------+-----+----")
+    print("  # | input              | style         | key/mode | tempo | lead        "
+          "| perc    | bars | arr")
+    print("  --+--------------------+---------------+----------+-------+-------------+-"
+          "--------+------+----")
     for i, v in enumerate(demo, 1):
         notes, m = generate(v)
-        write_midi(notes, m["tempo"], m["lead_prog"], m["ans_prog"],
-                   "motif_%d_%s.mid" % (i, slug(v)))
-        print("  %d | %-18s | %-2s %-5s | %5d | %-7s | %-11s | %4d | %-12s | %3d | %s"
-              % (i, v[:18], KEY_NAMES[m["key"]], m["mode"], m["tempo"], m["lead"],
-                 m["form"], m["bars"], m["arr"], m["fat"], m["res"]))
+        write_midi(notes, m, "motif_%d_%s.mid" % (i, slug(v)))
+        print("  %d | %-18s | %-13s | %-2s %-5s | %5d | %-11s | %-7s | %4d | %s"
+              % (i, v[:18], m["style"], KEY_NAMES[m["key"]], m["mode"], m["tempo"],
+                 m["lead"], m["percussion"], m["bars"], m["arr"]))
     print("\n  #1 vs #2: one-char input change.   #1 vs #6: identical input.")
 
 

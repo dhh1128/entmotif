@@ -19,7 +19,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 
 # Public API (engine + exporters) -------------------------------------------------
-from entmotif.engine import generate, compose, TEMPOS, TEMPO_W  # noqa: E402,F401
+from entmotif.engine import generate, compose  # noqa: E402,F401
 from entmotif.exporters.abc import (  # noqa: E402,F401
     abc_export, abc_pitch, chord_name, ABC_PC)
 from entmotif.exporters.midi import encode_midi, write_midi  # noqa: E402,F401

@@ -1,16 +1,16 @@
 X:1
 T:04d3e8850e766ea1e6999a20f3bff1ded648f014e3c4eee3c17905ada8895ec8b2d17670695211946e4da19982423e654ec8b3576a404b0082130a0e1c3e66e550f41bbb0c1957d041444a5aa992f005aa9693cc90796bcaa5e5ea3ac9e2e93d45889718f1cce931711f461632ae514ba3370a5f553de0dfab83bc7f98f98585414aaf6ffe15d652c5ba62b97f064677987e15298b172e8a58267fe2a9b4a711d5036786f546e48b2549ebeac9490a8a96ef0a01172b0dab37670df15d75adf938bc14d134ce1eed831ff4c29a1b2468da59da4b467d80cd07447ab16b9c439e80c1ad41e3a60fef3a4b8263d9e18b406cd5085d3bc2d779db94c5e4342fcc4874b3ad3744a5e0dc7137bb43f1f4cb6009117b1903c4d4a282c0cd0e805cadebe5b4c3a22807bee2bacbe8a60f7c136b65d645fcbe51bd0bc34e8495cf9ad1289c6a39fddecb2d219632dee9d3efdf002e42a17d5937b6d9328d5edb329a876ae02fc2f9588d5fe8ce1a1e7cdcc2a979363c11edf407d7bac71fcb348646c24f
-C:entmotif G major, 96bpm, aaba, arr=solo_bed, fat=2
+C:entmotif [swing] G major, 184bpm, lead=trumpet, perc=swing, form=aaba, arr=solo_bed
 M:4/4
 L:1/16
-Q:1/4=96
+Q:1/4=184
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G" !mp! =G6 =E2 =G4 =E4 | "Em" =G2 =E2 =G2 =A2 =e8 | "C" !mp! =G6 =B2 =G4 =B4 | "D" =G4 =B4 =A8 | "G" !mp! =g6 =e2 =g4 =e4 | "Em" =g2 =e2 =g2 =g2 =e2 z6 | "Am" !mp! =e6 =c2 =e4 =c4 | "D" =G4 =B4 =A8 | "C" !mf! =G2 =e2 ^f4 =c8 | "G" =g2 =d2 =g4 =d4 z4 | "Am" !f! =A2 ^f2 =g4 =e8 | "D" ^f2 =e2 =g4 =d8 | "G" !mp! =d6 =B2 =d4 =d4- | "Em" =d2 =B2 =d4 =e6 =c2 | "D" !mf! =A6 ^F2 =A4 ^F4 | "G" =B4 =A4 =G8 |]
+"G" !mp! =G6 =D2 =G4 =E4 | "Em" =G2 =E2 =G2 =A2 =e8 | "A" !mp! =A6 =E2 =A4 ^F4 | "D" =g4 =b4 =a8 | "G" !mp! =g6 =d2 =g4 =e4 | "Em" =g2 =e2 =g2 =a2 =b2 z6 | "Am" !mp! =e6 =B2 =e4 =c4 | "D" =g4 =b4 =a8 | "C" !mf! =G2 =e2 ^f4 =g8 | "G" =d2 =a2 =b4 =g4 z4 | "Am" !f! =A2 ^f2 =b4 =e8 | "D" =d'2 =a2 =d'4 =a8 | "G" !mp! =g6 =d2 =g4 =g4- | "Em" =g2 =d2 =g4 =e6 =B2 | "D" !mf! ^f6 =c2 ^f4 =d4 | "G" =b4 =a4 =g8 |]
 V:2
-z16 | z16 | [=E,=G,^A,=C]4 z4 [=E,=G,^A,=C]4 z4 | [=D,^F,=A,=C]4 z4 [=D,^F,=A,=C]4 z4 | [=D,=F,=G,=B,]4 z4 [=D,=F,=G,=B,]4 z4 | [=D,=E,=G,=B,]4 z4 [=D,=E,=G,=B,]4 z4 | [=E,=G,=A,=C]4 z4 [=E,=G,=A,=C]4 z4 | [=D,^F,=A,=C]4 z4 [=D,^F,=A,=C]4 z4 | [=E,=G,^A,=C]4 z4 [=E,=G,^A,=C]4 z4 | [=D,=F,=G,=B,]4 z4 [=D,=F,=G,=B,]4 z4 | [=E,=G,=A,=C]4 z4 [=E,=G,=A,=C]4 z4 | [=D,^F,=A,=C]4 z4 [=D,^F,=A,=C]4 z4 | [=D,=F,=G,=B,]4 z4 [=D,=F,=G,=B,]4 z4 | [=D,=E,=G,=B,]4 z4 [=D,=E,=G,=B,]4 z4 | z16 | z16 |]
+z16 | z16 | [=A,,^C,=E,=G,]2 z2 [=A,,^C,=E,=G,]2 z2 [=A,,^C,=E,=G,]2 z2 [=A,,^C,=E,=G,]2 z2 | [=D,^F,=A,=C]2 z2 [=D,^F,=A,=C]2 z2 [=D,^F,=A,=C]2 z2 [=D,^F,=A,=C]2 z2 | [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 | [=E,=G,=B,=D]2 z2 [=E,=G,=B,=D]2 z2 [=E,=G,=B,=D]2 z2 [=E,=G,=B,=D]2 z2 | [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 | [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 | [=C=E=G^A]2 z2 [=C=E=G^A]2 z2 [=C=E=G^A]2 z2 [=C=E=G^A]2 z2 | [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 [=G,=B,=D=F]2 z2 | [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 [=A,=C=E=G]2 z2 | [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 [=D^F=A=c]2 z2 | [=G=B=d=f]2 z2 [=G=B=d=f]2 z2 [=G=B=d=f]2 z2 [=G=B=d=f]2 z2 | [=E=G=B=d]2 z2 [=E=G=B=d]2 z2 [=E=G=B=d]2 z2 [=E=G=B=d]2 z2 | z16 | z16 |]
 V:3
-=G,,8 =D,,8 | =E,,8 =B,,8 | =C,,8 =G,,8 | =D,,8 =A,,8 | =G,,8 =D,,8 | =E,,8 =B,,8 | =A,,8 =E,,8 | =D,,8 =A,,8 | =C,,8 =G,,8 | =G,,8 =D,,8 | =A,,8 =E,,8 | =D,,8 =A,,8 | =G,,8 =D,,8 | =E,,8 =B,,8 | =D,,8 =A,,8 | =G,,8 =D,,8 |]
+=G,,4 =B,,4 =D,,4 =D,,4 | =E,,4 =G,,4 =B,,4 =E,,4 | =A,,4 ^C,,4 =E,,4 ^C,,4 | =D,,4 ^F,,4 =A,,4 =D,,4 | =G,,4 =B,,4 =D,,4 =D,,4 | =E,,4 =G,,4 =B,,4 =E,,4 | =A,,4 =C,,4 =E,,4 =C,,4 | =D,,4 ^F,,4 =A,,4 =D,,4 | =C,,4 =E,,4 =G,,4 =G,,4 | =G,,4 =B,,4 =D,,4 =G,,4 | =A,,4 =C,,4 =E,,4 =C,,4 | =D,,4 ^F,,4 =A,,4 =D,,4 | =G,,4 =B,,4 =D,,4 =D,,4 | =E,,4 =G,,4 =B,,4 =E,,4 | =D,,4 ^F,,4 =A,,4 ^F,,4 | =G,,4 =B,,4 =D,,4 =G,,4 |]

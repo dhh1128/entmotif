@@ -13,39 +13,43 @@ from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
     unit_dyn, line, cadence_bar, motif_shape, render_transform, choose_transform)
 from entmotif.arrangement import (
-    LEADS, LEAD_NAMES, LEAD_RANGE, ANSWER_INSTR, arrange_unit)
+    STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, arrange_unit, percussion_groove)
 from entmotif.form import build_form
 
-TEMPOS = [60, 72, 84, 96, 108, 120, 138, 160, 184]
-TEMPO_W = [1, 2, 3, 4, 4, 3, 2, 2, 1]
+# Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
+# the antecedent, never an inversion or octave-displacing op (which broke the call->answer
+# relationship in v0.8). Used for answer-role restatements only.
+ANSWER_TRANSFORMS = ["identity", "seq+2", "seq-2", "fragment"]
+ANSWER_TRANSFORM_W = [3, 3, 3, 2]
 
 
 def generate(value):
     fp = fingerprint_text(value)
     ch = Chooser(fp)
-    mode = ch.choice("mode", ["major", "minor"])
+    style = ch.weighted("style", STYLE_NAMES, STYLE_W)        # the broad master dimension (idiom/groove)
+    S = STYLES[style]
+    mode = ch.weighted("mode", ["major", "minor"], S["mode_w"])  # style-biased (tango minor, march major...)
     key = ch.int("key", 12)
-    lead = ch.choice("lead", LEADS)
-    ilo, ihi, icen = LEAD_RANGE[lead]
+    lead = ch.choice("lead", S["leads"])
+    pal = palette_for(style, lead)
+    ilo, ihi, icen = pal.range
     tonic = snap(icen, [key], ilo, ihi - 12)
-    lo, hi = max(ilo, tonic - 3), min(ihi, tonic + 15)
+    lo, hi = max(ilo, tonic - 5), min(ihi, tonic + 19)        # ~2 octaves (wider than v0.8's ~1.5)
     base = lo + (hi - lo) // 4
-    tempo = ch.weighted("tempo", TEMPOS, TEMPO_W)
+    tempo = ch.weighted("tempo", S["tempos"], S["tempo_w"])   # per-style tempo range (up to 208)
     leap = ch.weighted("leap", [0, 1, 2], [3, 4, 2])
     tendency = ch.weighted("tend", [-1, 0, 1], [2, 3, 2])
     resolution = ch.weighted("res", ["authentic", "deceptive", "half"], [3, 2, 2])
     form = ch.weighted("form", ["sentence", "period", "period_tag", "aaba"], [2, 4, 2, 2])
-    fat = ch.weighted("fat", [0, 1, 2, 3], [2, 3, 2, 1])
-    figr = ch.weighted("figr", ["block", "stabs", "arp", "alberti"], [2, 2, 2, 1])
-    bassfig = ch.weighted("bass", ["root5", "walking", "pedal"], [3, 2, 1])
+    fat = ch.weighted("fat", [0, 1, 2, 3], S["fat_w"])        # voicing richness, style-biased
+    # comp/bass GROOVE is fixed by the style (cohesion) — not a separate entropy draw.
     template = ch.weighted("arr", ["solo_bed", "lead_counter", "call_resp", "groove_first"],
                            [3, 2, 2, 1])
-    color = ch.weighted("color", [0, 1, 2], [3, 4, 1])        # harmonic adventurousness dial
+    color = ch.weighted("color", [0, 1, 2], S["color_w"])     # harmonic adventurousness, style-biased
     sig = ch.choice("sig", SIG_STEPS[leap])                   # signature opening interval
 
     idea = [ch.choice("hook", HOOKS), ch.choice("im1", FIGURES)]
     other = [ch.choice("om0", FIGURES), ch.choice("om1", FIGURES)]
-    ans_instr = ANSWER_INSTR[lead]
 
     units = build_form(form, resolution, ch, color)
     nU = len(units)
@@ -63,7 +67,7 @@ def generate(value):
     germ_shape = motif_shape(germ_notes, mode, key, lo, hi)
 
     dyn_bars = {}
-    notes, used_v4 = [], False
+    notes, used_v4, prev_voicing = [], False, None
     for u, (role, chs, cad, devslot) in enumerate(units):
         chm = [sym(c, mode) for c in chs]
         bar0 = u * 2
@@ -89,8 +93,8 @@ def generate(value):
                 mel = [NoteEvent(VoiceRole.LEAD, tagp, vel,
                                  bar0 * BEATS_PER_BAR * DIV, BEATS_PER_BAR * DIV)]
                 mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
-            else:                                             # consequent = germ transform, then a resolving cadence
-                op = choose_transform(ch, "xform%d" % u)
+            else:                                             # consequent = RECOGNIZABLE germ restatement, then cadence
+                op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
                 mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, [chm[0]],
                                        VoiceRole.LEAD, vel, center, climax=at_peak)
                 mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
@@ -123,7 +127,9 @@ def generate(value):
             comp_on = role != "idea"
         if nU >= 4 and u == nU - 1 and template != "groove_first":
             comp_on = False                                   # thin the texture at the final cadence
-        notes += arrange_unit(chm, mode, key, lo, bar0, fat, figr, bassfig, comp_on, bass_on)
+        anotes, prev_voicing = arrange_unit(chm, mode, key, lo, bar0, fat, pal.comp_pat, pal.bass_pat,
+                                            comp_on, bass_on, vel, pal.legato, prev_voicing)
+        notes += anotes
 
         if template == "lead_counter" and role == "idea":     # DEVELOPED counter on V:4 = inversion of the germ
             cm = render_transform(germ_shape, "invert", mode, key, lo - 7, hi - 9, bar0, chm,
@@ -131,9 +137,16 @@ def generate(value):
             used_v4 = used_v4 or bool(cm)
             notes += cm
 
-    meta = {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "lead": LEAD_NAMES[lead],
-            "lead_prog": lead, "ans_prog": ans_instr, "leap": LEAP_NAMES[leap], "res": resolution,
-            "form": form, "bars": nU * 2, "fat": fat, "figr": figr, "arr": template,
+    # ---- percussion: the style's groove across the piece (skip the groove-build intro) ----
+    perc_start = 2 if template == "groove_first" else 0
+    perc = percussion_groove(pal.perc, perc_start, nU * 2 - perc_start, pal.perc_vel)
+    notes += perc
+
+    meta = {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "style": style,
+            "lead": gm_name(lead), "lead_prog": lead, "comp_prog": pal.comp_program,
+            "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
+            "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": nU * 2,
+            "fat": fat, "arr": template, "percussion": pal.perc if perc else "none",
             "bar_chords": [c for _, chs, _, _ in units for c in (sym(x, mode) for x in chs)],
             "color": color, "v4": used_v4, "dyn_bars": dyn_bars}
     return notes, meta

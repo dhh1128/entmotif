@@ -450,3 +450,54 @@ as the de-facto cross-voice harmony auditor (it caught the v0.5 key-transpositio
 v0.6 bass-quality bugs). No lens does *deep* voice-leading/counterpoint or
 rhythm–phrase-synergy analysis — sharpen the arrangement lens (or add a dedicated
 harmony+counterpoint lens and a rhythm-synergy lens) for round-6 grading.
+
+---
+
+### Round 6 — engine v0.9 (built 2026-06-24; grading PENDING maintainer listen)
+
+Built on the round-5 verdict, under TDD (golden re-baselined intentionally;
+`scores-v0.9.md` regenerated). The headline is **STYLE as the master dimension**
+(this.i:z0m4p81q) plus the harmony overhaul the maintainer demanded.
+
+**North-star context (this.i:h0v4k7m2, recorded this session):** the maintainer
+set the long-range goal — *consume every SHA-512 bit via musically-valid decisions;
+a rich, broad spread, no simplifications.* v0.9 is a large step toward it, not the
+finish; the engine is still far from full-hash consumption.
+
+**Landed:**
+1. **Style master dimension — 14 real 4/4 idioms** (`arrangement.STYLES`): classical,
+   baroque, ragtime, boogie-woogie, swing, blues, bossa nova, samba, salsa, tango,
+   reggae, funk, gospel, march. Each is a genuine idiom with its own **groove**
+   (idiomatic comp + bass + percussion patterns — stride, walking, boogie ostinato,
+   bossa, montuno, skank, funk-16ths, habanera, oom-pah…), instrumentation, tempo
+   band, register, harmonic-color bias, mode bias, and articulation. The fingerprint
+   picks the style (`"style"` decision), which conditions everything downstream for
+   internal cohesion. All 14 verified reachable + ~uniform over 4000 inputs. *(Fixes
+   the v0.8 "boring 2-instrument classical / monochrome palette" — confirmed the
+   selection was always SHA-512-driven; the palette was the problem.)*
+2. **Percussion is the whole family, not a kit** (`VoiceRole.PERCUSSION`, ch 9):
+   per-style grooves draw on congas/bongos/timbales/agogo/claves/cowbell/guiro/
+   shaker/cabasa/tamb/woodblock/triangle/cuica/surdo as well as kit pieces (e.g.
+   salsa uses 7 distinct percussion instruments).
+3. **Harmony overhaul:** open, **cluster-free** voicings (every stacked tone ≥3
+   semitones apart; capped at 4 voices so it stays clear, not 2 octaves wide); comp
+   velocity now tracks the unit dynamic and **sits with the melody** (≈12 below, was
+   ≈30 below — the "faint accordion" complaint); octave **voice-leading** (comp picks
+   the inversion nearest the previous voicing); **goal-directed walking bass** (last
+   beat aims at the next root); legato sustain for legato styles.
+4. **Wider tempo (to 208) + per-style register** — melodies no longer stuck ~C4–C6;
+   tessitura varies by style.
+5. **Call/answer recognizability:** the consequent is restricted to recognizable ops
+   (identity/small-sequence/fragment — no inversion or octave displacement), fixing
+   the v0.8 "answer too unlike the call" (#02).
+
+**Deferred (tracked for v0.10+, toward the north star):** sitar raga / Gregorian
+chant / waltz (need a **meter dimension** + **drone/modal harmony** — not faked);
+deeper rhythm–phrase synergy (Beethoven-5 tension/release shaping); ABC percussion
+notation (audio has it; ABC shows it only in the header `perc=`); analog-layer stack
+(this.i:e9k2m4p1) and texture-interruption (this.i:f3a0k9m2); and the long tail of
+unconsumed fingerprint bits.
+
+Determinism + avalanche green; both suites green on the v0.9 golden baseline.
+`scores-v0.9.md` regenerated; corpus audio rendered to
+`~/winhome/Downloads/entmotif-v0.9-listen/`. **Grades pending the maintainer's listen.**

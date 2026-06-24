@@ -32,7 +32,7 @@ def current(value):
     notes, m = motif.generate(value)
     abc = motif.abc_export(value, notes, m)
     tmp = os.path.join(tempfile.gettempdir(), "_golden.mid")
-    motif.write_midi(notes, m["tempo"], m["lead_prog"], m["ans_prog"], tmp)
+    motif.write_midi(notes, m, tmp)
     midi_sha = hashlib.sha256(open(tmp, "rb").read()).hexdigest()
     return abc, midi_sha
 

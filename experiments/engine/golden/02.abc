@@ -1,19 +1,19 @@
 X:1
 T:0x742d35cc6634c0532925a3b844bc454e4438f44e
-C:entmotif B major, 138bpm, period, arr=call_resp, fat=3
+C:entmotif [reggae] B major, 80bpm, lead=rock-organ, perc=one_drop, form=period, arr=call_resp
 M:4/4
 L:1/16
-Q:1/4=138
+Q:1/4=80
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"B" !mp! =B2 =e2 =B4 ^d6 ^A2 | "G#m" =B3 ^A =B4 ^G4 ^c4 | "E" !mf! =e16 | "F#" =B4 ^d4 ^c6 z2 | "B" !f! =b ^c' ^g2 =b3 ^f =b2 ^a =b2 ^g2 ^c'2- | "G#m" ^c'0 ^c' ^c' ^g2 =b3 ^f ^g2 ^f ^g2 =e2 ^a | "F#" !mf! ^f16 | "B" ^d4 ^c4 =B8 |]
+"B" !mp! =B,2 =E2 =B,4 ^D6 ^A,2 | "G#m" =B,3 ^A, =B,4 ^G,4 ^C4 | "E" !mf! ^G16 | "F#" =B4 ^d4 ^c6 z2 | "B" !f! ^f ^f ^c2 =e3 =B ^d2 ^c ^d2 =B2 =e2- | "G#m" =e0 =e ^f ^c2 =e3 =B ^c2 =B ^c2 ^A2 ^d | "F#" !mf! ^F16 | "B" ^d4 ^c4 =B8 |]
 V:2
-z16 | z16 | [^F,^G,=B,=D=E]16 | [^F,^G,^A,^C=E]16 | z16 | z16 | z16 | z16 |]
+z16 | z16 | z2 [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 | z2 [^F,,^A,,^C,=E,]2 z2 [^F,,^A,,^C,=E,]2 z2 [^F,,^A,,^C,=E,]2 z2 [^F,,^A,,^C,=E,]2 | z16 | z16 | z16 | z16 |]
 V:3
-=B,,4 ^D,,4 ^F,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 =B,,4 | =E,,4 ^G,,4 =B,,4 ^G,,4 | ^F,,4 ^A,,4 ^C,,4 ^A,,4 | =B,,4 ^D,,4 ^F,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 =B,,4 | ^F,,4 ^A,,4 ^C,,4 ^A,,4 | =B,,4 ^D,,4 ^F,,4 ^D,,4 |]
+=B,,4 z2 =B,,2 z2 ^F,,4 z2 | ^G,,4 z2 ^G,,2 z2 ^D,,4 z2 | =E,,4 z2 =E,,2 z2 =B,,4 z2 | ^F,,4 z2 ^F,,2 z2 ^C,,4 z2 | =B,,4 z2 =B,,2 z2 ^F,,4 z2 | ^G,,4 z2 ^G,,2 z2 ^D,,4 z2 | ^F,,4 z2 ^F,,2 z2 ^C,,4 z2 | =B,,4 z2 =B,,2 z2 ^F,,4 z2 |]
 V:4
-z16 | z16 | =b2 ^c'2 ^g4 =b6 ^f2 | z16 | z16 | z16 | ^f2 =b2 ^f4 ^a2 ^c'2 ^g4 | z16 |]
+z16 | z16 | =B2 =e2 =B4 =e6 =B2 | z16 | z16 | z16 | ^F2 =B2 ^F4 ^A2 ^d2 ^A4 | z16 |]

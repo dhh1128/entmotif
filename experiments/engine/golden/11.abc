@@ -1,16 +1,16 @@
 X:1
 T:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDSD+oM4kLidAptE5pjRA8OBIWNysc9reQJjKegek2jATA3bSvKdq/wdQtpbihEx5OlKMo//V/8QpAIjCSsBaMb6G/e/D5kC9wCjnYJJ68+34L+H5Fx1Ofuiz3BidgssINw/qbV0u1vrCop+ggs6lkl+pIwa+9kPriD9xdowCOQABMVl4todcojY8gZK/Zs5XTwKi9Z8MRS/37FEPxlvpRExMmQU8v2tnP/TDqhR13NSyCZWqiH2ojMNDm2jWR+W65gIjFz4kNsu4EaSNOfKY4U7VRBLXg7om3pvIoarhBFMZvTPQ9FqJU/08BJ/A1tCjCIAY0+zGAAvfRHQt5R2wZXl83n9Xh+9IukW5r/pynpdLx1+WyAOKLxIUKflTWaIcYKBqmfaxz64Gm2lDbF0+9r/0Xf//P8TFDWFo9bo4loIukgjtwQmp8Kn6ngEKj8gS3vLApZ3wN18q3emtglyQEmO+9VXckK4NPOqAzwOu7rQbr7oEPS6HrnY3PKe9JD570= alice@workstation
-C:entmotif C# minor, 138bpm, sentence, arr=solo_bed, fat=3
+C:entmotif [blues] C# major, 108bpm, lead=harmonica, perc=shuffle, form=sentence, arr=solo_bed
 M:4/4
 L:1/16
-Q:1/4=138
+Q:1/4=108
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"C#m" !mf! ^c2 =B6 =e4 =B4 | "C#m" ^c8 ^c'6 =b2 | "G#" !f! ^d' ^c'3 =e'2 =e' ^d'3 =e'2 =e' ^d'3 | "C#m" =e4 ^d4 ^c8 |]
+"C#" !mf! ^C2 ^G,6 =F4 ^A,4 | "C#" ^G,8 ^C6 ^G,2 | "G#" !f! ^g ^d3 ^g2 ^g ^d3 ^g2 ^g ^d3 | "C#" =f4 ^d4 ^c8 |]
 V:2
-z16 | z16 | ^G,2 ^F2 =C2 ^F2 ^G,2 ^F2 =C2 ^F2 | ^G,2 =E2 ^C2 =E2 ^G,2 =E2 ^C2 =E2 |]
+z16 | z16 | z3 [^G,,,=C,,^D,,^F,,] z3 [^G,,,=C,,^D,,^F,,] z3 [^G,,,=C,,^D,,^F,,] z3 [^G,,,=C,,^D,,^F,,] | z3 [^C,,=F,,^G,,=B,,] z3 [^C,,=F,,^G,,=B,,] z3 [^C,,=F,,^G,,=B,,] z3 [^C,,=F,,^G,,=B,,] |]
 V:3
-^C,,16 | ^C,,16 | ^G,,16 | ^C,,16 |]
+^C,,4 ^G,,4 ^A,,4 ^G,,4 | ^C,,4 ^G,,4 ^A,,4 ^G,,4 | ^G,,4 ^D,,4 =F,,4 ^D,,4 | ^C,,4 ^G,,4 ^A,,4 ^G,,4 |]

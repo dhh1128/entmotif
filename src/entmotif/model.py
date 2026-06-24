@@ -18,13 +18,16 @@ WEIGHT_SCALE = 1_000_000        # fixed-point resolution for weighted choice
 
 
 class VoiceRole(IntEnum):
-    """The four instrument lines. The *value* IS the MIDI channel, so a VoiceRole
-    drops in anywhere the bare channel int (0..3) was used — it compares, sorts,
-    hashes and bit-ORs identically — while reading as a name."""
+    """The instrument lines. The *value* IS the MIDI channel, so a VoiceRole drops
+    in anywhere the bare channel int was used — it compares, sorts, hashes and
+    bit-ORs identically — while reading as a name. PERCUSSION is GM channel 9, the
+    whole percussion family (drums AND shakers/claves/congas/agogo/cowbell/guiro/
+    timbales/woodblock/triangle… — note numbers are percussion sounds, not pitches)."""
     LEAD = 0        # principal melody
     COMP = 1        # comping / harmony
     BASS = 2        # bass line
     ANSWER = 3      # antiphonal answer / counter-melody
+    PERCUSSION = 9  # GM percussion family (idiomatic per style, not just a drum kit)
 
 
 class NoteEvent(NamedTuple):

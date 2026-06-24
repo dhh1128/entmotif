@@ -1,24 +1,30 @@
 """entmotif MIDI exporter — the canonical, byte-reproducible output.
 
-`encode_midi` is a pure function (notes -> exact file bytes); `write_midi` just
-writes those bytes. Channel -> program assignment: ch0 lead, ch1 comp, ch2 bass,
-ch3 answer. This is the deterministic source of truth (golden-pinned); rendered
-audio is a non-reproducible convenience layer above it.
+`encode_midi` is a pure function (notes + meta -> exact file bytes); `write_midi`
+just writes those bytes. Program assignment comes from meta (per-style palette):
+ch0 lead, ch1 comp, ch2 bass, ch3 answer; ch9 is GM percussion (no program change,
+default kit). This is the deterministic source of truth (golden-pinned).
 """
 import struct
 
-from entmotif.model import DIV
-from entmotif.arrangement import COMP_PROGRAM, BASS_PROGRAM
+from entmotif.model import DIV, VoiceRole
 
 
-def encode_midi(notes, tempo, lead_prog, ans_prog):
+def _programs(meta):
+    return [(int(VoiceRole.LEAD), meta["lead_prog"]), (int(VoiceRole.COMP), meta["comp_prog"]),
+            (int(VoiceRole.BASS), meta["bass_prog"]), (int(VoiceRole.ANSWER), meta["ans_prog"])]
+
+
+def encode_midi(notes, meta):
     """Pure: render notes to the canonical MIDI file bytes (no file I/O)."""
-    ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", 60_000_000 // tempo)[1:]),
-          (0, 1, bytes([0xC0, lead_prog])), (0, 1, bytes([0xC1, COMP_PROGRAM])),
-          (0, 1, bytes([0xC2, BASS_PROGRAM])), (0, 1, bytes([0xC3, ans_prog]))]
+    tempo = meta["tempo"]
+    ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", 60_000_000 // tempo)[1:])]
+    for ch, prog in _programs(meta):                          # ch9 (drums) gets no program change
+        ev.append((0, 1, bytes([0xC0 | ch, prog])))
     for chn, pitch, vel, start, dur in notes:
-        ev.append((start, 2, bytes([0x90 | chn, pitch, vel])))
-        ev.append((start + max(1, dur), 0, bytes([0x80 | chn, pitch, 0])))
+        c = int(chn)
+        ev.append((start, 2, bytes([0x90 | c, pitch, vel])))
+        ev.append((start + max(1, dur), 0, bytes([0x80 | c, pitch, 0])))
     track, last = bytearray(), 0
     for tick, _p, data in sorted(ev):
         d = tick - last
@@ -35,6 +41,6 @@ def encode_midi(notes, tempo, lead_prog, ans_prog):
             b"MTrk" + struct.pack(">I", len(track)) + bytes(track))
 
 
-def write_midi(notes, tempo, lead_prog, ans_prog, path):
+def write_midi(notes, meta, path):
     with open(path, "wb") as f:
-        f.write(encode_midi(notes, tempo, lead_prog, ans_prog))
+        f.write(encode_midi(notes, meta))

@@ -32,8 +32,8 @@ for v in CORPUS:
     n1, m1 = motif.generate(v)
     n2, m2 = motif.generate(v)
     check(n1 == n2 and m1 == m2, "determinism(notes/meta): %s" % v)
-    motif.write_midi(n1, m1["tempo"], m1["lead_prog"], m1["ans_prog"], "/tmp/_a.mid")
-    motif.write_midi(n2, m2["tempo"], m2["lead_prog"], m2["ans_prog"], "/tmp/_b.mid")
+    motif.write_midi(n1, m1, "/tmp/_a.mid")
+    motif.write_midi(n2, m2, "/tmp/_b.mid")
     check(open("/tmp/_a.mid", "rb").read() == open("/tmp/_b.mid", "rb").read(),
           "determinism(midi bytes): %s" % v)
 
@@ -42,16 +42,17 @@ na, _ = motif.generate("did:example:alice")
 nb, _ = motif.generate("did:example:alife")
 check(na != nb, "avalanche: alice vs alife identical")
 
-# --- round-4: bass notes must be chord tones of the active chord ---
+# --- round-4 (v0.9-relaxed): the bass DOWNBEAT grounds the harmony (a chord tone).
+#     Mid-bar bass may use idiomatic 6th/b7/passing tones (boogie, walking, funk). ---
 for v in CORPUS:
     notes, m = motif.generate(v)
     for (chan, pitch, vel, start, dur) in notes:
-        if chan == 2:
+        if int(chan) == 2 and start % (4 * DIV) == 0:
             bar = start // (4 * DIV)
             if bar < m["bars"]:
                 pcs = bar_chord_pcs(m, bar)
                 check(pitch % 12 in pcs,
-                      "bass non-chord-tone: %s bar%d pc%d not in %s" % (v, bar, pitch % 12, pcs))
+                      "bass downbeat non-chord-tone: %s bar%d pc%d not in %s" % (v, bar, pitch % 12, pcs))
 
 # --- round-4: final cadence resolves (last melodic note in the tonic triad) ---
 for v in CORPUS:
@@ -130,6 +131,43 @@ for v in CORPUS:
                             for n in notes))
     check(1 <= comp_units <= nU - 1, "no texture envelope (comp constant): %s (%d/%d)"
           % (v, comp_units, nU))
+
+# --- v0.9: STYLE is a real, varied master dimension (>=14 idioms, all reachable). ---
+import entmotif.arrangement as arr  # noqa: E402
+seen_styles = {motif.generate("style-probe-%d" % i)[1]["style"] for i in range(3000)}
+check(len(arr.STYLE_NAMES) >= 14, "fewer than 14 styles: %d" % len(arr.STYLE_NAMES))
+check(seen_styles == set(arr.STYLE_NAMES),
+      "not every style reachable from the fingerprint: missing %s" % (set(arr.STYLE_NAMES) - seen_styles))
+
+# --- v0.9: harmony overhaul invariants on the corpus ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    comp = [n for n in notes if int(n[0]) == 1]
+    lead_v = [n[2] for n in notes if int(n[0]) == 0]
+    # (a) comp velocity sits WITH the melody (not the v0.8 ~30 below): within ~22 of lead avg
+    if comp:
+        lavg = sum(lead_v) // max(1, len(lead_v))
+        cmax = max(n[2] for n in comp)
+        check(cmax >= lavg - 22, "comp too quiet vs lead: %s (compMax %d vs leadAvg %d)" % (v, cmax, lavg))
+    # (b) cluster-free voicings: simultaneous comp tones never < 3 semitones apart
+    from collections import defaultdict as _dd
+    byon = _dd(list)
+    for n in comp:
+        byon[n[3]].append(n[1])
+    for st, ps in byon.items():
+        ps = sorted(ps)
+        check(all(b - a >= 3 for a, b in zip(ps, ps[1:])),
+              "clustered comp voicing: %s at %d -> %s" % (v, st, ps))
+    # (c) percussion present (chan 9) whenever the style declares a groove
+    if m["percussion"] != "none":
+        check(any(int(n[0]) == 9 for n in notes), "percussion declared but absent: %s (%s)" % (v, m["percussion"]))
+
+# --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
+lows = []
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    lows.append(min(n[1] for n in notes if int(n[0]) == 0))
+check(max(lows) - min(lows) >= 7, "melodic register barely varies across inputs (range %d)" % (max(lows) - min(lows)))
 
 print("CORPUS=%d   FAILURES=%d" % (len(CORPUS), len(fails)))
 for f in fails[:50]:

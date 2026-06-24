@@ -311,3 +311,32 @@ Entmotif = goal:
         LESSON: an adversarial panel surfaces arguments to ADJUDICATE on merits +
         VERIFY, not point-estimates to adopt. Refines [[k20f9a3x]], [[z0m4p81q]],
         [[q9f3a7k2]]; the real arbiter is the A/B/X listening study.
+
+    Full Hash Consumption Rich Variety = principle:
+      id: h0v4k7m2
+      why: >
+        NORTH STAR (maintainer, 2026-06-24). The generator's purpose is to EXPOSE
+        the variety in entropy, and entropy is maximally varied — so the engine
+        must expose music's enormous variety, NOT a narrow set. The standing
+        directive: BE IMPATIENT WITH SIMPLIFICATIONS. By the time the engine is
+        "done" it should CONSUME EVERY BIT of the SHA-512 fingerprint, with each
+        consumed bit driving a musical decision that is LOGICALLY VALID — a
+        consummate composer (think John Williams) would agree it is a legitimate
+        possibility, never random nonsense (a hard read of [[f7a2k930]]). This is
+        an ambition about the GENERATOR, not a claim about human recall: the ear
+        may reliably distinguish only ~20-30 bits (Model B, [[2p8z1m40]]), but
+        full consumption is still the goal — it maximizes machine-distinctness
+        (consumed >> delivered) AND casual avalanche, and forces us to keep
+        finding real musical axes instead of collapsing the space. Mechanism:
+        keep adding DISCRETE valid-choice dimensions (more styles/idioms, meter,
+        form, harmony vocab, groove variants, instrumentation, ornaments,
+        texture-interruption [[f3a0k9m2]]) AND a deep stack of ANALOG layers
+        [[e9k2m4p1]], each drawing fresh fingerprint bits from a CONTEXT-
+        CONDITIONED distribution [[7c4m1k0p]] so typical output stays believable
+        while the FULL range stays reachable. Test of done-ness: (a) no fingerprint
+        bits left unconsumed; (b) a rich, audibly broad spread across inputs; (c)
+        every decision defensible as valid music. Anti-pattern to reject in review:
+        any dimension hard-coded, collapsed, or left narrow "for simplicity" when a
+        musically-valid richer mapping exists. Ties together [[2p8z1m40]],
+        [[k20f9a3x]], [[f7a2k930]], [[z0m4p81q]], [[d4m1z8p0]], [[c2k9p0a4]],
+        [[e9k2m4p1]], [[f3a0k9m2]], [[7c4m1k0p]].

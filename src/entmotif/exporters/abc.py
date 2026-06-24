@@ -90,8 +90,9 @@ def abc_export(value, notes, meta):
         return [(n[3], n[4], n[1]) for n in notes if n[0] in chs]
 
     header = ["X:1", "T:%s" % value,
-              "C:entmotif %s %s, %dbpm, %s, arr=%s, fat=%d" %
-              (KEY_NAMES[key], mode, meta["tempo"], meta["form"], meta["arr"], meta["fat"]),
+              "C:entmotif [%s] %s %s, %dbpm, lead=%s, perc=%s, form=%s, arr=%s" %
+              (meta.get("style", "?"), KEY_NAMES[key], mode, meta["tempo"], meta.get("lead", "?"),
+               meta.get("percussion", "none"), meta["form"], meta["arr"]),
               "M:4/4", "L:1/16", "Q:1/4=%d" % meta["tempo"]]
     voices = [("1", "lead", pick([0])), ("2", "comp", pick([1])), ("3", "bass", pick([2]))]
     if meta["v4"]:
