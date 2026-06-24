@@ -37,6 +37,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from entmotif.model import (  # noqa: E402
     DIV, BEATS_PER_BAR, WEIGHT_SCALE, NoteEvent, VoiceRole, PitchRange, Development, Phrase)
+from entmotif.theory import *  # noqa: E402,F401,F403
 
 COMP_PROGRAM = 48               # GM "String Ensemble" — the comp voice (channel 1)
 BASS_PROGRAM = 32               # GM "Acoustic Bass" — the bass voice (channel 2)
@@ -46,18 +47,6 @@ ARP_GAP = 4                     # ticks trimmed off arpeggiated/running notes
 BLOCK_VEL, STAB_VEL, ARP_VEL, ALBERTI_VEL = 34, 42, 40, 38
 # bass figuration velocities
 PEDAL_VEL, WALK_VEL, ROOT_VEL, FIFTH_VEL = 56, 56, 60, 50
-
-MAJOR_SCALE = [0, 2, 4, 5, 7, 9, 11]
-MINOR_SCALE = [0, 2, 3, 5, 7, 8, 10]
-CHORDS = {
-    "major": {"I": [0, 4, 7], "ii": [2, 5, 9], "iii": [4, 7, 11], "IV": [5, 9, 0],
-              "V": [7, 11, 2], "vi": [9, 0, 4]},
-    "minor": {"i": [0, 3, 7], "iio": [2, 5, 8], "III": [3, 7, 10], "iv": [5, 8, 0],
-              "V": [7, 11, 2], "VI": [8, 0, 3]},
-}
-APPLIED = {"VsV": [2, 6, 9]}                                   # V/V: major triad on degree 2
-SEVENTH = 10
-ROMAN_TO_MINOR = {"I": "i", "ii": "iio", "iii": "III", "IV": "iv", "V": "V", "vi": "VI"}
 
 FIGURES = [
     [1, 1, 2], [2, 1, 1], [1, 2, 1], [1.5, 0.5, 2], [2, 1.5, 0.5],
@@ -80,7 +69,6 @@ LEAD_RANGE = {0: PitchRange(50, 81, 64), 73: PitchRange(62, 88, 76), 40: PitchRa
               56: PitchRange(54, 80, 67), 12: PitchRange(53, 84, 72)}
 ANSWER_INSTR = {0: 40, 73: 56, 40: 73, 56: 73, 12: 56}
 LEAP_NAMES = {0: "stepwise", 1: "moderate", 2: "jumpy"}
-KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 DYN_VEL = {"p": 62, "mp": 78, "mf": 94, "f": 110, "ff": 120}   # dynamic mark -> MIDI velocity
 
 
@@ -119,40 +107,6 @@ class Chooser:
         return opts[-1]
 
 
-def scale_pcs(mode, key):                                     # KEY-TRANSPOSED scale
-    return [(p + key) % 12 for p in (MAJOR_SCALE if mode == "major" else MINOR_SCALE)]
-
-
-def cpcs(s, mode, key):                                       # KEY-TRANSPOSED chord tones
-    base = APPLIED[s] if s in APPLIED else CHORDS[mode][s]
-    return [(p + key) % 12 for p in base]
-
-
-def scale_tones(mode, key, lo, hi):
-    sp = scale_pcs(mode, key)
-    return [m for m in range(lo, hi + 1) if m % 12 in sp]
-
-
-def snap(target, pcs, lo, hi):
-    c = [m for m in range(lo, hi + 1) if m % 12 in [p % 12 for p in pcs]]
-    if not c:
-        c = list(range(lo, hi + 1))
-    return min(c, key=lambda m: abs(m - target))
-
-
-def step(cur, delta, mode, key, lo, hi):
-    L = scale_tones(mode, key, lo, hi)
-    if not L:
-        return cur
-    i = min(range(len(L)), key=lambda k: abs(L[k] - cur))
-    return L[max(0, min(len(L) - 1, i + delta))]
-
-
-def degree(n, key, mode, lo, hi):
-    base = snap((lo + hi) // 2, [key], lo, hi)                # tonic (degree 1) = key
-    return step(base, n - 1, mode, key, lo, hi)
-
-
 def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
     drift = max(-2, min(2, round((center - cur) / 3.0))) + tendency
     if abs(prevd) >= 3:
@@ -161,10 +115,6 @@ def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
     opts = [d for d in range(-ml, ml + 1) if d != 0]
     wts = [math.exp(-((d - drift) ** 2) / (2 * sig * sig)) for d in opts]
     return ch.weighted(label, opts, wts)
-
-
-def sym(roman, mode):
-    return roman if (mode == "major" or roman in APPLIED) else ROMAN_TO_MINOR[roman]
 
 
 # --------------------------------------------------------------- melody ------
@@ -416,15 +366,6 @@ def abc_pitch(m):
     if octv >= 5:
         return acc + letter.lower() + "'" * (octv - 5)
     return acc + letter + "," * (4 - octv)
-
-
-def chord_name(s, key, mode):
-    if s in APPLIED:
-        return KEY_NAMES[(key + APPLIED[s][0]) % 12]          # applied dominant = major
-    pcs = CHORDS[mode][s]
-    third, fifth = (pcs[1] - pcs[0]) % 12, (pcs[2] - pcs[0]) % 12
-    q = "" if third == 4 else ("dim" if fifth == 6 else "m")
-    return KEY_NAMES[(key + pcs[0]) % 12] + q
 
 
 def _dtok(ticks):
