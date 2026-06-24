@@ -1,0 +1,11 @@
+% canon: C15  confidence: high  source: Wikipedia/mfiles + knowledge (Korobeiniki contour verified)
+% phrase: E B C D C B | A A C E D C | B (rest) C D E | C A A
+X:1
+T:Korobeiniki (Tetris Type A)
+C:Trad. Russian, arr. Hirokazu Tanaka, 1989
+M:4/4
+L:1/8
+Q:1/4=150
+K:Em
+e2 B B c2 d2 | c2 B B A4 | A2 c2 e4 | d2 c2 B3 B |
+c2 d2 e4 | c2 A2 A4 |]

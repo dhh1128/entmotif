@@ -1,0 +1,16 @@
+X:1
+T:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDSD+oM4kLidAptE5pjRA8OBIWNysc9reQJjKegek2jATA3bSvKdq/wdQtpbihEx5OlKMo//V/8QpAIjCSsBaMb6G/e/D5kC9wCjnYJJ68+34L+H5Fx1Ofuiz3BidgssINw/qbV0u1vrCop+ggs6lkl+pIwa+9kPriD9xdowCOQABMVl4todcojY8gZK/Zs5XTwKi9Z8MRS/37FEPxlvpRExMmQU8v2tnP/TDqhR13NSyCZWqiH2ojMNDm2jWR+W65gIjFz4kNsu4EaSNOfKY4U7VRBLXg7om3pvIoarhBFMZvTPQ9FqJU/08BJ/A1tCjCIAY0+zGAAvfRHQt5R2wZXl83n9Xh+9IukW5r/pynpdLx1+WyAOKLxIUKflTWaIcYKBqmfaxz64Gm2lDbF0+9r/0Xf//P8TFDWFo9bo4loIukgjtwQmp8Kn6ngEKj8gS3vLApZ3wN18q3emtglyQEmO+9VXckK4NPOqAzwOu7rQbr7oEPS6HrnY3PKe9JD570= alice@workstation
+C:entmotif C# minor, 96bpm, period_tag, arr=solo_bed, fat=0
+M:4/4
+L:1/16
+Q:1/4=96
+V:1 name="lead"
+V:2 name="comp"
+V:3 name="bass"
+K:C
+V:1
+"C#m" !mp! ^c2 =a6 =e4 =a4 | "A" =e8 =a6 ^c2 | "F#m" !mp! ^c4 =a2 ^f2 =a8 | "G#" ^c4 =e4 ^d6 z2 | "C#m" !mf! ^c2 =B6 ^c4 =B4 | "A" ^c8 =e6 ^d2 | "D#dim" !f! ^d4 =b2 ^c'2 ^d'8 | "G#" ^c4 =e4 ^d6 z2 | "C#m" !mp! ^c2 =a6 ^g4 ^c'4 | "A" =a8 =e'6 ^g2 | "G#" !mf! ^d4 =b2 ^f2 =c'8 | "C#m" =e4 ^d4 ^c8 |]
+V:2
+[^C=E]16 | [=A,^C]16 | [=A,^F]16 | [^G,=C]16 | [^C=E]16 | [=A,^C]16 | [^D^F]16 | [^G,=C]16 | [^C=E]16 | [=A,^C]16 | [^G,=C]16 | [^C=E]16 |]
+V:3
+^C,,8 ^G,,8 | =A,,8 =E,,8 | ^F,,8 ^C,,8 | ^G,,8 ^D,,8 | ^C,,8 ^G,,8 | =A,,8 =E,,8 | ^D,,8 =A,,8 | ^G,,8 ^D,,8 | ^C,,8 ^G,,8 | =A,,8 =E,,8 | ^G,,8 ^D,,8 | ^C,,8 ^G,,8 |]

@@ -1,0 +1,10 @@
+% canon: C50  confidence: high  source: pitches given in canon.md (Db Db Gb Db Ab)
+% phrase: the 5-note xylophone/synth sonic logo (rising-then-resolving mnemonic)
+X:1
+T:Intel "Bong" - sonic logo
+C:Walter Werzowa (1994)
+M:4/4
+L:1/8
+Q:1/4=120
+K:C
+_d2 _d2 _g2 _d2 | _a4 z4 |]

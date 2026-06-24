@@ -1,0 +1,13 @@
+% canon: C44  confidence: medium  source: from knowledge (no public ABC; Bernstein/Sondheim 1957, published-score consensus)
+% phrase: soaring melody in Eb, arching up to high Bb peak; "To-NIGHT, to-NIGHT"
+X:1
+T:Tonight
+C:Leonard Bernstein / Stephen Sondheim, 1957 (West Side Story)
+M:3/4
+L:1/8
+Q:3/4=54
+K:Eb
+"Eb"G4 G2 | "Eb"e4 z2 | "Bb7"d3 e d2 | "Bb7"B6 |
+"Eb"G4 G2 | "Eb"e4 z2 | "Ab"c3 d c2 | "Eb"G6 |
+"Ab"F4 F2 | "Ab"f4 z2 | "Eb"e3 f e2 | "Bb7"d6 |
+"Cm"e4 e2 | "Fm"f4 z2 | "Bb7"_b4 a2 | "Eb"g6 |]

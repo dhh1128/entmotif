@@ -1,0 +1,13 @@
+% canon: C40  confidence: high  source: abcnotation.com back.numachi.com/dtrad/abc_dtrad (AULDLANG)
+% phrase: Full melody with pickup, C major pentatonic 4/4
+X:1
+T:Auld Lang Syne
+C:Words Robert Burns 1788; tune traditional Scottish
+M:4/4
+L:1/4
+Q:1/4=96
+K:C
+G, | C3/2 B,/2 C E | D3/2 C/2 D E/2-D/2 | C/2 C3/2 E G | A3 A |
+G3/2 E/2 E C | D3/2 C/2 D E/2-D/2 | C3/2 A,/2 A, G, | C3 A |
+G3/2 E/2 E C | D3/2 C/2 D A | G3/2 E/2 E G | A3 A |
+G3/2 E/2 E C | D3/2 C/2 D E/2-D/2 | C3/2 A,/2 A, G, | C3 |]

@@ -1,0 +1,13 @@
+% canon: C47  confidence: high  source: abcnotation.com trillian.mit.edu/~jc/music/abc/Brazil/song/girl_from_Ipanema
+% phrase: cool bossa syncopation, F major — stepwise descent then rise over Fmaj7–G7–Gm7–Gb7
+X:1
+T:The Girl from Ipanema (Garota de Ipanema)
+C:Antonio Carlos Jobim, 1962
+M:4/4
+L:1/8
+Q:1/4=160
+K:F
+P:A
+"Fmaj7" G2 GE E2 ED | G2 GE EE DG- | "G7" G2 GE EE DG- |
+G2GE EE DF- | "Gm7" F2 FD DD CE- | "Gb7" E2 EC CC B,C- |
+"Fmaj7" C8 | z8 |]

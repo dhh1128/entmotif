@@ -1,0 +1,14 @@
+% canon: T29  confidence: high  source: marisamusicstudio / pianoutopia (Ab) + knowledge
+% phrase: LH boogie ostinato (low Ab against Eb octave/6th) under the syncopated leaping RH melody
+X:1
+T:Linus and Lucy (Peanuts theme)
+C:Vince Guaraldi, 1964
+M:4/4
+L:1/8
+Q:1/4=168
+K:Ab
+%%score (RH LH)
+V:RH clef=treble
+V:LH clef=bass
+[V:RH] z2 e'2 c'2 e'2 | z2 b2 a2 c'2 | z2 e'2 c'2 e'2 | z2 b2 a2 G2 |
+[V:LH] A,,E,A,F, A,,E,A,F, | A,,E,A,F, A,,E,A,F, | A,,E,A,F, A,,E,A,F, | A,,E,A,F, A,,E,A,F, |]

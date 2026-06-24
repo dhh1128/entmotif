@@ -1,0 +1,11 @@
+% canon: C13  confidence: high  source: virtualpiano + knowledge (opening E E E C E G verified)
+% phrase: E E E (rest) C E G (rest) G — the iconic overworld opening
+X:1
+T:Super Mario Bros. (Overworld Theme)
+C:Koji Kondo, 1985
+M:4/4
+L:1/8
+Q:1/4=200
+K:C
+E2 E2 z2 E2 | z2 C2 E2 z2 | G4 z4 | G,4 z4 |
+c4 G3 z | E4 A3 z | B4 _B2 A2 | (3GGG e2 g2 |]

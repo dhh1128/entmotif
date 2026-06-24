@@ -1,0 +1,10 @@
+% canon: C01  confidence: high  source: universally-known incipit (verified by ear)
+% phrase: the four-note "da-da-da-DUM" motif, stated then restated a step lower
+X:1
+T:Symphony No. 5 in C minor, Op. 67 - opening motif
+C:Ludwig van Beethoven (1808)
+M:2/4
+L:1/8
+Q:1/2=108
+K:Cmin
+z G G G | !fermata!E4 | z F F F | !fermata!D4 |]

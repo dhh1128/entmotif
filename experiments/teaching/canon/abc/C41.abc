@@ -1,0 +1,11 @@
+% canon: C41  confidence: high  source: abcnotation.com trillian.mit.edu/~jc/music/abc/mirror/abcusers/SomewhereOverTheRainbow_1
+% phrase: opening octave leap F to f ("SOME-where"), then wistful descent; F major
+X:1
+T:Over the Rainbow
+C:Harold Arlen / E.Y. Harburg, 1939
+M:4/4
+L:1/4
+Q:1/4=80
+K:F
+"F"F4 "Bb"f4 | "Am7"e2 cd "D7"e2 f2 | "Gm7"F4 "C7"d4 | "F7"c8 |
+"Bb"D4 "Bbm7"B4 | "Am7"A2 FG "D7"A2 B2 | "Gm7"A2 EF "C7"G2 A2 | "F"F8 |]

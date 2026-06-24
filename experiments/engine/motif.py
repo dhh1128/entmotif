@@ -1,0 +1,526 @@
+#!/usr/bin/env python3
+"""entmotif motif engine — v0.7 prototype (zero dependencies).
+
+v0.7 fixes teaching round 3 + the canon-calibration priors (docs/canon-calibration.md):
+ (1) BASS CHORD-QUALITY [Codex bug] — bass figuration now derives every tone from
+     the actual chord pitch-classes (root/third/fifth of `cpcs`), not hardcoded
+     +4/+7 intervals; minor/dim/applied chords get a quality-correct bass.
+ (2) LEAD NEVER SILENCED — in call_resp the principal voice (V:1) carries the call
+     AND resolves every answer (cadence); the antiphonal response moves to V:4, so
+     the lead is never tacet for a whole unit (fixes the v0.6 "melody dying" z16).
+ (3) V:4 DEVELOPS — the call_resp antiphon is a SEQUENCED FRAGMENT of the hook (up
+     a third), not a verbatim echo; lead_counter keeps its contrary-motion counter.
+ (4) FINAL CADENCE ALWAYS RESOLVES — the terminal cadence is forced authentic (V-I,
+     lands on the tonic); half/abrupt non-resolving finals are gone (canon: "clean
+     cadential closure"; resolves the maintainer's "incompleteness" open question).
+ (5) PLACED CLIMAX ~2/3 THROUGH (Huron arch) — register arc peaks at the 2/3 unit,
+     reached by the signature leap, reserved (earlier units sit lower).
+ (6) DYNAMICS ARC — an entropy/arc-driven dynamic (mp..f..mf) is emitted in ABC
+     (!mf! !f! marks on the lead) AND drives MIDI velocity: crescendo into the
+     climax, settle at the cadence. (Analog layer: casual avalanche + emotion cue.)
+ (7) SIGNATURE RHYTHM HOOK — stronger dotted/syncopated idea-bar cells, reused on
+     every idea statement, give a clappable recurring identity.
+
+Carries forward from v0.6: key-transposition, tasteful secondary-dominant color,
+signature opening leap, motivic transforms, spread voicings, arrangement templates.
+
+Determinism + avalanche preserved (see test_motif.py). Prototype to be HEARD + GRADED.
+Run:  python3 motif.py   |   Test:  python3 test_motif.py
+"""
+
+import hashlib
+import math
+import struct
+
+DIV = 480
+
+MAJOR_SCALE = [0, 2, 4, 5, 7, 9, 11]
+MINOR_SCALE = [0, 2, 3, 5, 7, 8, 10]
+CHORDS = {
+    "major": {"I": [0, 4, 7], "ii": [2, 5, 9], "iii": [4, 7, 11], "IV": [5, 9, 0],
+              "V": [7, 11, 2], "vi": [9, 0, 4]},
+    "minor": {"i": [0, 3, 7], "iio": [2, 5, 8], "III": [3, 7, 10], "iv": [5, 8, 0],
+              "V": [7, 11, 2], "VI": [8, 0, 3]},
+}
+APPLIED = {"VsV": [2, 6, 9]}                                   # V/V: major triad on degree 2
+SEVENTH = 10
+ROMAN_TO_MINOR = {"I": "i", "ii": "iio", "iii": "III", "IV": "iv", "V": "V", "vi": "VI"}
+
+FIGURES = [
+    [1, 1, 2], [2, 1, 1], [1, 2, 1], [1.5, 0.5, 2], [2, 1.5, 0.5],
+    [0.5, 0.5, 1, 2], [1, 0.5, 0.5, 2], [0.5, 0.5, 1, 1, 1], [1, 1, 0.5, 0.5, 1],
+    [0.75, 0.25, 1, 1, 1], [0.5, 0.5, 0.5, 0.5, 2], [2, 0.5, 0.5, 1],
+]
+HOOKS = [                                                      # signature idea-bar rhythms (dotted/syncopated)
+    [1.5, 0.5, 1, 1], [0.5, 1.5, 1, 1], [1, 0.5, 0.5, 2],
+    [0.75, 0.25, 1, 2], [0.5, 0.5, 1, 1.5, 0.5], [2, 0.5, 0.5, 1],
+]
+SIG_STEPS = {0: [2, -2, 3, -3], 1: [3, 4, -3, 5, -4], 2: [4, 5, 7, -5, -4]}
+BREATHS = [0, 0, 0.5, 1, 1, 1.5]
+TEMPOS = [60, 72, 84, 96, 108, 120, 138, 160, 184]
+TEMPO_W = [1, 2, 3, 4, 4, 3, 2, 2, 1]
+MAXLEAP = {0: 3, 1: 5, 2: 8}
+SIGMA = {0: 1.0, 1: 1.8, 2: 3.0}
+LEADS = [0, 73, 40, 56, 12]
+LEAD_NAMES = {0: "piano", 73: "flute", 40: "violin", 56: "trumpet", 12: "marimba"}
+LEAD_RANGE = {0: (50, 81, 64), 73: (62, 88, 76), 40: (55, 86, 69),
+              56: (54, 80, 67), 12: (53, 84, 72)}
+ANSWER_INSTR = {0: 40, 73: 56, 40: 73, 56: 73, 12: 56}
+LEAP_NAMES = {0: "stepwise", 1: "moderate", 2: "jumpy"}
+KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+DYN_VEL = {"p": 62, "mp": 78, "mf": 94, "f": 110, "ff": 120}   # dynamic mark -> MIDI velocity
+
+
+def unit_dyn(u, nU, peak):
+    """Dynamic arc: ramp into the placed climax, settle at the final cadence."""
+    if u == peak:
+        return "f"
+    if u == nU - 1:
+        return "mf"
+    if u < peak:
+        return "mf" if u == peak - 1 else "mp"
+    return "mp"
+
+
+class Chooser:
+    def __init__(self, fp):
+        self.fp = fp
+
+    def v(self, label):
+        return int.from_bytes(hashlib.sha512(self.fp + label.encode()).digest(), "big")
+
+    def int(self, label, n):
+        return self.v(label) % n
+
+    def choice(self, label, seq):
+        return seq[self.v(label) % len(seq)]
+
+    def weighted(self, label, opts, wts):
+        total = float(sum(wts))
+        r = (self.v(label) % 1_000_000) / 1_000_000.0 * total
+        acc = 0.0
+        for o, w in zip(opts, wts):
+            acc += w
+            if r <= acc:
+                return o
+        return opts[-1]
+
+
+def scale_pcs(mode, key):                                     # KEY-TRANSPOSED scale
+    return [(p + key) % 12 for p in (MAJOR_SCALE if mode == "major" else MINOR_SCALE)]
+
+
+def cpcs(s, mode, key):                                       # KEY-TRANSPOSED chord tones
+    base = APPLIED[s] if s in APPLIED else CHORDS[mode][s]
+    return [(p + key) % 12 for p in base]
+
+
+def scale_tones(mode, key, lo, hi):
+    sp = scale_pcs(mode, key)
+    return [m for m in range(lo, hi + 1) if m % 12 in sp]
+
+
+def snap(target, pcs, lo, hi):
+    c = [m for m in range(lo, hi + 1) if m % 12 in [p % 12 for p in pcs]]
+    if not c:
+        c = list(range(lo, hi + 1))
+    return min(c, key=lambda m: abs(m - target))
+
+
+def step(cur, delta, mode, key, lo, hi):
+    L = scale_tones(mode, key, lo, hi)
+    if not L:
+        return cur
+    i = min(range(len(L)), key=lambda k: abs(L[k] - cur))
+    return L[max(0, min(len(L) - 1, i + delta))]
+
+
+def degree(n, key, mode, lo, hi):
+    base = snap((lo + hi) // 2, [key], lo, hi)                # tonic (degree 1) = key
+    return step(base, n - 1, mode, key, lo, hi)
+
+
+def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
+    drift = max(-2, min(2, round((center - cur) / 3.0))) + tendency
+    if abs(prevd) >= 3:
+        drift += -2 * (1 if prevd > 0 else -1)
+    ml, sig = MAXLEAP[leap], SIGMA[leap]
+    opts = [d for d in range(-ml, ml + 1) if d != 0]
+    wts = [math.exp(-((d - drift) ** 2) / (2 * sig * sig)) for d in opts]
+    return ch.weighted(label, opts, wts)
+
+
+def sym(roman, mode):
+    return roman if (mode == "major" or roman in APPLIED) else ROMAN_TO_MINOR[roman]
+
+
+# --------------------------------------------------------------- melody ------
+def line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
+         tag, offset, invert, sig, chan, vel):
+    notes, cur, pos, k, prevd = [], None, 0.0, 0, 0
+    for b, fig in enumerate(figs):
+        cp = cpcs(chords2[b], mode, key)
+        for dur in fig:
+            beat = pos - b * 4
+            if cur is None:
+                cur = snap(base, cp, lo, hi)
+                if offset:
+                    cur = snap(step(cur, offset, mode, key, lo, hi), cp, lo, hi)
+            else:
+                if k == 0 and sig is not None:                # signature opening leap (hook)
+                    d = -sig if invert else sig
+                else:
+                    d = gravity_delta(cur, center, tendency, prevd, leap, ch,
+                                      "%s_d%d" % (tag, k))
+                    if invert:
+                        d = -d
+                cur = step(cur, d, mode, key, lo, hi)
+                prevd = d
+                k += 1
+                if beat in (0.0, 2.0):
+                    s = snap(cur, cp, lo, hi)
+                    if notes and s == notes[-1][1]:
+                        alt = [m for m in scale_tones(mode, key, lo, hi)
+                               if m % 12 in [p % 12 for p in cp] and m != s]
+                        if alt:
+                            s = min(alt, key=lambda m: abs(m - cur))
+                    cur = s
+            notes.append([chan, cur, vel, int((bar0 * 4 + pos) * DIV), int(dur * DIV)])
+            pos += dur
+    return notes
+
+
+def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
+    d = lambda n: degree(n, key, mode, lo, hi)
+    if res == "authentic":
+        figs = [(d(3), 1), (d(2), 1), (d(1), 2)]
+    elif res == "deceptive":
+        figs = [(d(2), 1), (d(3), 1), (d(6), 2)]
+    else:
+        figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
+    out, pos = [], 0.0
+    for pitch, dur in figs:
+        out.append([chan, pitch, vel, int((bar0 * 4 + pos) * DIV), int(dur * DIV)])
+        pos += dur
+    return out
+
+
+# ------------------------------------------------------------ arrangement ----
+def voice_chord(pcs, fat, top):
+    """Spread voicing (no clusters): stack chord tones upward with >=3-semitone gaps."""
+    ivs = {0: [pcs[0], pcs[1]], 1: pcs, 2: pcs + [(pcs[0] + SEVENTH) % 12],
+           3: pcs + [(pcs[0] + SEVENTH) % 12, (pcs[0] + 2) % 12]}[fat]
+    pcset = list(dict.fromkeys(p % 12 for p in ivs))
+    out, m = [], top - 13
+    for pc in pcset:
+        cand = m - ((m - pc) % 12) + 12                       # lowest >= m with this pc
+        while cand < m + 3:
+            cand += 12
+        if cand > top:
+            cand -= 12
+        out.append(cand)
+        m = cand
+    return sorted(out)
+
+
+def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, figr, bassfig, comp_on, bass_on):
+    out, top = [], melody_lo - 4
+    for b, s in enumerate(chords2):
+        pcs = cpcs(s, mode, key)
+        base = (bar0 + b) * 4 * DIV
+        if comp_on:
+            voic = voice_chord(pcs, fat, top)
+            if figr == "block":
+                for m in voic:
+                    out.append((1, m, 34, base, 4 * DIV - 6))
+            elif figr == "stabs":
+                for beat in (0, 2):
+                    for m in voic:
+                        out.append((1, m, 42, base + beat * DIV, DIV - 6))
+            elif figr == "arp":
+                seqv = voic + voic[-2::-1]
+                for i in range(8):
+                    out.append((1, seqv[i % len(seqv)], 40, base + i * (DIV // 2), DIV // 2 - 4))
+            else:                                             # alberti
+                pat = [voic[0], voic[-1], voic[len(voic) // 2], voic[-1]]
+                for i in range(8):
+                    out.append((1, pat[i % 4], 38, base + i * (DIV // 2), DIV // 2 - 4))
+        if bass_on:
+            bt = lambda pc: 36 + pc                            # bass register (C2..B2); always a chord tone
+            root, third, fifth = bt(pcs[0]), bt(pcs[1]), bt(pcs[2])
+            if bassfig == "pedal":
+                out.append((2, root, 56, base, 4 * DIV - 6))
+            elif bassfig == "walking":
+                ws = [root, third, fifth, third]               # walk the actual chord tones (quality-correct)
+                for i in range(4):
+                    out.append((2, ws[i], 56, base + i * DIV, DIV - 6))
+            else:                                              # root + the chord's actual fifth
+                out.append((2, root, 60, base, 2 * DIV))
+                out.append((2, fifth, 50, base + 2 * DIV, 2 * DIV))
+    return out
+
+
+def cadc(res):
+    return {"authentic": ["V", "I"], "deceptive": ["V", "vi"], "half": ["IV", "V"]}[res]
+
+
+def build_form(form, res, ch, color):
+    P = cadc(res)
+    sd = {0: 0, 1: 25, 2: 60}[color]                          # 2(d) secondary-dominant prob %, by color dial
+    if P[1] == "V" and ch.int("sd", 100) < sd:
+        P = ["VsV", "V"]
+    pre = ["VsV", "V"] if ch.int("sd2", 100) < sd else ["IV", "V"]
+    if form == "sentence":
+        units = [("idea", ["I", "I"], None, 0), ("answer", P, res, 0)]
+    elif form == "period":
+        units = [("idea", ["I", "vi"], None, 0), ("answer", pre, "half", 0),
+                 ("idea", ["I", "vi"], None, 1), ("answer", P, res, 0)]
+    elif form == "period_tag":
+        units = [("idea", ["I", "vi"], None, 0), ("answer", pre, "half", 0),
+                 ("idea", ["I", "vi"], None, 1), ("answer", ["ii", "V"], "half", 0),
+                 ("idea", ["I", "vi"], None, 2), ("answer", P, res, 0)]
+    else:
+        units = [("idea", ["I", "vi"], None, 0), ("answer", pre, "half", 0),
+                 ("idea", ["I", "vi"], None, 1), ("answer", ["ii", "V"], "half", 0),
+                 ("contrast", ["IV", "I"], None, 0), ("contrast", ["ii", "V"], None, 0),
+                 ("idea", ["I", "vi"], None, 2), ("answer", P, res, 0)]
+    role, _chs, _cad, dv = units[-1]                           # round 4: terminal cadence ALWAYS resolves
+    units[-1] = (role, ["V", "I"], "authentic", dv)            # (clean closure; no half/abrupt final)
+    return units
+
+
+def transform_for(devslot, ch):
+    if devslot == 0:
+        return 0, False
+    return ch.weighted("dev%d" % devslot, [(2, False), (-2, False), (0, True), (1, False)],
+                       [3, 2, 2, 1])
+
+
+def generate(value):
+    # ~4eu7: prototype hashes the RAW input; the real impl must normalize and
+    # strip prefix/suffix EXACTLY as entviz before hashing (see this.i:81pz4m0v).
+    fp = hashlib.sha512(value.encode("utf-8")).digest()
+    ch = Chooser(fp)
+    mode = ch.choice("mode", ["major", "minor"])
+    key = ch.int("key", 12)
+    lead = ch.choice("lead", LEADS)
+    ilo, ihi, icen = LEAD_RANGE[lead]
+    tonic = snap(icen, [key], ilo, ihi - 12)
+    lo, hi = max(ilo, tonic - 3), min(ihi, tonic + 15)
+    base = lo + (hi - lo) // 4
+    tempo = ch.weighted("tempo", TEMPOS, TEMPO_W)
+    leap = ch.weighted("leap", [0, 1, 2], [3, 4, 2])
+    tendency = ch.weighted("tend", [-1, 0, 1], [2, 3, 2])
+    resolution = ch.weighted("res", ["authentic", "deceptive", "half"], [3, 2, 2])
+    form = ch.weighted("form", ["sentence", "period", "period_tag", "aaba"], [2, 4, 2, 2])
+    fat = ch.weighted("fat", [0, 1, 2, 3], [2, 3, 2, 1])
+    figr = ch.weighted("figr", ["block", "stabs", "arp", "alberti"], [2, 2, 2, 1])
+    bassfig = ch.weighted("bass", ["root5", "walking", "pedal"], [3, 2, 1])
+    template = ch.weighted("arr", ["solo_bed", "lead_counter", "call_resp", "groove_first"],
+                           [3, 2, 2, 1])
+    color = ch.weighted("color", [0, 1, 2], [3, 4, 1])        # harmonic adventurousness dial
+    sig = ch.choice("sig", SIG_STEPS[leap])                   # signature opening interval
+
+    idea = [ch.choice("hook", HOOKS), ch.choice("im1", FIGURES)]
+    other = [ch.choice("om0", FIGURES), ch.choice("om1", FIGURES)]
+    ans_fig = ch.choice("ansfig", FIGURES)
+    ans_instr = ANSWER_INSTR[lead]
+
+    units = build_form(form, resolution, ch, color)
+    nU = len(units)
+    peak = max(1, int(round((nU - 1) * 2.0 / 3.0)))           # placed climax ~2/3 through (Huron arch)
+    span = float(max(1, max(peak, nU - 1 - peak)))
+    dyn_bars = {}
+    notes, used_v4 = [], False
+    for u, (role, chs, cad, devslot) in enumerate(units):
+        chm = [sym(c, mode) for c in chs]
+        bar0 = u * 2
+        frac = 1 - abs(u - peak) / span                       # register arc, =1 at the climax unit
+        center = int(base + (hi - 2 - base) * frac)
+        dyn = unit_dyn(u, nU, peak)
+        vel = DYN_VEL[dyn]
+        dyn_bars[bar0] = dyn
+        offset, invert = transform_for(devslot, ch)
+        cr_answer = template == "call_resp" and role == "answer"
+        if template == "groove_first" and u == 0:
+            mel = []
+        elif role == "idea":
+            mel = line(idea, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
+                       "idea", offset, invert, sig, 0, vel)
+        elif role == "answer":
+            if cr_answer:                                     # lead RESOLVES the phrase (never tacet);
+                mel = cadence_bar(cad, key, mode, lo, hi, bar0 + 1, 0, vel)   # antiphon answers below
+            else:
+                mel = line([ans_fig], [chm[0]], mode, key, base, lo, hi, bar0, center, tendency,
+                           leap, ch, "idea", offset, invert, sig, 0, vel)
+                mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, 0, vel)
+        else:
+            mel = line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
+                       "other", 0, False, None, 0, max(40, vel - 6))
+        if u != nU - 1 and mel:                               # breath: trim the LAST note (phrase boundary only)
+            br = ch.choice("breath%d" % u, BREATHS)
+            if br and mel[-1][4] - int(br * DIV) >= int(0.5 * DIV):
+                mel[-1][4] -= int(br * DIV)
+        notes += [tuple(n) for n in mel]
+
+        if cr_answer:                                         # antiphonal DEVELOPED response on V:4:
+            frag = idea[0][:3] or idea[0]                     #   a hook fragment SEQUENCED up a third
+            ans = line([frag], [chm[0]], mode, key, base, lo, hi, bar0, center, tendency, leap,
+                       ch, "ans%d" % u, 2, False, sig, 3, max(40, vel - 18))
+            used_v4 = used_v4 or bool(ans)
+            notes += [tuple(n) for n in ans]
+
+        comp_on = template in ("solo_bed", "lead_counter", "call_resp")
+        bass_on = True
+        if template == "groove_first":
+            comp_on = u >= 1
+        if template == "call_resp":
+            comp_on = role != "idea"
+        notes += [tuple(n) for n in arrange_unit(chm, mode, key, lo, bar0, fat, figr,
+                                                 bassfig, comp_on, bass_on)]
+        if template == "lead_counter" and role == "idea":     # real contrary-motion counter (V:4)
+            cm = line([idea[0]], [chm[0]], mode, key, base, lo - 7, hi - 9, bar0,
+                      center - 9, -tendency, 0, ch, "ctr", 0, True, None, 3, 72)
+            used_v4 = used_v4 or bool(cm)
+            notes += [tuple(n) for n in cm]
+
+    meta = {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "lead": LEAD_NAMES[lead],
+            "lead_prog": lead, "ans_prog": ans_instr, "leap": LEAP_NAMES[leap], "res": resolution,
+            "form": form, "bars": nU * 2, "fat": fat, "figr": figr, "arr": template,
+            "bar_chords": [c for _, chs, _, _ in units for c in (sym(x, mode) for x in chs)],
+            "color": color, "v4": used_v4, "dyn_bars": dyn_bars}
+    return notes, meta
+
+
+# --------------------------------------------------------------- ABC ---------
+ABC_PC = {0: "=C", 1: "^C", 2: "=D", 3: "^D", 4: "=E", 5: "=F",
+          6: "^F", 7: "=G", 8: "^G", 9: "=A", 10: "^A", 11: "=B"}
+
+
+def abc_pitch(m):
+    acc, letter = ABC_PC[m % 12][0], ABC_PC[m % 12][1]
+    octv = m // 12 - 1
+    if octv >= 5:
+        return acc + letter.lower() + "'" * (octv - 5)
+    return acc + letter + "," * (4 - octv)
+
+
+def chord_name(s, key, mode):
+    if s in APPLIED:
+        return KEY_NAMES[(key + APPLIED[s][0]) % 12]          # applied dominant = major
+    pcs = CHORDS[mode][s]
+    third, fifth = (pcs[1] - pcs[0]) % 12, (pcs[2] - pcs[0]) % 12
+    q = "" if third == 4 else ("dim" if fifth == 6 else "m")
+    return KEY_NAMES[(key + pcs[0]) % 12] + q
+
+
+def _dtok(ticks):
+    n = int(round(ticks / (DIV // 4)))
+    return str(n) if n != 1 else ""
+
+
+def _rest(ticks):
+    n = int(round(ticks / (DIV // 4)))
+    return ("z" + (str(n) if n != 1 else "")) if n >= 1 else ""
+
+
+def _voice(ch_notes, total_bars, chords=None, dyns=None):
+    out = []
+    for b in range(total_bars):
+        lo_t, hi_t = b * 4 * DIV, (b + 1) * 4 * DIV
+        toks = ['"%s"' % chords[b]] if chords else []
+        if dyns and b in dyns:
+            toks.append("!%s!" % dyns[b])
+        evs = sorted([n for n in ch_notes if lo_t <= n[0] < hi_t])
+        t, i = lo_t, 0
+        while i < len(evs):
+            st = evs[i][0]
+            r = _rest(st - t) if st > t else ""
+            if r:
+                toks.append(r)
+            grp = [e for e in evs if e[0] == st]
+            dur = grp[0][1]
+            if len(grp) > 1:
+                toks.append("[" + "".join(abc_pitch(g[2]) for g in grp) + "]" + _dtok(dur))
+            else:
+                toks.append(abc_pitch(grp[0][2]) + _dtok(dur))
+            t = st + dur
+            i += len(grp)
+        r = _rest(hi_t - t) if t < hi_t else ""
+        if r:
+            toks.append(r)
+        out.append(" ".join(toks))
+    return " | ".join(out) + " |]"
+
+
+def abc_export(value, notes, meta):
+    nb, key, mode = meta["bars"], meta["key"], meta["mode"]
+    chords = [chord_name(s, key, mode) for s in meta["bar_chords"]]
+
+    def pick(chs):
+        return [(n[3], n[4], n[1]) for n in notes if n[0] in chs]
+
+    header = ["X:1", "T:%s" % value,
+              "C:entmotif %s %s, %dbpm, %s, arr=%s, fat=%d" %
+              (KEY_NAMES[key], mode, meta["tempo"], meta["form"], meta["arr"], meta["fat"]),
+              "M:4/4", "L:1/16", "Q:1/4=%d" % meta["tempo"]]
+    voices = [("1", "lead", pick([0])), ("2", "comp", pick([1])), ("3", "bass", pick([2]))]
+    if meta["v4"]:
+        voices.append(("4", "answer/counter", pick([3])))
+    header += ['V:%s name="%s"' % (n, nm) for n, nm, _ in voices] + ["K:C"]
+    dyns = meta.get("dyn_bars")
+    body = []
+    for n, _nm, data in voices:
+        body += ["V:%s" % n, _voice(data, nb, chords if n == "1" else None,
+                                    dyns if n == "1" else None)]
+    return "\n".join(header) + "\n" + "\n".join(body) + "\n"
+
+
+# --------------------------------------------------------------- MIDI --------
+def write_midi(notes, tempo, lead_prog, ans_prog, path):
+    ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", int(60_000_000 / tempo))[1:]),
+          (0, 1, bytes([0xC0, lead_prog])), (0, 1, bytes([0xC1, 48])),
+          (0, 1, bytes([0xC2, 32])), (0, 1, bytes([0xC3, ans_prog]))]
+    for chn, pitch, vel, start, dur in notes:
+        ev.append((start, 2, bytes([0x90 | chn, pitch, vel])))
+        ev.append((start + max(1, dur), 0, bytes([0x80 | chn, pitch, 0])))
+    track, last = bytearray(), 0
+    for tick, _p, data in sorted(ev):
+        d = tick - last
+        last = tick
+        q = bytearray([d & 0x7F])
+        d >>= 7
+        while d:
+            q.append((d & 0x7F) | 0x80)
+            d >>= 7
+        q.reverse()
+        track += bytes(q) + data
+    track += b"\x00\xff\x2f\x00"
+    with open(path, "wb") as f:
+        f.write(b"MThd" + struct.pack(">IHHH", 6, 0, 1, DIV) +
+                b"MTrk" + struct.pack(">I", len(track)) + bytes(track))
+
+
+def slug(s):
+    return "".join(c if c.isalnum() else "-" for c in s)[:24].strip("-")
+
+
+if __name__ == "__main__":
+    demo = ["did:example:alice", "did:example:alife",
+            "550e8400-e29b-41d4-a716-446655440000",
+            "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
+            "GhostKey-2026", "did:example:alice"]
+    print("entmotif v0.7 — chord-quality bass, lead never tacet, developed antiphony, "
+          "resolved finals, 2/3 climax, dynamics:\n")
+    print("  # | input              | key/mode | tempo | lead    | form        | bars "
+          "| arr          | fat | res")
+    print("  --+--------------------+----------+-------+---------+-------------+------+-"
+          "-------------+-----+----")
+    for i, v in enumerate(demo, 1):
+        notes, m = generate(v)
+        write_midi(notes, m["tempo"], m["lead_prog"], m["ans_prog"],
+                   "motif_%d_%s.mid" % (i, slug(v)))
+        print("  %d | %-18s | %-2s %-5s | %5d | %-7s | %-11s | %4d | %-12s | %3d | %s"
+              % (i, v[:18], KEY_NAMES[m["key"]], m["mode"], m["tempo"], m["lead"],
+                 m["form"], m["bars"], m["arr"], m["fat"], m["res"]))
+    print("\n  #1 vs #2: one-char input change.   #1 vs #6: identical input.")

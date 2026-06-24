@@ -1,0 +1,16 @@
+X:1
+T:01ARZ3NDEKTSV4RRFFQ69G5FAV
+C:entmotif F# minor, 160bpm, aaba, arr=solo_bed, fat=1
+M:4/4
+L:1/16
+Q:1/4=160
+V:1 name="lead"
+V:2 name="comp"
+V:3 name="bass"
+K:C
+V:1
+"F#m" !mp! ^F6 =d2 =A4 =d4 | "D" =A2 =e2 ^c4 =A4 =e2 z2 | "G#" !mp! ^G6 =e2 =c8 | "C#" ^F4 =A4 ^G6 z2 | "F#m" !mp! ^F6 =E2 ^F4 =E4 | "D" ^F2 =E2 =E4 ^F4 =E4 | "G#dim" !mp! ^G6 =e2 =d8 | "C#" ^F4 =A4 ^G8 | "Bm" !mf! ^F4 ^c2 =d2 ^f8 | "F#m" ^c3 =e =d4 =a4 =e4 | "G#dim" !f! ^G4 =d2 ^f2 ^g8 | "C#" ^c3 ^f ^c4 ^g4 =e4 | "F#m" !mp! =A6 ^f2 ^c4 ^f4 | "D" =d2 =a2 ^f4 =a4 =a4 | "C#" !mf! ^G6 =e2 ^c8 | "F#m" =A4 ^G4 ^F8 |]
+V:2
+[^C,^F,=A,]16 | [=D,^F,=A,]16 | [=C,^D,^G,]16 | [^C,=F,^G,]16 | [^C,^F,=A,]16 | [=D,^F,=A,]16 | [=D,^G,=B,]16 | [^C,=F,^G,]16 | [=D,^F,=B,]16 | [^C,^F,=A,]16 | [=D,^G,=B,]16 | [^C,=F,^G,]16 | [^C,^F,=A,]16 | [=D,^F,=A,]16 | [^C,=F,^G,]16 | [^C,^F,=A,]16 |]
+V:3
+^F,,16 | =D,,16 | ^G,,16 | ^C,,16 | ^F,,16 | =D,,16 | ^G,,16 | ^C,,16 | =B,,16 | ^F,,16 | ^G,,16 | ^C,,16 | ^F,,16 | =D,,16 | ^C,,16 | ^F,,16 |]

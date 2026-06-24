@@ -1,0 +1,283 @@
+# Engine Improvement Log (report card)
+
+The saved history of the entmotif motif engine's successive improvements and what
+drove them. Each round: the faculty GPA, per-lens grades, the change made, and the
+teacher feedback that motivated it. Process: `prompts/teaching/orchestrating-teaching.md`.
+
+Corpus: `experiments/teaching/corpus.txt` (frozen). Rubric:
+`prompts/teaching/rubric.md` (normalized). Engine: `experiments/engine/motif.py`.
+
+| Round | Engine | Faculty mean | Lyricism | Memorability | Creative | Arrangement | Codex(gpt-5.5) | Driving change |
+|---|---|---|---|---|---|---|---|---|
+| 1 | v0.4 | ~70 (C−) | C− 71 | 57* | C+ 77 | C− 72 | C 74 | develop restatements; tessitura; climax+cadence; rhythmic signature |
+| 2 | v0.5 | ~73 (C) | C+ 77 | C+ 78 | C 75 | C 73 | **D 63** | **KEY-TRANSPOSITION BUG** (Codex); real rhythmic hook; placed climax; motivic development; arrangement mechanics |
+| 3 | v0.6 | ~78 (C+) | C 74 | C+ 77 | B 84 | B− 81 | C− 72 | key fix✓; **bass chord-quality bug** (Codex); lead-silence in short call_resp; placed climax; rhythmic hook; V:4 develops |
+| 4 | v0.7 | ~77 (C+) | C+ 78 | B− 81 | C+ 74 | C+ 75 | C 75 | bass-quality fix✓; resolved finals✓; dynamics arc✓; 2/3 climax✓; **v0.8 headline: real MOTIVIC TRANSFORMATION (stop restating)** |
+
+\* Memorability reported "C+ / 57" — an internally inconsistent grade that exposed
+a missing /100↔letter mapping; the rubric was given explicit bands after round 1
+(57 ≈ F by the band, ≈ C− by the teacher's prose). Use the /100 numbers as the
+canonical trend until round 2 re-grades on the banded rubric.
+
+---
+
+## Pre-loop changelog (by ear, before the teaching loop)
+
+- **v0.1** — first 8-bar antecedent/consequent period; strong-beat chord tones;
+  determinism + avalanche. (Built to fill the review's "no engine" CRITICAL.)
+- **v0.2** — rest-bearing rhythm; thin bed; entropy-driven register (C2–C5),
+  leapiness, and resolution (incl. non-resolving). *Ear: "marked improvement."*
+- **v0.3** — bound rhythm-+-interval signature; entropy-driven form & length
+  (sentence/period/period_tag/aaba); lyrical breaths at phrase boundaries only.
+- **v0.4** — conditioned probability distributions (register-gravity melodic
+  shape; musical priors); wider tempo (60–184); answer varies in rhythm/shape,
+  not just cadence.
+
+## Round entries
+
+### Round 1 — engine v0.4 (2026-06-23)
+
+Faculty: lyricism, memorability, creative-technique, arrangement (Claude subagents)
++ a generalist substitute teacher (Codex / gpt-5.5). Graded the 12-input frozen
+corpus from ABC lead-sheets (`experiments/teaching/scores-v0.4.md`). Reports:
+`grade-codex-v0.4.txt` + the subagent returns.
+
+**Grades (/100):** lyricism 71 (C−) · memorability 57 (miscalibrated, see above) ·
+creative-technique 77 (C+) · arrangement 72 (C−) · Codex overall 74 (C). **Mean ≈ 70 (C−).**
+
+**Dean synthesis — convergent findings (all five graders agree):**
+1. **Verbatim restatement.** AABA/period repeats are byte-identical; "answer-var"
+   barely audible; variation lands only at the cadence. → Need real motivic
+   *development* (sequence, inversion, augmentation, fragmentation) and mid-phrase
+   variation on every restatement.
+2. **Broken register/tessitura.** Melodies sit in extreme low (sub-bass) or high
+   (top-octave) registers and stay frozen there. → Normalize into a singable
+   window (~a 10th) and use register for arc, not a frozen per-hash octave.
+3. **Rhythm has no signature.** Durations are locked to {2,4,6,8,12,16}; no
+   distinctive recurring rhythmic motive. → A rhythm-+-interval hook (broken
+   rhythm `>`, ties, anacrusis, tuplets), reused on every statement.
+4. **No climax; boilerplate endings.** Nearly every piece ends on a held tonic;
+   no melodic peak. → Place a peak (penultimate phrase) + a small cadential
+   melodic formula instead of a held note.
+5. **Monotone "melody".** Several scores repeat a single pitch as the theme. →
+   Require minimum distinct scale degrees per phrase; cap consecutive repeats.
+6. **(Bigger) Arrangement is one fixed template** — and the ABC export even drops
+   the bass/comp voices the engine already computes. → Export multi-voice ABC
+   (`V:`), then add role-combinatorics, entry/exit schedule, and voicing-density
+   ("chord fatness") as new entropy axes (the arrangement teacher answered all
+   three open design questions — see its report).
+
+**Process refinements made this round:** (a) added explicit /100↔letter↔GPA bands
+to the rubric (the "C+/57" fix); (b) Codex validated as a well-calibrated
+substitute teacher; (c) noted the ABC export under-represents the engine (drops
+ch1/ch2) — fix for arrangement grading.
+
+**Chosen for round 2 (v0.5, melody-level, highest ROI):** (A) develop
+restatements; (B) tessitura normalization; (C) climax + cadential gesture;
+(D) rhythmic signature + anti-monotone. Arrangement (multi-voice + combinatorics)
+is the larger v0.6 track.
+
+### Round 2 — engine v0.5 (2026-06-23)
+
+Same faculty + Codex. **Grades:** lyricism 77 (C+), memorability 78 (C+),
+creative 75 (C), arrangement 73 (C — up from a lead-only baseline), **Codex 63
+(D)**. Mean ≈ 73. Improved vs round 1: lyricism 71→77, memorability now
+band-consistent at 78, arrangement now has a real 3-voice texture; tessitura,
+lyrical breaths, cadence formulas, and voicing density all landed.
+
+**CRITICAL bug — found by Codex, missed by all four Claude graders:
+KEY-TRANSPOSITION.** Melody + comp use pitch classes relative to C
+(`MAJOR_SCALE`/`MINOR_SCALE`/`CHORDS` are pc-relative-to-0 and never offset by
+`key`); only the bass (`36+key`) and the chord *labels* are transposed. So every
+non-C piece is **bitonal** (Score 1, labeled E major, has a C-major melody over
+an E bass). The Claude graders treated the `K:C` melody as ground truth; Codex's
+cross-voice harmonic check caught the clash — the multi-AI panel earned its keep.
+
+**Persistent (v0.5 fixes too subtle):** rhythmic hook still even blocks; climax
+not clearly placed/reserved; restatement reads as repeat/transpose, not
+development; arrangement templates are labels without mechanism (`call_resp` has
+no antiphony; `lead_counter` has no real counter-melody); comp/bass rhythmically
+inert; voicings clustered, not voice-led.
+
+**Process refinement:** instruct graders to check cross-voice key/harmony
+consistency and to read `K:C` pitches as literal sounding notes (so a wrong-key
+melody is caught, not rationalized).
+
+**Chosen for round 3 (v0.6):** (1) **FIX key transposition** [critical];
+(2) creative harmony — secondary dominants, real deceptive cadences, expressive
+borrowed color + tonal validation; (3) a real recurring rhythmic hook (broken
+rhythm / dotted / syncopation); (4) placed + reserved climax; (5) genuine motivic
+development on restatement (audible sequence / inversion / fragmentation);
+(6) arrangement mechanics — real antiphony (`call_resp`), real counter-melody
+(`lead_counter`), comp/bass rhythm, voice-led spacing, entry/exit schedule.
+
+### Round 3 — engine v0.6 (2026-06-23)
+
+**Grades:** lyricism 74 (C), memorability 77 (C+), creative **84 (B, ↑ from 75)**,
+arrangement **81 (B−, ↑ from 73)**, **Codex 72 (C−, ↑ from 63)**. Mean ≈ 78.
+**Trajectory: 70 → 73 → 78.**
+
+- **Wins:** KEY-TRANSPOSITION **fixed** (Codex confirms all leads in-key). Motivic
+  transforms, the tasteful secondary-dominant **color dial**, real antiphony
+  (`call_resp` → V:4) and the contrary-motion counter-melody (`lead_counter` →
+  V:4) all landed — creative +9, arrangement +8.
+- **New bug (Codex, missed by Claude): BASS CHORD-QUALITY.** Bass figuration uses
+  hardcoded intervals (+4 major third in "walking", +7 perfect fifth) ignoring
+  chord quality, so minor/dim chords get a clashing bass (A under Fm, C# under
+  Adim). Fix: derive bass tones from the actual `cpcs`, not fixed intervals.
+- **Regression:** the new antiphony **silences the lead** for half of short
+  `call_resp`/sentence pieces (`z16 z16`) — reads as the melody dying. Fix: the
+  lead carries the call and dovetails with the answer; never rest the principal
+  voice for 50% of a 4-bar form.
+- **Persistent laggards:** no *placed/reserved* climax; rhythm still even-grid
+  (broken rhythm / anacrusis / tuplets — the most-repeated ask across all rounds);
+  comp/bass samey; V:4 echoes rather than develops.
+
+**Chosen for round 4 (v0.7):** (1) bass chord-quality fix; (2) lead-silence fix;
+(3) deterministic placed climax; (4) a real rhythmic hook (broken rhythm /
+anacrusis / tuplets) — the persistent #1 ask; (5) V:4 develops; (6) comp/bass
+rhythmic + harmonic-rhythm variety; (7) **rests must reinforce phrasing** (logical
+placement at phrase boundaries, not arbitrary); (8) **no abrupt fragments** — a
+fragment must trail off *deliberately* (an intentional non-ending), never cut off
+mid-thought like a severed sentence. **To discuss (maintainer, 2026-06-23):
+reconsider whether non-resolution / incompleteness should remain a feature at all
+— `res=half` as a *final* cadence may be the source of the "cut-off" feel; the
+lead-silence regression compounds it.** **Possible next: calibrate the rubric
+against a canon of ~50 great themes (render to ABC, grade them) and ground the
+teachers in melodic-memorability research (in progress: `docs/memorability-research.md`).**
+
+**Research-grounded additions (`docs/memorability-research.md`, 2026-06-23):**
+(9) **Dynamics** as an analog layer — ABC *does* support `!p!`/`!mf!`/`!f!` and
+crescendo/diminuendo hairpins (`!<(!…!<)!`); add an entropy-driven dynamic arc
+(crescendo into the placed climax, settle at the cadence) and *emit* it so graders
+see it. Dynamics is both casual-avalanche margin AND an emotion cue. (10) Place the
+climax at **~2/3 through the phrase** (Huron's melodic arch), not the midpoint.
+(11) Candidate new **MASTER dimension: emotional register** (happy/sad/tense/…)
+that conditions mode > tempo > register > dynamics > articulation *coherently*
+(Gabrielsson & Lindström cue ranking) — gives downstream coherence; flag
+mode/consonance as Western-enculturated. **Notation: ABC still has large unused
+vocabulary (dynamics, staccato `.`, grace notes `{}`, slurs, tuplets, broken
+rhythm `>`, multi-voice) — exhaust it before augmenting. Introduce an enhanced
+convention (ABC + a sidecar "expression track", or `%%MIDI` directives) only at
+ABC's real ceiling: continuous/micro dynamics, micro-timing/swing depth, pitch
+bends, per-note timbre.**
+
+---
+
+## Canon calibration — grading the greats (2026-06-23)
+
+Full report: **`docs/canon-calibration.md`**. Per-grader records:
+`experiments/teaching/grade-{lyricism,memorability,creative,codex}-canon.{md,txt}`.
+Bundle: `scores-canon.md` (37 anchors + 5 controls). Tiers: `canon/tiers.md`.
+
+**Maintainer reframed the canon mid-build (important):** the original `docs/canon.md`
+was selected on *song-fame consensus*; entmotif needs **melodic memorability as
+UNSUNG instrumental music**. Re-stratified into ANCHORs (instrumental: classical,
+film/TV, riffs, jazz heads, folk/hymn, logos) vs. 5 CONTROLs (famous-as-sung
+songs) + cohort/thin picks cut (Mario, Zelda, Tetris, FF, Seven Nation Army, and
+thin-sung extras). Transcription confidence used as a corroborating diagnostic.
+
+**Result — the rubric is well-calibrated; no rule changes.** Panel: 3 Claude lenses
+(lyricism, memorability, creative-technique) + Codex (gpt-5.5) generalist.
+- **Clean A−/B+ decision boundary:** by **argmax across lenses**, every ANCHOR ≥ A−
+  (90); every CONTROL ≤ B+ (87). Zero overlap. Codex: anchors avg 94 (A), controls
+  avg 81 (B−).
+- **Ground-truth confirmed:** Pink Panther A, Take Five A, all classical A. No
+  appeal triggered; **no "(c) rubric-is-wrong"** tag from any grader. Every sub-A
+  anchor grade was (a) genuine narrow-lens weakness with another lens carrying it
+  (Jaws: D lyricism / A memorability — correct).
+- **One doc nuance (not a rule change):** the creative-technique lens correctly
+  gives *simplicity-executed-perfectly* (Ode to Joy, Amazing Grace) a B/B+ — it
+  rewards transformation; their A lives on lyricism+memorability. Relabel their
+  ground-truth expectation accordingly.
+
+**Convergent engine priors (all four graders agree) → sharpen the round-4 list:**
+(1) compact germinal cell, then TRANSFORM (sequence / intervallic expansion /
+fragment) — never verbatim repeat; (2) one signature interval leap vs. stepwise
+context (the fingerprint); (3) one placed/reserved climax (final third); (4)
+distinctive NON-uniform rhythm (dotted/broken `>`, triplets, syncopation, odd
+meter, anacrusis, held cadence) — the biggest gap; (5) call-and-response of two
+contrasting ideas; (6) chromatic color as a motivic signature; (7) clean cadential
+closure; (8) (lyrical class) balanced antecedent/consequent + narrow singable
+range. **Anti-patterns to KILL (the controls' failure = the engine's current
+defaults):** verbatim repeat changed only at the last note; static arpeggio over a
+pedal; rote I–IV–V; walls of even eighths. These empirically ground the standing
+round-4 fixes (rhythmic hook, placed climax, development-not-repetition).
+
+---
+
+### Round 4 — engine v0.7 (revision 2026-06-23; grading pending)
+
+First round built under **TDD** (`experiments/engine/test_motif.py`, zero-dep): the
+SACRED invariants (determinism — same input → identical notes/meta/MIDI bytes;
+avalanche — one-char change → different motif) plus the round-4 fixes were written
+as failing assertions first (87 failures on v0.6), then driven to **green** (0
+failures). test_motif.py is now the regression net for all future engine work.
+
+Changes (v0.6 → v0.7), grounded in `docs/canon-calibration.md`:
+1. **Bass chord-quality fix** [Codex bug] — bass tones derive from the actual chord
+   pitch-classes (root/third/fifth of `cpcs`), not hardcoded +4/+7; minor/dim/applied
+   chords now get a quality-correct bass. (Test: every bass note ∈ active chord.)
+2. **Lead never tacet** — call_resp answer units: the principal voice (V:1) resolves
+   the phrase (cadence) instead of resting `z16 z16`; the antiphonal response moves to
+   V:4. (Test: lead present in every 2-bar unit.) Fixes the v0.6 "melody dying."
+3. **V:4 develops** — the call_resp antiphon is a hook fragment **sequenced up a
+   third**, not a verbatim echo.
+4. **Final cadence always resolves** — terminal cadence forced authentic (V–I, lands
+   on tonic); half/abrupt finals removed. (Test: last melodic note ∈ tonic triad.)
+   **Decision on the maintainer's open question:** non-resolving *final* cadences are
+   dropped — the canon's clearest shared trait is clean cadential closure; revertible
+   if the "incompleteness" aesthetic is wanted back. (mid-form half/deceptive remain.)
+5. **Placed climax ~2/3 through** (Huron arch) — register arc peaks at the 2/3 unit.
+6. **Dynamics arc** — entropy/arc-driven `!mp!→!mf!→!f!→!mf!` emitted in ABC AND
+   driving MIDI velocity (crescendo into climax, settle at cadence). (Test: `!` in ABC.)
+7. **Signature rhythm hook** — stronger dotted/syncopated idea-bar cells, reused per
+   idea statement.
+
+**Deferred (noted):** true anacrusis/tuplets (needs ABC-export + bar-structure work;
+the `(3` tuplet doesn't round-trip through the L:1/16 duration tokenizer yet); the
+**emotional-register master dimension** (a larger design change — still "to discuss").
+
+Scores regenerated: `scores-v0.7.md`.
+
+**Grades (round 4, all 5 graders on the canon-calibrated rubric):** lyricism C+ 78,
+memorability B− 81, creative-technique C+ 74, arrangement C+ 75, Codex(gpt-5.5) C 75.
+**Faculty mean ≈ 77.** Codex report: `grade-codex-v0.7.txt`.
+
+**Comparability caveat:** trajectory 70→73→78→77 looks flat, but rounds are NOT
+cleanly comparable across the canon-calibration boundary. This round the graders
+apply the *validated* "develop-not-restate / texture-envelope" bar (round 3's
+creative B/84 and arrangement B−/81 predate it). So lyricism+memorability genuinely
+ROSE (74→78, 77→81) on the floor-clearing fixes, while creative/arrangement are now
+held to a stricter, masterpiece-anchored bar that exposes the real ceiling.
+
+**Convergent verdict (all 5 graders):**
+- **LANDED:** bass chord-quality (fixed), final tonic resolution (universal — the
+  single biggest audible lift), placed climax ~2/3, dynamic arc, lead resolves in
+  longer forms. v0.7 "cleared the floor" — nothing is broken or ugly.
+- **PARTIAL/FAILED:** the 4-bar `call_resp` lead still has a full-bar `z16` (scores
+  1, 12) — present per-unit (test passed) but reads as a hole; my test was too weak
+  (per-unit, not per-bar). V:4 "develops" only in 1 case (score 2); elsewhere it
+  echoes verbatim (scores 6, 8, 10). The dotted hook became a *tic*, not development.
+- **CEILING (unanimous v0.8 headline):** the engine **restates a cell + swaps the
+  cadence note**; it never *operates on* the germinal cell. This caps the whole
+  batch at C/C+ regardless of the surface fixes.
+
+**Chosen for round 5 (v0.8), ranked by impact:**
+1. **Real motivic-transformation pass** [THE change] — derive every restatement by an
+   explicit operation: sequence (±2/±3 steps), inversion about the head, augmentation/
+   diminution, fragmentation. FORBID "verbatim + cadence-swap" as the only return.
+2. **V:4 develops in ALL templates** (not just call_resp) — kill byte-identical echoes
+   (scores 6/8/10); apply the transform pass to the answer/counter too.
+3. **Fix the short-form lead `z16`** — in ≤8-bar call_resp the lead carries a tag/tie
+   *through* the antiphony bar; never tacet a full bar. (Tighten the test to per-bar.)
+4. **Onset-based rhythm** — anacrusis/pickups, true broken rhythm `>`/`<`, ties across
+   beats; stop deriving rhythm from a duration inventory on the grid.
+5. **Unify the climax** — registral peak + harmonic arrival + rhythmic activity + `!f!`
+   must coincide, with a prepared approach and a release (not `!f!` at a fixed index).
+6. **Texture envelope (entry/exit schedule)** + comp/bass **voice-leading** (minimal
+   motion, goal-directed bass) — the arrangement ceiling.
+
+**Notation affordances still untapped** (all graders): tuplets `(3`, grace notes `{}`,
+slurs `( )`, ties `-`, articulations/ornaments, crescendo *hairpins* (vs terraced
+dynamics), per-voice instrument programs, real `K:`/mode spelling, volta/repeat.

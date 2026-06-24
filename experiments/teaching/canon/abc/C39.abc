@@ -1,0 +1,13 @@
+% canon: C39  confidence: high  source: abcnotation.com trillian.mit.edu/~jc/music/abc/song/New_Britain
+% phrase: Verse 1 melody "Amazing Grace", C major pentatonic 3/4
+X:1
+T:New Britain (Amazing Grace)
+C:Tune: traditional (Scottish/Irish origin); words John Newton 1772
+M:3/4
+L:1/8
+Q:1/4=84
+K:C
+c2 | e4 e2 | g4 g2 | e4 e2 | d4 d2 |
+e4 ce | g4 fe | d4 d2 | c4 c2 |
+e4 g2 | e4 ed | c4 c2 | G4 c2 |
+e4 d2 | e4 z2 |]

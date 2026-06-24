@@ -1,0 +1,12 @@
+% canon: C31  confidence: medium  source: from knowledge (trillian header confirms K:C M:4/4 composer Strayhorn; full text copyright-blocked)
+% phrase: swinging leap C to D to #F to G, then descending; D7 sharpened-4th colour
+X:1
+T:Take the "A" Train
+C:Billy Strayhorn (Duke Ellington Orch.), 1939
+M:4/4
+L:1/8
+Q:1/4=210
+K:C
+P:A
+z2 GG | "C"c4 GE2D | "D7"^F6 z2 | "D7"^F3G ^F2ED | "G7"G6 z2 |
+"C"c4 GE2D | "D7"^F6 z2 | "C"E3G E2DC | "C"C6 z2 ||

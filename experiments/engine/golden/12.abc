@@ -1,0 +1,19 @@
+X:1
+T:04d3e8850e766ea1e6999a20f3bff1ded648f014e3c4eee3c17905ada8895ec8b2d17670695211946e4da19982423e654ec8b3576a404b0082130a0e1c3e66e550f41bbb0c1957d041444a5aa992f005aa9693cc90796bcaa5e5ea3ac9e2e93d45889718f1cce931711f461632ae514ba3370a5f553de0dfab83bc7f98f98585414aaf6ffe15d652c5ba62b97f064677987e15298b172e8a58267fe2a9b4a711d5036786f546e48b2549ebeac9490a8a96ef0a01172b0dab37670df15d75adf938bc14d134ce1eed831ff4c29a1b2468da59da4b467d80cd07447ab16b9c439e80c1ad41e3a60fef3a4b8263d9e18b406cd5085d3bc2d779db94c5e4342fcc4874b3ad3744a5e0dc7137bb43f1f4cb6009117b1903c4d4a282c0cd0e805cadebe5b4c3a22807bee2bacbe8a60f7c136b65d645fcbe51bd0bc34e8495cf9ad1289c6a39fddecb2d219632dee9d3efdf002e42a17d5937b6d9328d5edb329a876ae02fc2f9588d5fe8ce1a1e7cdcc2a979363c11edf407d7bac71fcb348646c24f
+C:entmotif G major, 184bpm, sentence, arr=call_resp, fat=0
+M:4/4
+L:1/16
+Q:1/4=184
+V:1 name="lead"
+V:2 name="comp"
+V:3 name="bass"
+V:4 name="answer/counter"
+K:C
+V:1
+"G" !mf! =G6 =E2 =G4 =E4 | "G" =G2 =A2 =c2 =e2 =d8 | "D" !f! z16 | "G" =B4 =A4 =G8 |]
+V:2
+z16 | z16 | [=D,^F,]16 | [=G,=B,]16 |]
+V:3
+=G,,8 =D,,8 | =G,,8 =D,,8 | =D,,8 =A,,8 | =G,,8 =D,,8 |]
+V:4
+z16 | z16 | =d6 =A2 =d4 z4 | z16 |]

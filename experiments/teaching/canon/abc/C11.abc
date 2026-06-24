@@ -1,0 +1,11 @@
+% canon: C11  confidence: high  source: getyoursaxtogether / Musicnotes (E minor concert) + knowledge
+% phrase: chromatic creep E-F-F#-G (the "da-dum"s), then the angular leap up and the chromatic fall
+X:1
+T:The Pink Panther Theme
+C:Henry Mancini, 1963
+M:4/4
+L:1/8
+Q:1/4=120
+K:Em
+z2 E F | ^F2 G2 | z2 E F | ^F2 G2 |
+c B z A | ^G2 G2 | z B z d | ^d2 e2 | z2 c B | =A2 ^F2 | E4 |]

@@ -1,0 +1,14 @@
+% canon: C33  confidence: high  source: abcnotation.com trillian.mit.edu/~jc/music/abc/song/Autumn_leaves
+% phrase: stepwise descending ii-V-I sequences through Gm; opens with GAB pickup to long e
+X:1
+T:Autumn Leaves (Les Feuilles Mortes)
+C:Joseph Kosma / Johnny Mercer, 1945
+M:4/4
+L:1/4
+Q:1/4=150
+K:Gm
+P:A
+GAB || "Cm7"e4- | "F7"eFGA | "Bbmaj7"d2d2- | "Ebmaj7"dEFG |
+"Am7b5"c4- | "D7"cD=E^F | "Gm6"B4 | zGAB ||
+"Cm7"e4- | "F7"eFGA | "Bbmaj7"d2d2- | "Ebmaj7"dEFG |
+"Am7b5"c4- | "D7"cAcB | "Gm6"G4 | z2^FG ||

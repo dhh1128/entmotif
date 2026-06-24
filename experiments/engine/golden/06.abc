@@ -1,0 +1,19 @@
+X:1
+T:GCKFBEIYTKP5RDBQMUTAPDCDHF2TR4LPNRGW4JBQQTQUYZP4LDKP3SGM
+C:entmotif G# major, 108bpm, period_tag, arr=lead_counter, fat=1
+M:4/4
+L:1/16
+Q:1/4=108
+V:1 name="lead"
+V:2 name="comp"
+V:3 name="bass"
+V:4 name="answer/counter"
+K:C
+V:1
+"G#" !mp! ^G2 =F2 =G4 ^G6 ^A2 | "Fm" ^G4 =G8 =F4 | "C#" !mp! ^G3 =F ^G4 ^c4 ^d4 | "D#" ^G4 =c4 ^A6 z2 | "G#" !mf! =c2 ^G2 =c4 ^d6 =f2 | "Fm" =c4 ^c8 =c4 | "A#m" !f! ^A3 =G ^A4 ^c4 =g4 | "D#" ^G4 =c4 ^A4 z4 | "G#" !mp! ^G2 =F2 ^G4 =c6 ^d2 | "Fm" =c4 ^c8 =c4 | "D#" !mf! ^A3 =G ^A4 ^d4 ^c4 | "G#" =c4 ^A4 ^G8 |]
+V:2
+^D,2 ^G,2 =C2 ^G,2 ^D,2 ^D,2 ^G,2 =C2 | =F,2 ^G,2 =C2 ^G,2 =F,2 =F,2 ^G,2 =C2 | =F,2 ^G,2 ^C2 ^G,2 =F,2 =F,2 ^G,2 ^C2 | ^D,2 =G,2 ^A,2 =G,2 ^D,2 ^D,2 =G,2 ^A,2 | ^D,2 ^G,2 =C2 ^G,2 ^D,2 ^D,2 ^G,2 =C2 | =F,2 ^G,2 =C2 ^G,2 =F,2 =F,2 ^G,2 =C2 | =F,2 ^A,2 ^C2 ^A,2 =F,2 =F,2 ^A,2 ^C2 | ^D,2 =G,2 ^A,2 =G,2 ^D,2 ^D,2 =G,2 ^A,2 | ^D,2 ^G,2 =C2 ^G,2 ^D,2 ^D,2 ^G,2 =C2 | =F,2 ^G,2 =C2 ^G,2 =F,2 =F,2 ^G,2 =C2 | ^D,2 =G,2 ^A,2 =G,2 ^D,2 ^D,2 =G,2 ^A,2 | ^D,2 ^G,2 =C2 ^G,2 ^D,2 ^D,2 ^G,2 =C2 |]
+V:3
+^G,,4 =C,,4 ^D,,4 =C,,4 | =F,,4 ^G,,4 =C,,4 ^G,,4 | ^C,,4 =F,,4 ^G,,4 =F,,4 | ^D,,4 =G,,4 ^A,,4 =G,,4 | ^G,,4 =C,,4 ^D,,4 =C,,4 | =F,,4 ^G,,4 =C,,4 ^G,,4 | ^A,,4 ^C,,4 =F,,4 ^C,,4 | ^D,,4 =G,,4 ^A,,4 =G,,4 | ^G,,4 =C,,4 ^D,,4 =C,,4 | =F,,4 ^G,,4 =C,,4 ^G,,4 | ^D,,4 =G,,4 ^A,,4 =G,,4 | ^G,,4 =C,,4 ^D,,4 =C,,4 |]
+V:4
+^G2 =c2 =c4 ^G6 =c2 | z16 | z16 | z16 | ^G2 =c2 =c4 ^G6 =c2 | z16 | z16 | z16 | ^G2 =c2 =c4 ^G6 =c2 | z16 | z16 | z16 |]

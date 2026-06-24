@@ -1,0 +1,14 @@
+% canon: C29  confidence: high  source: abcnotation.com trillian.mit.edu/~jc/music/abc/song/Take_five
+% phrase: syncopated 5/4 alto sax melody, Ebm, opening pickup B,EGA
+X:1
+T:Take Five
+C:Paul Desmond (Dave Brubeck Quartet), 1959
+M:5/4
+L:1/8
+Q:5/4=80
+K:Ebm
+P:A
+B,EGA || "Ebm"=ABA_AG2 "Bbm7"B,2D2 | "Ebm"E6 "Bbm7"(F/G/F/E/D2) |
+"Ebm"E6 "Bbm7"(D/E/D/B,/A,2) | "Ebm"B,6 "Bbm7"B,EGA |
+"Ebm"=ABA_AG2 "Bbm7"B,2D2 | "Ebm"E6 "Bbm7"(D/E/D/B,/A,2) |
+"Ebm"B,6 "Bbm7"(F/G/F/E/D2) | "Ebm"E6- "Bbm7"E2z2 ||
