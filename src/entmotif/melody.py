@@ -112,6 +112,28 @@ def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, 
 line = generate_melodic_line   # legacy alias (call sites migrate during engine extraction)
 
 
+def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
+    """A singable CALL figure for the antiphony ('tag') bar of a call/response form.
+
+    Replaces the dead whole-bar sustain (the v12 / earworm "static held-note bars
+    read as filler" complaint: =E16 / =B16 / ^F16 carry no melodic info). The lead
+    now articulates the held tone with a scale neighbour and returns to it — a real
+    'calling' gesture that keeps moving while V:4 answers — instead of dwelling on one
+    pitch for the whole bar. Metric-conserving (fills exactly the bar: 1+1+2 beats);
+    the figure sits on chord tones at the seams so it stays consonant over the comp."""
+    cp = cpcs(chords2_sym, mode, key)
+    tag = snap(center, cp, lo, hi)
+    nbr = step(tag, 1, mode, key, lo, hi)                     # upper scale neighbour
+    if nbr == tag:                                            # at the ceiling: lean down instead
+        nbr = step(tag, -1, mode, key, lo, hi)
+    figs = [(tag, 1), (nbr, 1), (tag, 2)]                     # call: tone, neighbour, settle back (no dead hold)
+    out, pos = [], 0.0
+    for pitch, dur in figs:
+        out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+        pos += dur
+    return out
+
+
 def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
     d = lambda n: degree(n, key, mode, lo, hi)
     if res == "authentic":

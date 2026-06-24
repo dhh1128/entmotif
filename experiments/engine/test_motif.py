@@ -111,6 +111,26 @@ for v in CORPUS:
         check(len(set(v4)) >= 2, "V:4 static (not developed): %s" % v)
         check(v4 != lead, "V:4 is a verbatim echo of the lead: %s" % v)
 
+# --- fw3 (Group B #4, earworm "static held-note bars read as filler, not hook"):
+#     the lead never DEAD-HOLDS one pitch for a whole bar. A whole-bar single sustain
+#     (the call_resp "tag" bar emitted =E16 / =B16 / ^F16 etc., and any augmented
+#     restatement that tiled to one long note) carries no melodic info — cap a single
+#     held lead note below the full bar and give the long value a neighbour/turn so the
+#     line keeps moving. Allowed ONLY at the placed climax bar (a deliberate peak). ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    nU = m["bars"] // 2
+    peak = max(1, ((nU - 1) * 2 + 1) // 3)
+    bar = 4 * DIV
+    for b in range(m["bars"]):
+        if b == peak * 2:                                     # the placed climax may dwell on its peak
+            continue
+        lo, hi = b * bar, (b + 1) * bar
+        ld = [n for n in notes if int(n[0]) == 0 and lo <= n[3] < hi]
+        if len(ld) == 1 and ld[0][4] >= bar:
+            check(False, "lead dead-holds a whole bar (static, not a hook): %s bar%d pitch%d"
+                  % (v, b, ld[0][1]))
+
 # --- v0.8: unified climax — exactly ONE bar carries !f!, and it is the placed peak
 #     unit (~2/3 through, Huron arch), with lead activity there. ---
 for v in CORPUS:

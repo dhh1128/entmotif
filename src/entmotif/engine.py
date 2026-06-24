@@ -8,10 +8,10 @@ antiphon/counter, and comp+bass into one note list with a register + dynamic arc
 """
 from entmotif.model import DIV, BEATS_PER_BAR, VoiceRole, NoteEvent, Motif
 from entmotif.entropy import Chooser, fingerprint_text
-from entmotif.theory import snap, sym, cpcs
+from entmotif.theory import snap, sym
 from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
-    unit_dyn, line, cadence_bar, motif_shape, render_transform, choose_transform)
+    unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform)
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
@@ -94,10 +94,9 @@ def generate(value):
                 mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
                                        VoiceRole.LEAD, vel, center, climax=at_peak)
         elif role == "answer":
-            if cr_answer:                                     # lead holds a TAG through the antiphony bar (no z16)
-                tagp = snap(center, cpcs(chm[0], mode, key), lo, hi)
-                mel = [NoteEvent(VoiceRole.LEAD, tagp, vel,
-                                 bar0 * BEATS_PER_BAR * DIV, BEATS_PER_BAR * DIV)]
+            if cr_answer:                                     # lead CALLS through the antiphony bar (singable
+                mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel)
+                #   figure, not a dead whole-bar hold — fw3, the "static held-note" fix)
                 mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
             else:                                             # consequent = RECOGNIZABLE germ restatement, then cadence
                 op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
