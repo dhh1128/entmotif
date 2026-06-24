@@ -17,8 +17,8 @@ def main():
             "550e8400-e29b-41d4-a716-446655440000",
             "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
             "GhostKey-2026", "did:example:alice"]
-    print("entmotif v0.7 — chord-quality bass, lead never tacet, developed antiphony, "
-          "resolved finals, 2/3 climax, dynamics:\n")
+    print("entmotif v0.8 — real motivic transformation (sequence/inversion/fragment/"
+          "augment/diminish), developed V:4, unified climax, texture envelope, ties:\n")
     print("  # | input              | key/mode | tempo | lead    | form        | bars "
           "| arr          | fat | res")
     print("  --+--------------------+----------+-------+---------+-------------+------+-"

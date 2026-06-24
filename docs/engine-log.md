@@ -322,3 +322,57 @@ gravity, line→`generate_melodic_line`, cadence, dynamics) · **arrangement**
   changed for all 12 corpus inputs (small per-input ABC diffs) → **golden
   re-baselined** intentionally (still v0.7 *musical behavior*, just deterministic).
   `scores-v0.7.md` is left as the historical round-4 grading record (not regenerated).
+
+---
+
+### Round 5 — engine v0.8 (built 2026-06-24; grading PENDING maintainer listen)
+
+Built on the clean `src/entmotif/` package under TDD (new failing assertions in
+`test_motif.py` first, then driven green; golden re-baselined intentionally since
+output changes; `scores-v0.8.md` regenerated). Addresses the unanimous round-4
+v0.8 list:
+
+1. **Real motivic transformation [THE change].** The germinal cell is stated once,
+   then its realized **shape** (scale-step interval deltas + rhythm) is extracted
+   (`melody.motif_shape`) and **every restatement is an explicit operation** on it
+   (`melody.render_transform`): sequence (±2/±3 scale steps), inversion about the
+   head, augmentation/diminution, fragmentation, or (rarely) identity — chosen by
+   the fingerprint (`choose_transform`, label `xform%d`). "Verbatim + cadence-swap"
+   is forbidden as the only return type. Verified: across the corpus every 2-bar
+   lead unit is now a *distinct* realized shape (was near-identical in v0.7).
+   **Bit class:** the transform family is a DISCRETE, untrained-ear-recoverable
+   decision ("it rose / mirrored / sped up / shrank to a fragment") — ~2–3 reliable
+   bits across a multi-restatement period (declared per AGENTS.md §0).
+2. **V:4 develops in ALL templates.** The `call_resp` antiphon is now a germ
+   transform (label `ans%d`, never identity); the `lead_counter` counter is an
+   explicit **inversion** of the germ (contrary motion, lower register) — no more
+   byte-identical echoes. (Test: V:4 has ≥2 distinct pitches and ≠ the lead line.)
+3. **Short-form `call_resp` z16 fixed.** The lead now holds a **tag** (a chord-tone
+   pedal) through the antiphony bar, then cadences — never tacet for a full bar.
+   The test is tightened to **per-bar** lead presence (was per-unit).
+4. **Onset rhythm — partial.** Broken rhythm is pervasive (dotted/syncopated germ
+   cells propagate through every transform); **ties** across the barline are now
+   notated (`exporters/abc._split_at_bars`, ABC `-`), which also lets augmentation
+   sustain correctly. **Deferred to v0.9:** true anacrusis/pickups (hard in the
+   fixed bar-grid — needs a pre-bar-1 region) and the cosmetic `>`/`<` glyphs
+   (numeric durations already encode the broken rhythm audibly + visibly).
+5. **Unified climax.** At the placed peak (~2/3, Huron) the lead transform runs with
+   `climax=True`: registral peak (start at the top of the window) + rhythmic
+   activity (halved durations) + harmonic arrival (strong-beat chord snap) + the
+   single `!f!`, with a prepared crescendo (mp→mf→f) and a release (→mf/mp).
+   (Test: exactly one `!f!`, at the peak unit, with lead activity there.) *Known
+   gap:* when the peak lands on an `aaba` **contrast** unit the activity-boost isn't
+   applied (contrast uses the separate `line()` path) — register+dynamics still
+   coincide; full coincidence on contrast units is a v0.9 item.
+6. **Texture envelope + voice-leading.** Entry/exit schedule: lead states the germ
+   **unaccompanied** first (solo_bed/lead_counter), comp **enters** after the intro,
+   groove builds bass-first, and the texture **thins** (comp drops) at the final
+   cadence of longer forms. (Test: comp present in some units, absent in others.)
+   **Voice-leading deferred to v0.9:** comp still re-voices per bar and the bass is
+   not yet goal-directed across units — the spread-voicing + chord-tone bass from
+   v0.7 carry over; minimal-motion voicing + approach-tone bass are the next step.
+
+Determinism + avalanche green; both suites green on the v0.8 golden baseline.
+**Grades not yet recorded** — the maintainer listens to the v0.8 audio first
+(`make_scores.py` → `scores-v0.8.md`; render via FluidSynth), then the round-5
+faculty + Codex panel runs and the grades + the v0.9 fix list land here.

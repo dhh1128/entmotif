@@ -92,13 +92,24 @@ round-4 list).
   a Claude architect; full reviews in `reviews/`). Golden safety net committed
   (`test_golden.py`).
 
-## Done 2026-06-24 (this session, on branch `refactor/engine-to-src`)
+## Done 2026-06-24 (this session)
 
-- **Refactor COMPLETE** — engine graduated `experiments/engine/motif.py` →
-  `src/entmotif/` package, behavior-preserving (golden NOT re-baselined; both suites
-  green; `make_scores.py v0.7` byte-identical). 8 small signed-off commits off a
-  `main` baseline snapshot. Stopped before step 17 (determinism repair, approval-gated).
-- **In progress:** Round 5 (v0.8) engine work on the clean package (see below).
+- **Refactor COMPLETE** (`refactor/engine-to-src`) — engine graduated
+  `experiments/engine/motif.py` → `src/entmotif/` package, behavior-preserving
+  through step 16. **Step 17 (cross-platform determinism repair) DONE** too
+  (maintainer-approved): integer-only decision math (integer `weighted()`, frozen
+  `GAUSS` table replacing `math.exp`, integer register arc) — golden re-baselined.
+- **v0.8 engine BUILT** (`feat/engine-v0.8`, branched off the refactor) — all six
+  round-4 v0.8 items (real motivic transformation, V:4 develops everywhere, z16 fix,
+  ties/broken rhythm, unified climax, texture envelope); see `engine-log.md` round-5
+  build entry for what's full vs. deferred-to-v0.9. Golden re-baselined; both suites
+  green; `scores-v0.8.md` regenerated.
+- **PAUSED before grading** — the maintainer listens to the v0.8 audio first; then
+  the round-5 faculty + Codex panel runs (`docs/engine-log.md` round-5 grades + v0.9
+  list still to be filled in).
+- **Branches not yet merged to main** — `main` holds only the baseline snapshot;
+  `refactor/engine-to-src` then `feat/engine-v0.8` stack the work (small signed-off
+  commits, steps not collapsed). Merge order: refactor → v0.8 (no squash).
 
 ## Immediate next steps (pick one)
 

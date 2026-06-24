@@ -32,14 +32,34 @@ def _rest(ticks):
     return ("z" + (str(n) if n != 1 else "")) if n >= 1 else ""
 
 
+def _split_at_bars(evs):
+    """Split any note that crosses a bar line into per-bar segments, marking every
+    segment but the last as TIED (rendered with ABC '-'). A long note (e.g. an
+    augmented motif) thus notates correctly across the barline. evs: (start, dur,
+    pitch) tuples; returns (start, dur, pitch, tied) sorted by start."""
+    bar = BEATS_PER_BAR * DIV
+    out = []
+    for st, dur, pitch in evs:
+        while True:
+            bar_end = (st // bar + 1) * bar
+            if st + dur <= bar_end:
+                out.append((st, dur, pitch, False))
+                break
+            out.append((st, bar_end - st, pitch, True))
+            dur -= bar_end - st
+            st = bar_end
+    return sorted(out)
+
+
 def _voice(ch_notes, total_bars, chords=None, dyns=None):
+    evs_all = _split_at_bars(sorted(ch_notes))
     out = []
     for b in range(total_bars):
         lo_t, hi_t = b * BEATS_PER_BAR * DIV, (b + 1) * BEATS_PER_BAR * DIV
         toks = ['"%s"' % chords[b]] if chords else []
         if dyns and b in dyns:
             toks.append("!%s!" % dyns[b])
-        evs = sorted([n for n in ch_notes if lo_t <= n[0] < hi_t])
+        evs = [e for e in evs_all if lo_t <= e[0] < hi_t]
         t, i = lo_t, 0
         while i < len(evs):
             st = evs[i][0]
@@ -48,10 +68,11 @@ def _voice(ch_notes, total_bars, chords=None, dyns=None):
                 toks.append(r)
             grp = [e for e in evs if e[0] == st]
             dur = grp[0][1]
+            tie = "-" if any(e[3] for e in grp) else ""       # carry the note across the barline
             if len(grp) > 1:
-                toks.append("[" + "".join(abc_pitch(g[2]) for g in grp) + "]" + _dtok(dur))
+                toks.append("[" + "".join(abc_pitch(g[2]) for g in grp) + "]" + _dtok(dur) + tie)
             else:
-                toks.append(abc_pitch(grp[0][2]) + _dtok(dur))
+                toks.append(abc_pitch(grp[0][2]) + _dtok(dur) + tie)
             t = st + dur
             i += len(grp)
         r = _rest(hi_t - t) if t < hi_t else ""

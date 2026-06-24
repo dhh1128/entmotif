@@ -62,21 +62,74 @@ for v in CORPUS:
     check(last[1] % 12 in tonic,
           "final unresolved: %s ends on pc%d (tonic triad %s)" % (v, last[1] % 12, tonic))
 
-# --- round-4: lead (chan 0) never silent for a whole 2-bar unit (except groove intro) ---
+# --- v0.8: lead (chan 0) present in EVERY bar (per-BAR, tighter than round-4's
+#          per-unit check) except the groove_first 2-bar intro (fixes the z16 hole) ---
 for v in CORPUS:
     notes, m = motif.generate(v)
-    nU = m["bars"] // 2
-    for u in range(nU):
-        lo, hi = u * 2 * 4 * DIV, (u + 1) * 2 * 4 * DIV
-        if m["arr"] == "groove_first" and u == 0:
+    for b in range(m["bars"]):
+        if m["arr"] == "groove_first" and b < 2:
             continue
-        has = any(n[0] == 0 and lo <= n[3] < hi for n in notes)
-        check(has, "lead silent in unit %d: %s (arr=%s)" % (u, v, m["arr"]))
+        lo, hi = b * 4 * DIV, (b + 1) * 4 * DIV
+        check(any(int(n[0]) == 0 and lo <= n[3] < hi for n in notes),
+              "lead silent in bar %d: %s (arr=%s)" % (b, v, m["arr"]))
 
 # --- round-4: dynamics emitted in ABC ---
 for v in CORPUS:
     notes, m = motif.generate(v)
     check("!" in motif.abc_export(v, notes, m), "no dynamics in ABC: %s" % v)
+
+
+def lead_per_unit(notes, m):
+    """(pitch, dur) tuples of the lead (chan 0), grouped per 2-bar unit."""
+    out = []
+    for u in range(m["bars"] // 2):
+        lo, hi = u * 2 * 4 * DIV, (u + 1) * 2 * 4 * DIV
+        out.append(tuple((n[1], n[4]) for n in sorted(notes) if int(n[0]) == 0 and lo <= n[3] < hi))
+    return out
+
+
+# --- v0.8 (THE change): real motivic transformation — restatements are NOT verbatim.
+#     With >=2 non-empty lead units, at least two distinct realized shapes must appear. ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    units = [u for u in lead_per_unit(notes, m) if u]
+    if len(units) >= 2:
+        check(len(set(units)) >= 2, "verbatim restatement (no transform): %s" % v)
+
+# --- v0.8: V:4 (chan 3) DEVELOPS when present — a real line (>=2 distinct pitches),
+#     not a static echo; and not pitch-identical to the whole lead. ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    if m["v4"]:
+        v4 = [n[1] for n in sorted(notes) if int(n[0]) == 3]
+        lead = [n[1] for n in sorted(notes) if int(n[0]) == 0]
+        check(len(set(v4)) >= 2, "V:4 static (not developed): %s" % v)
+        check(v4 != lead, "V:4 is a verbatim echo of the lead: %s" % v)
+
+# --- v0.8: unified climax — exactly ONE bar carries !f!, and it is the placed peak
+#     unit (~2/3 through, Huron arch), with lead activity there. ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    nU = m["bars"] // 2
+    peak = max(1, ((nU - 1) * 2 + 1) // 3)
+    f_bars = [b for b, d in m["dyn_bars"].items() if d == "f"]
+    check(len(f_bars) == 1, "climax !f! not unique: %s (%s)" % (v, f_bars))
+    if f_bars:
+        check(f_bars[0] == peak * 2, "climax !f! not at the placed peak: %s" % v)
+    lo, hi = peak * 2 * 4 * DIV, (peak + 1) * 2 * 4 * DIV
+    check(any(int(n[0]) == 0 and lo <= n[3] < hi for n in notes),
+          "no lead activity at the climax: %s" % v)
+
+# --- v0.8: texture envelope — comp (chan 1) enters/exits (present in some units,
+#     absent in others), not a constant slab. ---
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    nU = m["bars"] // 2
+    comp_units = sum(1 for u in range(nU)
+                     if any(int(n[0]) == 1 and u * 2 * 4 * DIV <= n[3] < (u + 1) * 2 * 4 * DIV
+                            for n in notes))
+    check(1 <= comp_units <= nU - 1, "no texture envelope (comp constant): %s (%d/%d)"
+          % (v, comp_units, nU))
 
 print("CORPUS=%d   FAILURES=%d" % (len(CORPUS), len(fails)))
 for f in fails[:50]:

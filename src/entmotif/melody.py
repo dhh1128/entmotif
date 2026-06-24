@@ -125,3 +125,89 @@ def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
         out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
         pos += dur
     return out
+
+
+# --------------------------------------------------- motivic transformation --
+# v0.8 headline: every restatement is an EXPLICIT operation on the germinal cell's
+# realized shape (its scale-step intervals + rhythm), not a re-derived near-copy.
+# This forbids "verbatim + cadence-swap" as the only return type (canon prior:
+# compact germ, then TRANSFORM). The op is a DISCRETE, bit-bearing decision (an
+# untrained ear hears "it went up / mirrored / sped up / shrank to a fragment"):
+# ~2-3 reliable bits across a multi-restatement period.
+TRANSFORMS = ["identity", "seq+2", "seq-2", "seq+3", "seq-3",
+              "invert", "fragment", "augment", "diminish"]
+TRANSFORM_W = [1, 3, 3, 2, 2, 3, 2, 2, 2]                      # identity rare; sequence/inversion favored
+_SEQ_SHIFT = {"seq+2": 2, "seq-2": -2, "seq+3": 3, "seq-3": -3}
+
+
+def _nearest_index(scale, pitch):
+    return min(range(len(scale)), key=lambda i: abs(scale[i] - pitch))
+
+
+def motif_shape(germ_notes, mode, key, lo, hi):
+    """Extract the germ's reusable shape: (scale-step deltas, durations-in-beats).
+
+    Deltas are differences of scale indices between consecutive germ notes (so the
+    signature opening leap is captured as the first delta); durations are in beats.
+    """
+    scale = scale_tones(mode, key, lo, hi)
+    idx = [_nearest_index(scale, n.pitch) for n in germ_notes]
+    deltas = [idx[i] - idx[i - 1] for i in range(1, len(idx))]
+    durs = [n.dur / DIV for n in germ_notes]                  # beats; germ durs are 0.25-multiples (exact)
+    return deltas, durs
+
+
+def choose_transform(ch, label):
+    return ch.weighted(label, TRANSFORMS, TRANSFORM_W)
+
+
+def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
+                     register_center, climax=False):
+    """Realize a restatement: apply `op` to the germ shape, place it near
+    `register_center` (or at the registral peak if `climax`), tile/truncate to fill
+    the spanned bars, and snap strong beats to chord tones for singability.
+    Returns NoteEvents; durations stay >= a 16th so the ABC tokenizer is valid."""
+    deltas, durs = shape
+    scale = scale_tones(mode, key, lo, hi)
+    if not scale or not durs:
+        return []
+    span_beats = len(chords2) * BEATS_PER_BAR
+    d = [-x for x in deltas] if op == "invert" else list(deltas)
+    du = list(durs)
+    if op == "augment":
+        du = [min(BEATS_PER_BAR * 1.0, x * 2) for x in du]
+    elif op == "diminish":
+        du = [max(0.25, x * 0.5) for x in du]
+    pat = [(0, du[0])] + [(d[i], du[i + 1]) for i in range(len(d))]
+    if op == "fragment":
+        pat = pat[:3] if len(pat) >= 3 else pat
+    if climax:                                                # rhythmic activity at the peak
+        pat = [(dl, max(0.25, dr * 0.5)) for dl, dr in pat]
+    start_idx = (len(scale) - 1) if climax else _nearest_index(scale, register_center)
+    start_idx = max(0, min(len(scale) - 1, start_idx + _SEQ_SHIFT.get(op, 0)))
+
+    notes, pos, idx, i, first = [], 0.0, start_idx, 0, True
+    while pos < span_beats - 1e-9:
+        delta, dur = pat[i % len(pat)]
+        if pos + dur > span_beats:
+            dur = span_beats - pos
+        if not first:
+            idx = max(0, min(len(scale) - 1, idx + delta))
+        first = False
+        pitch = scale[idx]
+        beat = pos - int(pos // BEATS_PER_BAR) * BEATS_PER_BAR
+        if beat in (0.0, 2.0):                                # strong beat: snap to a chord tone
+            b = min(int(pos // BEATS_PER_BAR), len(chords2) - 1)
+            cp = cpcs(chords2[b], mode, key)
+            s = snap(pitch, cp, lo, hi)
+            if notes and s == notes[-1].pitch:               # anti-repeat on strong beats
+                alt = [m for m in scale if m % 12 in [p % 12 for p in cp] and m != s]
+                if alt:
+                    s = min(alt, key=lambda m: abs(m - pitch))
+            pitch = s
+            idx = _nearest_index(scale, pitch)
+        notes.append(NoteEvent(chan, pitch, vel,
+                               int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+        pos += dur
+        i += 1
+    return notes
