@@ -487,6 +487,21 @@ Entmotif = goal:
         which is what makes the motif feel like SOMETHING. A big v0.11+ track with
         [[p6m2v9k0]] (texture). Refines [[z0m4p81q]], [[7c4m1k0p]], [[h0v4k7m2]];
         the enculturation caveat ties to [[6b2k9p0a]].
+        IMPLEMENTED (fw7, 2026-06-24, hand-tuned conditionals — part of the DAG
+        [[d2k9m4p1]]): EMOTIONS table in arrangement.py (happy/sad/peaceful/tense/
+        triumphant/tender, ~2.5 bits via EMOTION_W). Entropy draws a new independent
+        "emotion" label; it then conditions the within-style cues in Gabrielsson order:
+        mode + dissonance(color) by elementwise product of the style and emotion weight
+        vectors (mode_weights/color_weights, floored at 1 so the range stays reachable);
+        tempo by ramping the emotion's energy across the style's unchanged band
+        (tempo_weights); register by a high/low shift of the lead center WITHIN the
+        instrument window (so [[d2k9m4p1]]'s range invariant holds); dynamics by a loud/
+        soft offset on the velocity arc; articulation by overriding the comp legato.
+        Realized over a 2.4k probe: tempo happy 127 / sad 114, loudness triumphant 119 /
+        peaceful 99, %minor tense+sad ~0.65 / happy+triumphant ~0.20 — coherent, audible,
+        cue-redundant. Emotion biases WITHIN style, never overrides the idiom (a sad samba
+        stays a samba). STILL OPEN: lead staccato articulation (only the comp is
+        articulated so far); emotion->style priors; emotion-conditioned groove/development.
 
     Conditional Decision Dependencies = constraint:
       id: d2k9m4p1
@@ -508,6 +523,21 @@ Entmotif = goal:
         the DAG even with hand-tuned conditionals first (immediate fix), then data-derive
         the conditionals [[v8k2m1p0]]. Sharpens [[7c4m1k0p]], [[c2k9p0a4]], [[z0m4p81q]],
         [[a7k0m3p9]]; the "instrument has a normal register" rule extends [[b7p21m9z]].
+        IMPLEMENTED (fw7, 2026-06-24, hand-tuned conditionals): the three highest-ROI DAG
+        edges now exist, each STRICT-TDD. (1) REGISTER | INSTRUMENT — each LEAD_POOL
+        instrument has a real tessitura (arrangement.LEAD_RANGE); the melodic window is
+        the INTERSECTION of the style register and that tessitura (melodic_window()), so
+        the flute-salsa / piccolo-march "below its range" failures are gone (the antiphon/
+        counter on the same timbre is clamped too). (2) INSTRUMENT | STYLE convergence —
+        lead_choices rewritten: signature leads weighted by their per-style affinity
+        (lead_w, previously computed-but-unused) so the iconic timbre dominates, while the
+        whole weird-but-valid pool shares a FIXED ~20% budget; P(signature) ~0.80 across
+        all 14 styles (was 0.35-0.71), corpus style-suited 6/12 -> 11/12. (3) the EMOTION
+        master [[a7k0m3p9]] landed (see that node). All three are PURE post-draw / reweight
+        changes (each Chooser label hashes independently), so determinism + avalanche held
+        and only the golden corpus re-baselined. STILL OPEN on the DAG: meter [[m4k0p2v9]]
+        as an upstream edge; emotion->style priors; groove/development conditioned on
+        emotion; then data-derived conditionals [[v8k2m1p0]].
 
     Corpus Mined Feature Vectors = decision:
       id: v8k2m1p0

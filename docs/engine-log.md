@@ -935,3 +935,52 @@ per the maintainer's request (chat at ~800k tokens; don't lose this).
 
 **fw5 caution:** input-derived cadence dropped the arrangement grade 81→63; A/B and
 likely revert (commit 2eb9632) pending the maintainer's ear.
+
+## Flywheel cycle fw7 — the CONDITIONAL DECISION DAG (`this.i:d2k9m4p1`) (2026-06-24)
+
+The maintainer's named root cause for "extreme weirdness + high boringness": compounding
+decisions were drawn FREE when they must be DEPENDENT. This cycle built the three
+highest-ROI DAG edges, each STRICT-TDD (failing `test_motif.py` assertion first, then the
+minimal change to green). All three are PURE post-draw / reweight changes — each Chooser
+label hashes independently (`fp + label`), so **determinism + avalanche held untouched**;
+only the golden corpus re-baselined. Scores → `scores-v0.13.md`; audio →
+`~/winhome/Downloads/entmotif-v0.13-listen/`. **Grades PENDING the maintainer's listen.**
+
+**Fix 1 — REGISTER conditioned on the chosen INSTRUMENT** (`arrangement.py`, `engine.py`).
+Each `LEAD_POOL` instrument now has a real tessitura (`LEAD_RANGE: lo/hi/center`); the
+melodic window is the INTERSECTION of the style register and that tessitura
+(`melodic_window()`). The named failures are gone — a flute salsa sat at F#3 below the
+flute floor, a piccolo march sang G3 nearly two octaves below the piccolo (and a trombone
+lead ran *above* its ceiling). The antiphon/counter ANSWER voice (same timbre) is clamped
+to the instrument floor too. Centers kept byte-identical, so lead *selection* is unchanged
+— the fix is isolated to the register window. 4/12 golden inputs drifted.
+
+**Fix 2 — style→instrument CONVERGENCE** (`arrangement.py`). `lead_choices` was diluted by
+~26–37 weird-capable timbres each ~1 against a flat signature 16, so P(signature) was only
+0.35–0.71 and the per-style affinity `lead_w` was computed-but-unused. Rewrote it: signature
+leads weighted by `lead_w` (the iconic timbre dominates), the whole weird-but-valid pool
+sharing a FIXED ~20% budget (so more reachable timbres → each rarer, not less convergent).
+**P(signature) ≈ 0.80 across all 14 styles; corpus style-suited 6/12 → 11/12.** Also added
+the missing church-organ (19) tessitura — a gospel *signature* lead that was silently
+dropped. 10/12 golden drifted. Leads now iconic: salsa flute, march trombone, swing
+tenor-sax/trumpet, blues harmonica, ragtime piano.
+
+**Fix 3 — EMOTION as the affect master** (`this.i:a7k0m3p9`; `arrangement.py`, `engine.py`).
+Mode/tempo/register/dynamics/articulation/dissonance were drawn INDEPENDENTLY, so affect
+never aligned. Added an EMOTION master (happy/sad/peaceful/tense/triumphant/tender) drawn
+on a new independent `"emotion"` label; it conditions the within-style cues in Gabrielsson
+& Lindström precedence (`docs/memorability-research.md` Part C): mode + color by elementwise
+product of style×emotion weight vectors (floored at 1 so the range stays reachable); tempo
+by ramping the emotion's energy across the style's unchanged band; register by a high/low
+shift WITHIN the instrument window; dynamics by a velocity-arc offset; articulation by
+overriding the comp legato. Emotion biases WITHIN style, never overrides the idiom (a sad
+samba is still a samba). **Realized over a 2.4k-input probe:** tempo happy 127 / sad 114;
+loudness triumphant 119 / peaceful 99; %minor tense+sad ~0.65 / happy+triumphant ~0.20 —
+coherent, audible, cue-redundant. 10/12 golden drifted.
+
+**STILL OPEN on the DAG** (next cycles): meter beyond 4/4 as an upstream edge
+(`this.i:m4k0p2v9`); emotion→style priors; groove/development conditioned on emotion; lead
+staccato articulation (only the comp is articulated so far); then data-derived conditionals
+(`this.i:v8k2m1p0`). The persistent creative-technique ceiling — the melody restates+orbits
+rather than taking a real ARCH-contour journey with development on return — is untouched by
+this cycle and remains the top taste item.

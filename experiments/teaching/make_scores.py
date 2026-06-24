@@ -23,9 +23,9 @@ out = ["# entmotif scores — engine %s" % label,
 for i, v in enumerate(corpus, 1):
     notes, m = motif.generate(v)
     out.append("## Score %d  —  `%s`" % (i, v))
-    out.append("(%s %s, %dbpm, %s, %d bars, lead=%s, leap=%s, arr=%s, fat=%d)"
-               % (motif.KEY_NAMES[m["key"]], m["mode"], m["tempo"], m["form"],
-                  m["bars"], m["lead"], m["leap"], m["arr"], m["fat"]))
+    out.append("(%s/%s, %s %s, %dbpm, %s, %d bars, lead=%s, leap=%s, arr=%s, fat=%d)"
+               % (m["style"], m.get("emotion", "-"), motif.KEY_NAMES[m["key"]], m["mode"],
+                  m["tempo"], m["form"], m["bars"], m["lead"], m["leap"], m["arr"], m["fat"]))
     out.append("```abc\n%s```\n" % motif.abc_export(v, notes, m))
 path = os.path.join(HERE, "scores-%s.md" % label)
 open(path, "w").write("\n".join(out))
