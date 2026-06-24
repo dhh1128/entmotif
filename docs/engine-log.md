@@ -898,3 +898,40 @@ arrangement 71 · Codex(gpt-5.5) 77.
 2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the line's
    *pitches*, not just supply idiomatic rhythm under it.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`).
+
+### Flywheel round (fw1–fw6) — maintainer listening verdict (2026-06-25)
+
+Overnight autonomous flywheel (6 TDD cycles + 2 Fowler refactors, both suites green).
+Maintainer's ear (the ground truth) on the full corpus:
+
+**Net: clearly better than pre-flywheel.** Every entmotif is now a coherent,
+recognizable piece of music. Tempos better (still slightly slow on average), endings
+better, rhythms better. ~**C for validity** overall — but **"extreme" on weirdness**
+and **"quite high" on boringness**. Possibly one residual minor timing issue.
+
+**Per-axis:**
+- *Melodic development*: slightly better, still weak. #01 (flute salsa) is "boring as
+  all get-out — doesn't earn its long bar-count, just muddles around." Suspect the fw5
+  arrangement regression OR that melodic-dev gain < arrangement loss.
+- *Rests/phrasing*: maintainer hears NO rests — continuous glued-together phrases. The
+  fw4 breath pass isn't audible enough → leaving emotion on the table.
+- *Instrument selection*: still odd — only 2/12 style-suited (06 piano ragtime; 08
+  swing guitar, bass odd). Some weirdness welcome (reggae clavinet, ragtime shamisen —
+  novel but workable), but not CONVERGING on style-suited centers. March: trombone
+  lead fine, but a march must feel martial/crisp; the muddy/weird bed undermines it.
+- **ROOT CAUSE named: compounding decisions are still FREE, not DEPENDENT** — e.g. #01
+  flute salsa sits below the flute's normal register (register must be conditioned on
+  the instrument). → `this.i:d2k9m4p1` (Conditional Decision Dependencies).
+- *Emotion*: unaddressed — all "emotionless and boring; nothing bold/dramatic/shy/sad/
+  lyrical." → `this.i:a7k0m3p9`.
+- *Meter*: still only 4/4 (no 3/4, 6/8, 9/8, 5/4, 2/2, 3/2). → `this.i:m4k0p2v9`.
+- *Bass*: still a simple oom-pah in every piece. *Texture*: only lead+comp heard, ever;
+  almost no voicing-density variation (maybe muddied by instruments).
+
+**Strategic note:** maintainer questions whether to step back from purely hand-rolled
+generation toward **corpus-mined feature vectors + a conditional decision DAG** — full
+proposal in `docs/feature-vector-direction.md` (`this.i:v8k2m1p0`). "Captured/saved"
+per the maintainer's request (chat at ~800k tokens; don't lose this).
+
+**fw5 caution:** input-derived cadence dropped the arrangement grade 81→63; A/B and
+likely revert (commit 2eb9632) pending the maintainer's ear.

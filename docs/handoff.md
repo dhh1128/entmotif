@@ -6,6 +6,16 @@
 > cadence). It exists so no session has to be re-taught (e.g. TDD). `AGENTS.md` is
 > authoritative; `this.i` holds the design intent; `docs/engine-log.md` is the
 > round-by-round report card.
+>
+> **STRATEGIC CROSSROADS (2026-06-25):** after ~6 flywheel rounds the hand-rolled
+> engine is coherent (≈C) but stuck on "extreme weirdness + high boringness." The
+> maintainer's diagnosis: compounding decisions are still modeled as FREE when they
+> must be DEPENDENT (a conditional decision DAG — `this.i:d2k9m4p1`), and the priors
+> are guessed. **Proposed pivot: corpus-mined feature vectors + conditional DAG —
+> `docs/feature-vector-direction.md` (`this.i:v8k2m1p0`).** Recommended first move
+> (no corpus needed): build the dependency DAG so register is conditioned on the
+> instrument, instruments converge on the style, and emotion drives the cue set. Also
+> open: emotion (`a7k0m3p9`), meter beyond 4/4 (`m4k0p2v9`), bass/texture variety.
 
 A fresh session can continue from here. **Everything important is on disk** — this
 file points to it; the artifacts are the source of truth (this is a date-stamped

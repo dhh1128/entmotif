@@ -487,3 +487,64 @@ Entmotif = goal:
         which is what makes the motif feel like SOMETHING. A big v0.11+ track with
         [[p6m2v9k0]] (texture). Refines [[z0m4p81q]], [[7c4m1k0p]], [[h0v4k7m2]];
         the enculturation caveat ties to [[6b2k9p0a]].
+
+    Conditional Decision Dependencies = constraint:
+      id: d2k9m4p1
+      why: >
+        RECURRING ROOT CAUSE (maintainer, across listening rounds; sharpest 2026-06-25):
+        compounding musical decisions are still drawn as FREE / INDEPENDENT when they
+        must be DEPENDENT — a directed acyclic graph where downstream choices are
+        CONDITIONED on the already-decided upstream ones. Failures this caused: a flute
+        salsa whose lead register sat below the flute's normal tessitura (register must
+        be conditioned on the chosen INSTRUMENT); style->instrument convergence too weak
+        (only 2/12 style-suited); emotion absent because mode/tempo/dynamics/articulation
+        weren't conditioned on one affect target. Required dependency order (sketch):
+        emotion -> style/genre -> meter -> tempo -> mode/harmonic-vocab -> instrumentation
+        -> (per instrument) register/tessitura -> groove/bass -> motif shape ->
+        development -> dynamics/articulation. Each node samples its CONDITIONAL
+        distribution P(node | decided ancestors); entropy still picks the CDF point
+        (determinism + [[7c4m1k0p]] preserved). Capability gates ([[c2k9p0a4]]) are the
+        hard edges of this DAG; the soft edges are conditional probabilities. Implement
+        the DAG even with hand-tuned conditionals first (immediate fix), then data-derive
+        the conditionals [[v8k2m1p0]]. Sharpens [[7c4m1k0p]], [[c2k9p0a4]], [[z0m4p81q]],
+        [[a7k0m3p9]]; the "instrument has a normal register" rule extends [[b7p21m9z]].
+
+    Corpus Mined Feature Vectors = decision:
+      id: v8k2m1p0
+      why: >
+        PROPOSED PIVOT (maintainer, 2026-06-25) — full write-up:
+        docs/feature-vector-direction.md. After ~6 flywheel rounds the hand-rolled
+        engine is coherent (~C) but stuck on "extreme weirdness + high boringness"
+        because the priors are guessed. Proposal: acquire a large corpus of
+        human-authored MIDI / lead sheets (thousands+, popularity as a quality proxy),
+        MINE probabilistic FEATURE VECTORS (conditional distributions) for motif
+        development/re-articulation, emotion, dynamics, instrument choice (+ register-
+        per-instrument, groove, harmony, meter, contour, voicing density), wire them
+        into the dependency DAG [[d2k9m4p1]], and map entropy -> a point on each
+        conditional distribution (same contract as today, data-derived). Then most
+        hand-rolled variability code collapses to ASSEMBLY + render after a DAG walk.
+        This is an EVOLUTION of [[7c4m1k0p]], not a throwaway: the determinism harness,
+        Chooser, exporters, theory, render stage, teaching loop, and the style/two-layer/
+        capability structure all transfer (see doc "What transfers"). CONSTRAINT: keep
+        the model to distributions we sample DETERMINISTICALLY (conditional histograms /
+        n-gram + GMM), NOT an end-to-end neural generator, to preserve determinism +
+        auditability [[81pz4m0v]]. Candidate corpora (verify): EMOPIA / VGMIDI
+        (emotion-labelled), Hooktheory TheoryTab (harmony + popularity), Essen / Nottingham
+        / ABC (melody+meter+contour), Lakh / MetaMIDI (instrumentation), POP909, MAESTRO.
+        Recommended: incremental — build the DAG with hand-tuned conditionals first, then
+        replace dimensions with mined vectors (emotion + register-per-instrument first).
+        Realizes [[h0v4k7m2]] (consume more of the hash with VALID, data-grounded choices);
+        depends on [[d2k9m4p1]]; relates to [[2p8z1m40]], [[a7k0m3p9]], [[m4k0p2v9]].
+
+    Meter Beyond Four Four = decision:
+      id: m4k0p2v9
+      why: >
+        OPEN (maintainer, 2026-06-25): the engine is hardcoded 4/4 (BEATS_PER_BAR=4,
+        M:4/4). Whole idiom families need other meters: waltz/minuet/mazurka (3/4),
+        many marches/polkas (2/2 cut time), jigs/some folk (6/8), compound (9/8, 12/8),
+        odd (5/4, 7/8), and 3/2. METER is an upstream master decision in the DAG
+        [[d2k9m4p1]] (conditioned on style/emotion) that re-parameterizes the bar grid,
+        the groove patterns, the strong-beat map (metric conservation [[m9p3k7a2]] must
+        generalize off the 16th-in-4/4 grid), and the ABC M: header. A prerequisite for
+        non-4/4 styles and for sitar raga / chant ([[p6m2v9k0]], tick ~55y2). Relates to
+        [[z0m4p81q]], [[d2k9m4p1]].
