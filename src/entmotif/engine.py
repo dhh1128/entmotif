@@ -50,15 +50,15 @@ def generate(value):
 
     units = build_form(form, resolution, ch, color)
     nU = len(units)
-    peak = max(1, int(round((nU - 1) * 2.0 / 3.0)))           # placed climax ~2/3 through (Huron arch)
-    span = float(max(1, max(peak, nU - 1 - peak)))
+    peak = max(1, ((nU - 1) * 2 + 1) // 3)                    # placed climax ~2/3 through (Huron arch), integer
+    span = max(1, max(peak, nU - 1 - peak))                   # integer (no float register arc)
     dyn_bars = {}
     notes, used_v4 = [], False
     for u, (role, chs, cad, devslot) in enumerate(units):
         chm = [sym(c, mode) for c in chs]
         bar0 = u * 2
-        frac = 1 - abs(u - peak) / span                       # register arc, =1 at the climax unit
-        center = int(base + (hi - 2 - base) * frac)
+        # register arc (integer): peaks (=hi-2) at the climax unit, lower away from it
+        center = base + (hi - 2 - base) * (span - abs(u - peak)) // span
         dyn = unit_dyn(u, nU, peak)
         vel = DYN_VEL[dyn]
         dyn_bars[bar0] = dyn

@@ -10,8 +10,6 @@ NOTE (refactor debt, deferred to the v0.8 onset-rhythm rewrite): the public
 MelodyContext parameter object. Bundling it now would be churn — Phase 2 replaces
 this rhythm model wholesale, which is the right moment to introduce the context.
 """
-import math
-
 from entmotif.model import DIV, BEATS_PER_BAR, NoteEvent
 from entmotif.theory import cpcs, snap, step, scale_tones, degree
 
@@ -27,8 +25,31 @@ HOOKS = [                                                      # signature idea-
 SIG_STEPS = {0: [2, -2, 3, -3], 1: [3, 4, -3, 5, -4], 2: [4, 5, 7, -5, -4]}
 BREATHS = [0, 0, 0.5, 1, 1, 1.5]
 MAXLEAP = {0: 3, 1: 5, 2: 8}
-SIGMA = {0: 1.0, 1: 1.8, 2: 3.0}
+SIGMA = {0: 1.0, 1: 1.8, 2: 3.0}                               # documented Gaussian widths (GAUSS is the frozen form)
 LEAP_NAMES = {0: "stepwise", 1: "moderate", 2: "jumpy"}
+
+# Frozen integer Gaussian weight tables: round(exp(-e^2 / (2*sigma^2)) * 1000) for
+# e = (delta - drift), one per leap setting (sigma 1.0 / 1.8 / 3.0). HARDCODED (not
+# computed at import) so contour weighting is byte-identical on every platform/libm
+# — this replaces math.exp(), the step-17 cross-platform determinism repair. Bump
+# GRAVITY_TABLE_VERSION if these values change (it re-baselines the golden corpus).
+GRAVITY_TABLE_VERSION = 1
+GAUSS = {
+    0: {-3: 11, -2: 135, -1: 607, 0: 1000, 1: 607, 2: 135, 3: 11},
+    1: {-7: 1, -6: 4, -5: 21, -4: 85, -3: 249, -2: 539, -1: 857, 0: 1000,
+        1: 857, 2: 539, 3: 249, 4: 85, 5: 21, 6: 4, 7: 1},
+    2: {-11: 1, -10: 4, -9: 11, -8: 29, -7: 66, -6: 135, -5: 249, -4: 411,
+        -3: 607, -2: 801, -1: 946, 0: 1000, 1: 946, 2: 801, 3: 607, 4: 411,
+        5: 249, 6: 135, 7: 66, 8: 29, 9: 11, 10: 4, 11: 1},
+}
+
+
+def _round_div(a, b):
+    """round(a / b) to the nearest integer (half away from zero), PURE INTEGER —
+    no float, so the contour drift is identical on every platform."""
+    if a >= 0:
+        return (a + b // 2) // b
+    return -((-a + b // 2) // b)
 DYN_VEL = {"p": 62, "mp": 78, "mf": 94, "f": 110, "ff": 120}   # dynamic mark -> MIDI velocity
 
 
@@ -44,12 +65,12 @@ def unit_dyn(u, nU, peak):
 
 
 def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
-    drift = max(-2, min(2, round((center - cur) / 3.0))) + tendency
+    drift = max(-2, min(2, _round_div(center - cur, 3))) + tendency
     if abs(prevd) >= 3:
         drift += -2 * (1 if prevd > 0 else -1)
-    ml, sig = MAXLEAP[leap], SIGMA[leap]
+    ml, table = MAXLEAP[leap], GAUSS[leap]
     opts = [d for d in range(-ml, ml + 1) if d != 0]
-    wts = [math.exp(-((d - drift) ** 2) / (2 * sig * sig)) for d in opts]
+    wts = [table.get(d - drift, 0) for d in opts]             # frozen integer Gaussian (no math.exp)
     return ch.weighted(label, opts, wts)
 
 

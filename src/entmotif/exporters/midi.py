@@ -13,7 +13,7 @@ from entmotif.arrangement import COMP_PROGRAM, BASS_PROGRAM
 
 def encode_midi(notes, tempo, lead_prog, ans_prog):
     """Pure: render notes to the canonical MIDI file bytes (no file I/O)."""
-    ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", int(60_000_000 / tempo))[1:]),
+    ev = [(0, 0, b"\xff\x51\x03" + struct.pack(">I", 60_000_000 // tempo)[1:]),
           (0, 1, bytes([0xC0, lead_prog])), (0, 1, bytes([0xC1, COMP_PROGRAM])),
           (0, 1, bytes([0xC2, BASS_PROGRAM])), (0, 1, bytes([0xC3, ans_prog]))]
     for chn, pitch, vel, start, dur in notes:

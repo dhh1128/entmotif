@@ -309,7 +309,16 @@ gravity, line→`generate_melodic_line`, cadence, dynamics) · **arrangement**
   (MelodyContext bundling deferred — Phase 2 rewrites the rhythm model). (c)
   DecisionKey-constant centralization of labels deferred (labels left as unchanged
   literals).
-- **STOPPED before step 17** (integer/fixed-point determinism repair). It CHANGES
-  all output and is approval-gated — see the cross-platform-determinism risk flagged
-  to the maintainer (Codex severity-1: `Chooser.weighted()` float accumulation +
-  `gravity_delta()` `math.exp()` can round differently across libm/platforms).
+- **Step 17 — cross-platform determinism repair — DONE (maintainer-approved 2026-06-24).**
+  Eliminated every float hazard so MIDI is byte-identical on every platform/libm
+  (AGENTS.md §1), mirroring entviz's discipline of making all reproducible decisions
+  with pure integer arithmetic (entviz reserves float only for SVG geometry, where a
+  0.01px tolerance absorbs rounding — MIDI has no such tolerance, so integer-only):
+  (a) `Chooser.weighted()` now uses an integer threshold (`v(label) % total`) +
+  integer cumulative comparison — no float accumulation, no `WEIGHT_SCALE` division;
+  (b) `gravity_delta()` reads a **frozen, versioned integer Gaussian table**
+  (`GAUSS`, `GRAVITY_TABLE_VERSION=1`) instead of `math.exp()`; (c) the register-arc
+  `center`, `peak`, `span` are integer arithmetic; (d) tempo uses `//`. Output
+  changed for all 12 corpus inputs (small per-input ABC diffs) → **golden
+  re-baselined** intentionally (still v0.7 *musical behavior*, just deterministic).
+  `scores-v0.7.md` is left as the historical round-4 grading record (not regenerated).

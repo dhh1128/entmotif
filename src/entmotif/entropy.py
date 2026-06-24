@@ -17,8 +17,6 @@ hashing — a pending correctness fix, not part of this behavior-preserving refa
 """
 import hashlib
 
-from entmotif.model import WEIGHT_SCALE
-
 
 def fingerprint_text(value):
     """The motif's entropy source: SHA-512 of the input text (raw, for now)."""
@@ -45,11 +43,20 @@ class Chooser:
         return seq[self.v(label) % len(seq)]
 
     def weighted(self, label, opts, wts):
-        total = float(sum(wts))
-        r = (self.v(label) % WEIGHT_SCALE) / float(WEIGHT_SCALE) * total
-        acc = 0.0
-        for o, w in zip(opts, wts):
+        """Pick opts[i] with probability wts[i]/sum(wts), via PURE INTEGER math.
+
+        Weights MUST be integers. The threshold ``v(label) % total`` and an
+        integer cumulative comparison make the choice byte-identical on every
+        platform — no float accumulation, no ``WEIGHT_SCALE`` division (step 17,
+        the cross-platform determinism repair)."""
+        iw = [int(w) for w in wts]
+        total = sum(iw)
+        if total <= 0:
+            return opts[-1]
+        r = self.v(label) % total
+        acc = 0
+        for o, w in zip(opts, iw):
             acc += w
-            if r <= acc:
+            if r < acc:
                 return o
         return opts[-1]
