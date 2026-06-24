@@ -399,11 +399,16 @@ def comp_groove(pat, voic, base, vel, legato):
             chord(beat, 0.5, vel - 6)
     elif pat == "charleston":                                 # the classic jazz Charleston: 1 + and-of-2
         chord(0, 1, vel - 4); chord(1.5, 0.5, vel - 4); chord(2.5, 1.5, vel - 8)
-    elif pat in ("stride", "oompah", "marcato"):              # chord "pah" on the backbeats (2 & 4)
+    elif pat in ("stride", "marcato"):                        # chord "pah" on the backbeats (2 & 4)
         chord(1, 0.75, vel - 2)
         chord(3, 0.75, vel - 2)
-    elif pat == "oompah_push":                                # oom-pah with an extra anticipating "pah" (1& 2 3& 4)
-        chord(1, 0.5, vel - 2); chord(2.5, 0.5, vel - 4); chord(3, 0.75, vel - 2)
+    elif pat == "oompah":                                     # march "pah" — LIGHTER than a block chord (v12 #03):
+        pah = voic[1:]                                        # drop the lowest voice so the "pah" doesn't double into
+        chord(1, 0.75, vel - 2, tones=pah)                   # the tuba's "oom" register (the muddy "collection of
+        chord(3, 0.75, vel - 2, tones=pah)                   # horns"); the band answers ABOVE the bass, not on it
+    elif pat == "oompah_push":                                # oom-pah with an extra anticipating "pah" (1& 2& 3& 4)
+        pah = voic[1:]                                        # same lightened "pah" (drop the bass-register voice)
+        chord(1, 0.5, vel - 2, tones=pah); chord(2.5, 0.5, vel - 4, tones=pah); chord(3, 0.75, vel - 2, tones=pah)
     elif pat == "bossa":                                      # nylon-guitar syncopation
         for beat, dur in [(0, 0.5), (1.5, 0.5), (2, 0.5), (3, 0.5)]:
             chord(beat, dur, vel - 4)

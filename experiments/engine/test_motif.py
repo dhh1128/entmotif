@@ -184,6 +184,24 @@ for p in march_cprogs:
     check(p not in (56, 57, 59, 61),
           "march comp is a brass stab (ugly oom-pah): prog%d (%s)" % (p, arr.gm_name(p)))
 
+# --- A3 (v12 #03): the oom-pah "pah" is LIGHTER than the full block chord — the bass
+#     plays the "oom" low, so the comp "pah" drops its lowest voice (no doubling into
+#     the tuba register that muddied the "collection of horns") and sounds fewer voices
+#     than the full voicing. Metric conservation is unaffected (same onsets/durations). ---
+_full = arr.voice_chord([0, 4, 7], 2, 72)                       # a 4-voice voicing
+check(len(_full) >= 3, "test setup: voicing too thin to lighten")
+for _pat in ("oompah", "oompah_push"):
+    _ev = arr.comp_groove(_pat, _full, 0, 80, False)
+    _bottom = min(_full)
+    check(all(n.pitch != _bottom for n in _ev),
+          "oom-pah '%s' still doubles the bass-register bottom voice (%d): %s"
+          % (_pat, _bottom, sorted({n.pitch for n in _ev})))
+    # the pah sounds strictly fewer voices than the full block chord (it is lighter)
+    _pah_voices = len({n.pitch for n in _ev})
+    check(0 < _pah_voices < len(_full),
+          "oom-pah '%s' pah is not lighter than the full chord: %d of %d voices"
+          % (_pat, _pah_voices, len(_full)))
+
 # --- A2 (v12 #08, this.i:r4d8m1k6): comp/bass RHYTHM-pattern variety. The groove is
 #     no longer one fixed rhythm per style: each style's signature comp/bass pattern
 #     belongs to a small family of idiomatic, metric-CONSERVING variants, chosen by
