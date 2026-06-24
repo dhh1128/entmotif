@@ -196,16 +196,61 @@ def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
     return _lay_figure(figs, bar0, chan, vel)
 
 
-def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
+# fw5 (Group B #4, "cadential interchangeability is the #1 memorability killer"):
+# the engine ended almost every piece with the IDENTICAL approach to the tonic (3-2-1:
+# two stepwise quarters falling into the half-note tonic), so two inputs were
+# indistinguishable by their endings. The cadence APPROACH is now a small FAMILY of
+# valid, resolving figures, drawn per-input — so the cadence becomes a per-piece
+# signature, not a shared stamp. Every authentic/plagal approach STILL lands on the
+# tonic (degree 1) as its final note, so the resolved-final invariant is untouched; all
+# figures fill exactly the bar (metric conservation, this.i:m9p3k7a2). Each figure is a
+# list of (scale-degree, beats) pairs; the LAST pair is the half-note resolution tone.
+# A "+7"/"-..." entry leaps from the leading-tone/lower neighbour for a pointed approach.
+CADENCE_APPROACHES = {
+    "authentic": [
+        [(3, 1), (2, 1), (1, 2)],          # 0: stepwise descent (the canonical 3-2-1)
+        [(5, 1), (3, 1), (1, 2)],          # 1: arpeggiated descent (5-3-1, gentle)
+        [(2, 1), (-1, 1), (1, 2)],         # 2: leading-tone resolution (2-7-1, pointed)
+        [(1, 0.5), (3, 0.5), (2, 1), (1, 2)],   # 3: anacrusis turn into 3-2-1
+        [(5, 1), (-1, 1), (1, 2)],         # 4: leap down then leading-tone (5-7-1)
+        [(4, 1), (2, 1), (1, 2)],          # 5: 4-2-1 falling-fourth approach
+        [(2, 0.5), (1, 0.5), (3, 1), (1, 2)],   # 6: appoggiatura (lean 2->1, reach 3, settle 1)
+        [(6, 1), (5, 1), (1, 2)],          # 7: high approach 6-5-1 (a reach before the close)
+    ],
+    "plagal": [
+        [(4, 1), (2, 1), (1, 2)],          # 0: 4-2-1 "amen"
+        [(6, 1), (4, 1), (1, 2)],          # 1: 6-4-1 plagal reach
+        [(4, 1), (3, 1), (1, 2)],          # 2: 4-3-1 suspension-style
+        [(4, 0.5), (5, 0.5), (4, 1), (1, 2)],   # 3: neighbour-decorated 4 into 1
+        [(2, 1), (4, 1), (1, 2)],          # 4: rise to 4 then resolve
+        [(4, 1), (6, 1), (1, 2)],          # 5: 4 up to 6 then settle (plagal arch)
+        [(5, 1), (4, 1), (1, 2)],          # 6: 5-4-1 over IV-I
+        [(4, 0.5), (3, 0.5), (2, 1), (1, 2)],   # 7: stepwise 4-3-2-1 amen descent
+    ],
+    "deceptive": [                          # deceptive ends OPEN on 6 (no tonic landing)
+        [(2, 1), (3, 1), (6, 2)],
+        [(1, 1), (2, 1), (6, 2)],
+        [(3, 1), (4, 1), (6, 2)],
+        [(5, 1), (4, 1), (6, 2)],
+    ],
+    "half": [                               # half cadence (mid-phrase only): ends open on 2
+        [(1, 1), (3, 1), (2, 2)],
+        [(3, 1), (1, 1), (2, 2)],
+        [(1, 1), (4, 1), (2, 2)],
+        [(4, 1), (3, 1), (2, 2)],
+    ],
+}
+
+
+def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel, approach=0):
+    """Render the cadential bar. `approach` selects from a small family of valid,
+    resolving approach figures (input-derived by the engine) so the cadence is a
+    per-piece signature rather than a shared stamp. Authentic/plagal approaches all
+    land on the tonic (degree 1); each figure fills exactly the bar."""
     d = lambda n: degree(n, key, mode, lo, hi)
-    if res == "authentic":
-        figs = [(d(3), 1), (d(2), 1), (d(1), 2)]
-    elif res == "deceptive":
-        figs = [(d(2), 1), (d(3), 1), (d(6), 2)]
-    elif res == "plagal":
-        figs = [(d(4), 1), (d(2), 1), (d(1), 2)]              # 4-2-1 over IV-I: resolved "amen"
-    else:                                                    # half (mid-phrase only): ends open on 2
-        figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
+    fam = CADENCE_APPROACHES.get(res, CADENCE_APPROACHES["half"])
+    deg_figs = fam[approach % len(fam)]
+    figs = [(d(n), beats) for n, beats in deg_figs]
     return _lay_figure(figs, bar0, chan, vel)
 
 

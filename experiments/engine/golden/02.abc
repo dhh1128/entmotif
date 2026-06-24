@@ -10,7 +10,7 @@ V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"B" !mp! ^F,2 =B,2 ^F,4 =B,6 ^F,2 | "G#m" =B,3 ^G, ^A,4 ^G,2 z2 ^A,4 | "E" !mf! =E4 ^F4 =E8 | "F#" =B,4 ^D4 ^C6 z2 | "B" !f! =B =B ^F2 =B z2 ^F =B2 ^G ^A2 ^G2 ^A | "G#m" =B =B ^F z =B3 ^F =B2 ^G ^A2 ^G2 ^A | "F#" !mf! ^C4 ^D2 z2 ^C8 | "B" ^D4 ^C4 =B,8 |]
+"B" !mp! ^F,2 =B,2 ^F,4 =B,6 ^F,2 | "G#m" =B,3 ^G, ^A,4 ^G,2 z2 ^A,4 | "E" !mf! =E4 ^F4 =E8 | "F#" =B,4 ^D4 ^C6 z2 | "B" !f! =B =B ^F2 =B z2 ^F =B2 ^G ^A2 ^G2 ^A | "G#m" =B =B ^F z =B3 ^F =B2 ^G ^A2 ^G2 ^A | "F#" !mf! ^C4 ^D2 z2 ^C8 | "B" =B,2 ^D2 ^C4 =B,8 |]
 V:2
 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 | z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 | z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 | z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 | z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 | z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 | z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 z2 [^F,^A,^C=E]2 | z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 z2 [=B,^D^F=A]2 |]
 V:3

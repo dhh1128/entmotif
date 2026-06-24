@@ -85,14 +85,16 @@ def generate(value):
             return render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
                                     VoiceRole.LEAD, vel, center, climax=at_peak)
         if role == "answer":
+            cad_app = ch.int("cad_app%d" % u, 8)              # fw5: input-derived cadence approach (per-piece
+            #   signature, not a shared 3-2-1 stamp); the cadence still resolves on the tonic
             if cr_answer:                                     # lead CALLS through the antiphony bar (singable
                 mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel)
                 #   figure, not a dead whole-bar hold — fw3, the "static held-note" fix)
-                return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
+                return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app)
             op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
             mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, [chm[0]],
                                    VoiceRole.LEAD, vel, center, climax=at_peak)
-            return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
+            return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel, cad_app)
         return line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
                     "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6))
 

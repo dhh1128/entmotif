@@ -292,6 +292,51 @@ multi_bpat = sum(1 for st in _bpat_seen if len(_bpat_seen[st]) >= 2)
 check(multi_cpat >= 4, "comp rhythm barely varies: only %d styles show >=2 comp patterns" % multi_cpat)
 check(multi_bpat >= 4, "bass rhythm barely varies: only %d styles show >=2 bass patterns" % multi_bpat)
 
+# --- fw5 (Group B #4, "Cadential interchangeability is the #1 memorability killer"):
+#     the engine ended almost every piece with the IDENTICAL approach to the tonic — a
+#     two-stepwise-quarters-falling-into-a-half-note-tonic cell (3-2-1: down-2, down-2).
+#     A listener could not tell two inputs apart by their endings. The final cadence's
+#     APPROACH must be INPUT-DERIVED (vary the approach interval / leap-to-tonic /
+#     leading-tone / appoggiatura) so the cadence is a per-piece signature, not a shared
+#     stamp — while STILL resolving (the resolved-final invariant above is unchanged:
+#     authentic/plagal land on the tonic). Assert: (a) the cadence figure is a pure
+#     function of an input-derived "cadence approach" id, so cadence_bar takes one and
+#     distinct ids give distinct approaches; (b) across the corpus's resolving finals,
+#     the realized final-bar APPROACH SHAPE (the interval into the tonic) is not a single
+#     shared cell — at least 3 distinct approach shapes appear.
+import entmotif.melody as _mel  # noqa: E402
+_capp = set()
+for _i in range(8):
+    _fig = tuple(_mel.cadence_bar("authentic", 0, "major", 52, 79, 0, 0, 80, approach=_i))
+    _capp.add(_fig)
+check(len(_capp) >= 4, "cadence approach not input-derived: only %d distinct approaches over 8 ids" % len(_capp))
+# determinism: same approach id -> identical figure
+check(_mel.cadence_bar("authentic", 0, "major", 52, 79, 0, 0, 80, approach=3)
+      == _mel.cadence_bar("authentic", 0, "major", 52, 79, 0, 0, 80, approach=3),
+      "cadence_bar not deterministic for a fixed approach id")
+# every authentic/plagal approach still RESOLVES on the tonic (last note = degree 1)
+for _i in range(8):
+    for _res in ("authentic", "plagal"):
+        _fig = _mel.cadence_bar(_res, 0, "major", 52, 79, 0, 0, 80, approach=_i)
+        _tonic = motif.snap((52 + 79) // 2, [0], 52, 79)
+        check(_fig[-1].pitch == _tonic,
+              "cadence approach %d (%s) does not resolve on tonic: ends %d (tonic %d)"
+              % (_i, _res, _fig[-1].pitch, _tonic))
+# on the corpus: resolving finals show >=3 distinct approach interval-shapes (not one stamp)
+_shapes = set()
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    if m.get("final_cad") not in ("authentic", "plagal"):
+        continue
+    lead = sorted((n for n in notes if int(n[0]) == 0), key=lambda n: n[3])
+    lastbar = (m["bars"] - 1) * 4 * DIV
+    cell = [n[1] for n in lead if n[3] >= lastbar]
+    if len(cell) >= 2:
+        _shapes.add(tuple(b - a for a, b in zip(cell, cell[1:])))   # interval shape into the tonic
+check(len(_shapes) >= 3,
+      "cadence interchangeable: corpus resolving finals show only %d distinct approach shapes %s"
+      % (len(_shapes), _shapes))
+
 # --- v0.9: harmony overhaul invariants on the corpus ---
 for v in CORPUS:
     notes, m = motif.generate(v)
