@@ -64,10 +64,20 @@ def unit_dyn(u, nU, peak):
     return "mp"
 
 
+GRAVITY_PULL = 3        # register-gravity divisor: how strongly the line is drawn back to center
+DRIFT_CLAMP = 2         # the center pull is capped to +-2 scale steps per note
+LEAP_THRESHOLD = 3      # a step of this many scale degrees or more counts as a leap...
+LEAP_RECOVERY = 2       # ...and the next note drifts this far the OTHER way (Huron's gap-fill)
+
+
 def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
-    drift = max(-2, min(2, _round_div(center - cur, 3))) + tendency
-    if abs(prevd) >= 3:
-        drift += -2 * (1 if prevd > 0 else -1)
+    """Choose the next scale-step delta: a register-gravity DRIFT (pull toward the
+    arc center, plus the global tendency and a post-leap recovery) biases a frozen
+    integer Gaussian over the allowed steps, then the Chooser picks one."""
+    pull = _round_div(center - cur, GRAVITY_PULL)
+    drift = max(-DRIFT_CLAMP, min(DRIFT_CLAMP, pull)) + tendency
+    if abs(prevd) >= LEAP_THRESHOLD:                          # after a leap, lean back to fill the gap
+        drift += -LEAP_RECOVERY if prevd > 0 else LEAP_RECOVERY
     ml, table = MAXLEAP[leap], GAUSS[leap]
     opts = [d for d in range(-ml, ml + 1) if d != 0]
     wts = [table.get(d - drift, 0) for d in opts]             # frozen integer Gaussian (no math.exp)
@@ -307,6 +317,11 @@ def _nearest_index(scale, pitch):
     return min(range(len(scale)), key=lambda i: abs(scale[i] - pitch))
 
 
+def _clamp_index(scale, i):
+    """Keep a scale index in range (the contour walks off neither end of the scale)."""
+    return max(0, min(len(scale) - 1, i))
+
+
 def motif_shape(germ_notes, mode, key, lo, hi):
     """Extract the germ's reusable shape: (scale-step deltas, durations-in-beats).
 
@@ -361,7 +376,7 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
     target = min((1.0, 2.0, 4.0, 8.0), key=lambda t: abs(t - total))
     pat[-1] = (pat[-1][0], max(0.25, pat[-1][1] + (target - total)))
     start_idx = (len(scale) - 1) if climax else _nearest_index(scale, register_center)
-    start_idx = max(0, min(len(scale) - 1, start_idx + _SEQ_SHIFT.get(op, 0)))
+    start_idx = _clamp_index(scale, start_idx + _SEQ_SHIFT.get(op, 0))
 
     notes, pos, idx, i, first = [], 0.0, start_idx, 0, True
     while pos < span_beats - 1e-9:
@@ -369,7 +384,7 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
         if pos + dur > span_beats:
             dur = span_beats - pos
         if not first:
-            idx = max(0, min(len(scale) - 1, idx + delta))
+            idx = _clamp_index(scale, idx + delta)
         first = False
         pitch = scale[idx]
         beat = pos - int(pos // BEATS_PER_BAR) * BEATS_PER_BAR

@@ -21,6 +21,7 @@ from entmotif.theory import cpcs, SEVENTH
 
 SUSTAIN_GAP = 6
 B = DIV                                                       # one beat in ticks (4/4)
+BASS_C2 = 36                                                  # MIDI C2 — the bass line's octave floor
 
 # --- GM percussion (channel 9) — the whole family, not just a kit ------------
 KICK, SNARE, SIDE, HHC, HHO, RIDE, CRASH = 36, 38, 37, 42, 46, 51, 49
@@ -364,7 +365,7 @@ def _bn(pcs, role):
     """A bass MIDI note (C2 register) for a chord role."""
     semis = {"root": pcs[0], "third": pcs[1], "fifth": pcs[2],
              "sixth": (pcs[0] + 9) % 12, "b7": (pcs[0] + 10) % 12}[role]
-    return 36 + semis
+    return BASS_C2 + semis
 
 
 # --------------------------------------------------------------- comp grooves -
@@ -448,7 +449,7 @@ def bass_groove(pat, pcs, next_root_pc, base, vel):
     out = []
 
     def note(role_or_pc, beat, dur, v=vel):
-        m = _bn(pcs, role_or_pc) if isinstance(role_or_pc, str) else 36 + role_or_pc % 12
+        m = _bn(pcs, role_or_pc) if isinstance(role_or_pc, str) else BASS_C2 + role_or_pc % 12
         out.append(NoteEvent(VoiceRole.BASS, m, v, base + int(beat * B), int(dur * B) - SUSTAIN_GAP))
 
     aim = min(("root", "third", "fifth"),
