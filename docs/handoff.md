@@ -1,4 +1,4 @@
-# entmotif — session handoff / project orientation (2026-06-23)
+# entmotif — session handoff / project orientation (2026-06-24)
 
 A fresh session can continue from here. **Everything important is on disk** — this
 file points to it; the artifacts are the source of truth (this is a date-stamped
@@ -37,15 +37,26 @@ nodes; IDs are deliberately meaningless, semantics live in node names).
 
 ## The engine
 
-`experiments/engine/motif.py` — currently **v0.7**, a zero-dependency prototype.
+**The engine has graduated into a clean package: `src/entmotif/`** (v0.7 behavior,
+zero-dependency). Modules: `model` (NoteEvent/Phrase/Palette/PitchRange/Development/
+Motif/VoiceRole + constants) · `entropy` (fingerprint + Chooser) · `theory` (pure
+pitch/chord ops) · `form` · `melody` · `arrangement` · `engine` (`generate`/
+`compose`) · `exporters/{abc,midi}` · `cli`. **`experiments/engine/motif.py` is now
+a thin compatibility shim** re-exporting the package, so `import motif` (the test
+suites + `experiments/teaching/make_scores.py`) keeps working unchanged. New code
+should import from `entmotif` directly. Refactor details: `docs/engine-log.md`
+"Refactor — engine graduated" entry; the ordered plan was `docs/refactor-plan.md`
+steps 2–16 (done; **step 17, the determinism repair, is intentionally NOT done** —
+approval-gated, changes output).
+
 Turns value → SHA-512 → choices → 8-bar (or longer) period → MIDI + multi-voice
 ABC. **Invariants that must never break:** determinism (same input → byte-identical
-MIDI) and avalanche (one-char change → different motif). Verify both after any
-change — now ENFORCED by tests: `experiments/engine/test_motif.py` (invariants +
-behavior) and `test_golden.py` (exact ABC+MIDI snapshot of the corpus; run
-`--update` only to intentionally re-baseline). Run both after any engine edit. Graduates into `src/` with TDD once the design settles. Note `~4eu7`
-(tick): the prototype hashes raw input; the real impl must normalize + strip
-prefix/suffix exactly as entviz (`this.i:81pz4m0v`).
+MIDI) and avalanche (one-char change → different motif). Now ENFORCED by tests:
+`experiments/engine/test_motif.py` (invariants + behavior) and `test_golden.py`
+(exact ABC+MIDI snapshot of the corpus; run `--update` only to intentionally
+re-baseline). Run both after any engine edit. Note `~4eu7` (tick): the prototype
+hashes raw input; the real impl must normalize + strip prefix/suffix exactly as
+entviz (`this.i:81pz4m0v`).
 
 ## The teaching loop (how grading works)
 
@@ -80,6 +91,14 @@ round-4 list).
 - **Architecture review done** — `docs/refactor-plan.md` (consolidated from Codex +
   a Claude architect; full reviews in `reviews/`). Golden safety net committed
   (`test_golden.py`).
+
+## Done 2026-06-24 (this session, on branch `refactor/engine-to-src`)
+
+- **Refactor COMPLETE** — engine graduated `experiments/engine/motif.py` →
+  `src/entmotif/` package, behavior-preserving (golden NOT re-baselined; both suites
+  green; `make_scores.py v0.7` byte-identical). 8 small signed-off commits off a
+  `main` baseline snapshot. Stopped before step 17 (determinism repair, approval-gated).
+- **In progress:** Round 5 (v0.8) engine work on the clean package (see below).
 
 ## Immediate next steps (pick one)
 

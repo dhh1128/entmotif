@@ -281,3 +281,35 @@ held to a stricter, masterpiece-anchored bar that exposes the real ceiling.
 **Notation affordances still untapped** (all graders): tuplets `(3`, grace notes `{}`,
 slurs `( )`, ties `-`, articulations/ornaments, crescendo *hairpins* (vs terraced
 dynamics), per-voice instrument programs, real `K:`/mode spelling, volta/repeat.
+
+---
+
+## Refactor — engine graduated to `src/entmotif/` (2026-06-24)
+
+Behavior-preserving execution of `docs/refactor-plan.md` steps 2–16 (step 1, the
+golden tests, was already done). The v0.7 single-file prototype
+`experiments/engine/motif.py` is now a thin compatibility shim re-exporting a clean
+package `src/entmotif/`: **model** (NoteEvent/Phrase/Palette/PitchRange/Development/
+Motif + VoiceRole; timing constants) · **entropy** (fingerprint + Chooser; frozen
+label rule) · **theory** (pure scales/chords/snap/step/degree/sym/chord_name) ·
+**form** (Phrase sequence, cadence, development) · **melody** (rhythm vocab,
+gravity, line→`generate_melodic_line`, cadence, dynamics) · **arrangement**
+(Palette, voicing, comp/bass) · **engine** (`generate`/`compose`) · **exporters/**
+(abc, midi) · **cli**.
+
+- **Both SACRED rules honored:** every `Chooser` label literal is byte-unchanged
+  (frozen wire format); every step ran under green `test_motif.py` + `test_golden.py`.
+  Output is byte-identical end to end — golden NOT re-baselined, `make_scores.py
+  v0.7` byte-identical, teaching harness intact.
+- **Committed in small traceable steps** (8 commits on `refactor/engine-to-src` off
+  a `main` baseline snapshot); steps 10–16 not collapsed.
+- **Deliberate scope calls (documented in code):** (a) Mode is NOT an enum — it is
+  `%s`-formatted into ABC and str-Enum `str()` is version-dependent (`"Mode.MAJOR"`),
+  a determinism hazard. (b) `generate_melodic_line` keeps its 18-arg signature
+  (MelodyContext bundling deferred — Phase 2 rewrites the rhythm model). (c)
+  DecisionKey-constant centralization of labels deferred (labels left as unchanged
+  literals).
+- **STOPPED before step 17** (integer/fixed-point determinism repair). It CHANGES
+  all output and is approval-gated — see the cross-platform-determinism risk flagged
+  to the maintainer (Codex severity-1: `Chooser.weighted()` float accumulation +
+  `gravity_delta()` `math.exp()` can round differently across libm/platforms).
