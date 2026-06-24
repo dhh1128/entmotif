@@ -144,6 +144,7 @@ LEAD_RANGE = {
     25: PitchRange(52, 79, 62), 26: PitchRange(52, 79, 62), 27: PitchRange(52, 79, 62),
     29: PitchRange(52, 81, 62), 40: PitchRange(55, 91, 67), 41: PitchRange(48, 84, 60),
     42: PitchRange(36, 72, 52), 45: PitchRange(48, 84, 57), 46: PitchRange(48, 84, 62),
+    19: PitchRange(48, 84, 60),                              # church-organ (gospel signature lead)
     53: PitchRange(50, 74, 60), 56: PitchRange(54, 82, 66), 57: PitchRange(40, 72, 52),
     59: PitchRange(54, 82, 64), 60: PitchRange(41, 77, 58), 61: PitchRange(48, 79, 60),
     65: PitchRange(49, 81, 66), 66: PitchRange(44, 76, 58), 68: PitchRange(58, 88, 70),
@@ -157,7 +158,11 @@ LEAD_RANGE = {
 # program -> comfortable register CENTER (the capability-gate key). Derived from the
 # tessitura above so the center stays a single source of truth.
 LEAD_POOL = {p: r.center for p, r in LEAD_RANGE.items()}
-LEAD_SIG_W, LEAD_BASE_W, LEAD_REACH = 16, 1, 8               # signature ~80% (typical common); weird ~20% (rare)
+LEAD_REACH = 8                                              # a weird-but-valid lead must sit within ~an octave
+LEAD_SIG_UNIT = 240        # one unit of signature affinity; the per-style lead_w scales it (the iconic timbre,
+#   with the highest lead_w, is the most common). Large enough that even a single-signature style (ragtime)
+#   keeps the weird budget below an integer-floored 20% (this.i:d2k9m4p1 genre convergence).
+WEIRD_FRACTION = 4         # total weird mass <= signature mass / WEIRD_FRACTION -> signature stays >= 80%
 
 MIN_MELODIC_SPAN = 13                                        # the lead window is >= an octave+1 so the tonic snap
 #   (which needs hi-12 >= lo) and the ~1.5-octave contour have room even when the style
@@ -199,19 +204,27 @@ STYLE_MIN_AGILE = {                                           # what the idiom d
 
 
 def lead_choices(style):
-    """(programs, weights) for the lead. The lead is chosen by a CAPABILITY gate
-    (register reach + the style's minimum agility) AND an affinity weight (signature
-    timbres dominate; capable others reachable-but-rare). So ragtime can take a
+    """(programs, weights) for the lead. Genre CONVERGENCE (this.i:d2k9m4p1, the
+    maintainer's "only ~2/12 style-suited" failure): the line is DOMINATED by the style's
+    SIGNATURE instruments, weighted by their per-style affinity (`lead_w` — the most
+    iconic timbre is the most common), while the capability-passing 'weird-but-valid'
+    leads share a FIXED ~20% budget, so adding more reachable timbres makes each RARER,
+    not the genre less convergent. The capability gate (register reach + the style's
+    minimum agility) still decides WHICH weird leads are eligible — so ragtime can take a
     clarinet or banjo lead over its piano stride bed, but not a church organ."""
-    sig = STYLES[style]["leads"]
-    sigset, center = set(sig), STYLES[style]["reg"].center
+    s = STYLES[style]
+    sig, sig_w = s["leads"], s["lead_w"]
+    sigset, center = set(sig), s["reg"].center
     min_ag = STYLE_MIN_AGILE.get(style, 0)
-    progs, wts = [], []
-    for p, c in LEAD_POOL.items():
-        capable = abs(c - center) <= LEAD_REACH and LEAD_AGILITY.get(p, 2) >= min_ag
-        if p in sigset or capable:
-            progs.append(p)
-            wts.append(LEAD_SIG_W if p in sigset else LEAD_BASE_W)
+    progs = list(sig)                                       # signature leads first, in declared order
+    wts = [LEAD_SIG_UNIT * w for w in sig_w]               # ...weighted by per-style affinity (lead_w now USED)
+    sig_total = sum(wts)
+    weird = [p for p, c in LEAD_POOL.items()                # capability-passing non-signature timbres
+             if p not in sigset and abs(c - center) <= LEAD_REACH and LEAD_AGILITY.get(p, 2) >= min_ag]
+    if weird:
+        each = max(1, sig_total // (WEIRD_FRACTION * len(weird)))   # whole weird pool ~= sig_total / 4 (>= 80% sig)
+        progs += weird
+        wts += [each] * len(weird)
     return progs, wts
 
 

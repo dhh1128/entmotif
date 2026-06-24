@@ -378,6 +378,39 @@ for v in _LEAD_RANGE_PROBE:
                   "lead %s note %d outside its tessitura [%d,%d]: %s"
                   % (arr.gm_name(prog), n[1], rng.lo, rng.hi, v))
 
+# --- fw7 (this.i:d2k9m4p1 / z0m4p81q): STRONGER style->instrument CONVERGENCE. The lead
+#     distribution was diluted by ~30 'weird-but-valid' capable timbres (each ~1 vs a
+#     signature ~16), so per-style P(signature) was only 0.35-0.71 and barely half the
+#     corpus leads were style-suited. The signature instruments must DOMINATE (genre-
+#     typical common, weird-but-valid rare-but-reachable): per style P(signature) >= 0.75;
+#     the per-style affinity (lead_w) biases WITHIN the signature set (the iconic timbre
+#     most common); every offered lead stays reachable (weight >= 1); and a weird-but-
+#     valid lead remains reachable so the full palette is not collapsed. ---
+for st in arr.STYLE_NAMES:
+    progs, wts = arr.lead_choices(st)
+    sig = set(arr.STYLES[st]["leads"])
+    total = sum(wts)
+    sigmass = sum(w for p, w in zip(progs, wts) if p in sig)
+    check(total > 0 and sigmass / total >= 0.75,
+          "weak style->lead convergence: %s P(sig)=%.2f < 0.75" % (st, sigmass / max(1, total)))
+    check(all(w >= 1 for w in wts), "a lead weight < 1 (unreachable): %s" % st)
+    check(any(p not in sig for p in progs), "no weird-but-valid lead reachable (palette collapsed): %s" % st)
+# the per-style affinity actually biases WITHIN the signature (lead_w is USED, not flat):
+for st in arr.STYLE_NAMES:
+    s = arr.STYLES[st]
+    if len(set(s["lead_w"])) > 1:
+        wmap = dict(zip(*arr.lead_choices(st)))
+        top = s["leads"][s["lead_w"].index(max(s["lead_w"]))]
+        bot = s["leads"][s["lead_w"].index(min(s["lead_w"]))]
+        check(wmap[top] > wmap[bot], "lead_w affinity ignored within signature: %s" % st)
+# corpus: most leads are now style-suited (the "only ~2/12 style-suited" failure) ---
+_suited = 0
+for v in CORPUS:
+    _n, _m = motif.generate(v)
+    if _m["lead_prog"] in set(arr.STYLES[_m["style"]]["leads"]):
+        _suited += 1
+check(_suited >= 9, "too few corpus leads style-suited: %d/12 (want >=9)" % _suited)
+
 # --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
 lows = []
 for v in CORPUS:

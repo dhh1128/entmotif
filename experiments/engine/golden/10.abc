@@ -1,6 +1,6 @@
 X:1
 T:addr1q9c0sj9wp29txqlt0qkc4cz76d5szl4xqgmgpw70ay9zkmskq7stm5kkjjjvrjz9p3kgxx0plzkphkn2yepg6w2zjphshtm0rl
-C:entmotif [blues] G major, 120bpm, lead=nylon-guitar, perc=shuffle, form=aaba, arr=solo_bed
+C:entmotif [blues] G major, 120bpm, lead=harmonica, perc=shuffle, form=aaba, arr=solo_bed
 M:4/4
 L:1/16
 Q:1/4=120
@@ -9,7 +9,7 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G" !mp! =G,6 =C2 =G,4 ^F,4 | "Em" =G,4 ^F,2 =E,2 =G,6 z2 | "C" !mp! =C6 ^F2 =C4 =B,4 | "D" =G,4 =B,4 =A,4 z4 | "G" !mp! =D6 =G2 =D4 =C4 | "Em" =E4 =D2 =C2 =E4 z4 | "Am" !mp! =E6 =G2 =C4 =B,4 | "D" =B,4 =G,4 =A,4 z4 | "C" !mf! =G,4 =B,4 =C8 | "G" =D4 =C4 =D2 =C2 =E4 | "Am" !f! =A,2 z2 =C4 =A,8 | "D" ^F,4 =B,4 ^F,2 =G,2 =B,4 | "G" !mp! =D12 =G2 z2 | "Em" =E8 =B,8 | "D" !mf! =D6 =G2 =D4 =C4 | "G" =D4 =E,4 =G,8 |]
+"G" !mp! =B,6 =E2 =G,4 =A,4 | "Em" =B,4 =A,2 =G,2 =B,6 z2 | "C" !mp! =C6 ^F2 =G,4 =A,4 | "D" =G,4 =B,4 =A,4 z4 | "G" !mp! =D6 =G2 =B,4 =C4 | "Em" =E4 =D2 =C2 =E4 z4 | "Am" !mp! =E6 =G2 =C4 =D4 | "D" =B,4 =G,4 =A,4 z4 | "C" !mf! =C4 =G,4 =C8 | "G" =D4 =C4 =D2 =C2 =E4 | "Am" !f! =A,2 z2 =C4 =A,8 | "D" =D4 =E4 =D2 =B,2 =D4 | "G" !mp! =D12 =G2 z2 | "Em" =B,8 =E8 | "D" !mf! ^F6 =G2 =A,4 =B,4 | "G" =D4 =G,4 =G,8 |]
 V:2
 z4 [=G,=B,=D=F]2 z4 [=G,=B,=D=F]2 [=G,=B,=D=F]2 z2 | z4 [=E,=G,=B,=D]2 z4 [=E,=G,=B,=D]2 [=E,=G,=B,=D]2 z2 | z4 [=C=E=G^A]2 z4 [=C=E=G^A]2 [=C=E=G^A]2 z2 | z4 [=D^F=A=c]2 z4 [=D^F=A=c]2 [=D^F=A=c]2 z2 | z4 [=G=B=d=f]2 z4 [=G=B=d=f]2 [=G=B=d=f]2 z2 | z4 [=E=G=B=d]2 z4 [=E=G=B=d]2 [=E=G=B=d]2 z2 | z4 [=A=c=e=g]2 z4 [=A=c=e=g]2 [=A=c=e=g]2 z2 | z4 [=d^f=a=c']2 z4 [=d^f=a=c']2 [=d^f=a=c']2 z2 | z4 [=c=e=g^a]2 z4 [=c=e=g^a]2 [=c=e=g^a]2 z2 | z4 [=G=B=d=f]2 z4 [=G=B=d=f]2 [=G=B=d=f]2 z2 | z4 [=A=c=e=g]2 z4 [=A=c=e=g]2 [=A=c=e=g]2 z2 | z4 [=d^f=a=c']2 z4 [=d^f=a=c']2 [=d^f=a=c']2 z2 | z4 [=g=b=d'=f']2 z4 [=g=b=d'=f']2 [=g=b=d'=f']2 z2 | z4 [=e=g=b=d']2 z4 [=e=g=b=d']2 [=e=g=b=d']2 z2 | z4 [=d^f=a=c']2 z4 [=d^f=a=c']2 [=d^f=a=c']2 z2 | z4 [=g=b=d'=f']2 z4 [=g=b=d'=f']2 [=g=b=d'=f']2 z2 |]
 V:3
