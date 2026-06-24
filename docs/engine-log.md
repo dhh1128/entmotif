@@ -537,3 +537,70 @@ recorded as intent for v0.11+). Fixes:
 
 Determinism + avalanche green; both suites green on the v0.10 golden baseline;
 `scores-v0.10.md` + `~/winhome/Downloads/entmotif-v0.10-listen/` rendered.
+
+---
+
+## Flywheel cycle fw1 — Backlog A2: comp/bass RHYTHM-pattern variety (2026-06-24)
+
+**Backlog item A2** (v12 #08; `this.i:r4d8m1k6`), under strict TDD. The comp/bass
+grooves previously read as one fixed strong/weak cell per style; this extends the
+existing two-layer "signature common, alternates rare" model (`c2k9p0a4`, used for the
+rhythm section's INSTRUMENT in fw1's A1) to its RHYTHM. WHY: maintainer/backlog
+complaint that grooves were a simple strong/weak alternation — this consumes more of
+the hash with musically-valid, idiomatic choices while conserving the bar's duration
+(`this.i:m9p3k7a2`).
+
+**Change:**
+- `src/entmotif/arrangement.py` — added `COMP_PAT_VARIANTS`/`BASS_PAT_VARIANTS` family
+  tables + `comp_pat_choices()`/`bass_pat_choices()`. Each style's signature
+  comp_pat/bass_pat now heads a small family of idiomatic, metric-conserving variants
+  (walking↔walking_skip, stride↔stride_octave, shuffle↔shuffle_jab, comp4↔charleston,
+  skank↔skank_double, montuno↔montuno_synco, bossa↔bossa_partido, boogie↔boogie_shuffle,
+  continuo↔continuo_synco, oompah↔oompah_push, funk16↔funk16_synco, root5↔root5_arp,
+  reggae↔reggae_drop, tumbao↔tumbao_anticipate, habanera↔habanera_dotted). Added the
+  matching render branches in `comp_groove()`/`bass_groove()`, each filling exactly one
+  4/4 bar on the 16th grid. `palette_for()` now accepts comp_pat/bass_pat overrides.
+  Signature affinity ~70% (`PAT_SIG_W=5` vs `PAT_VAR_W=2`); variants reachable-but-rare.
+  Capability gate untouched (keys off the base pattern; variants share its attack demands).
+- `src/entmotif/engine.py` — draws comp_pat/bass_pat per input via two NEW Chooser
+  labels (`"comp_pat"`/`"bass_pat"`) and exposes them in meta. Because the Chooser is
+  label-keyed (hashes fp+label independently), existing draws (lead, harmony, form,
+  tempo, …) are byte-unperturbed; only the comp/bass rhythm changes.
+
+**TDD:** added a FAILING assertion block to `experiments/engine/test_motif.py` first
+(verified `AttributeError` on the missing `COMP_PAT_VARIANTS`), then the minimal change.
+The test checks every variant is on-grid, fills the bar, has a downbeat note, the
+signature is in its own family, several families have ≥2 variants, and the rendered
+comp/bass rhythm actually varies across ≥4 styles over 1500 probe inputs.
+
+**Validation:** `test_motif.py` = 0 failures (determinism + avalanche green);
+`test_golden.py` green after `--update`. 3 corpus inputs drew a variant (#4 swing
+walking_skip, #6 ragtime stride_octave, #10 blues shuffle_jab) — eyeballed: drift
+confined to comp/bass voices (chan 1/2), lead unchanged. Decision recorded in `this.i`
+(node `r4d8m1k6`); item marked DONE in `docs/flywheel.md`; `scores-fw1.md` regenerated.
+
+**Panel grades (/100):** lyricism 80 · memorability 74 · creative-technique 68 ·
+arrangement 73 · Codex(gpt-5.5) 73. (Lead-side lenses unaffected as expected; the
+change targets the rhythm-section groove, which the arrangement/Codex lenses cover.)
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a
+  real ARCH-contour journey with development on return — the persistent ceiling
+  (creative-technique lowest at 68). This is the highest-leverage open item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the rhythm-variety win is audible but the
+  comp's *pitch* relationship to the lead is the next gap.
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- The **march oom-pah comp** remains the most pointed timbral defect (the brass "pah"
+  reads as a collection of horns).
+
+**Chosen next-fix list (ranked):**
+1. **March comp fix** (Backlog A3, v12 #03) — lighten/lower the "pah" (lighter reed or
+   tuba+percussion); the only remaining well-specified, low-taste-risk A-item.
+2. **Melodic development + MEMORABILITY** (Backlog B4, tick `~77d7`/`~3yhb`) — apply
+   the earworm checklist: real ARCH contour, a reused multi-pitch HOOK, repetition-
+   WITH-development, short singable phrases, medium-LOW surprisal. PRIORITY per the
+   maintainer; taste-heavy, so be conservative and expect a re-listen.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
+   emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
