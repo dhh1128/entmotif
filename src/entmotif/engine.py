@@ -146,33 +146,47 @@ def generate(value):
             used_v4 = used_v4 or bool(cm)
             notes += cm
 
-    # ---- breath/phrasing (fw4, the #1 lyricism lever): open comma-length rests in the
-    #      LEAD as a function of phrase length so the line breathes mid-section, not only
-    #      at form boundaries. Trims durations (onsets unmoved) so the grid + metric
-    #      conservation are untouched; other voices keep their groove. ----
-    lead_notes = [n for n in notes if int(n[0]) == VoiceRole.LEAD]
-    if lead_notes:
-        rest = [n for n in notes if int(n[0]) != VoiceRole.LEAD]
-        # de-stutter (fw6, singability): cap consecutive same-pitch lead repeats at 2
-        # (pitch-only) BEFORE breathing (duration-only) — the two passes don't interact.
-        deStut = destutter(lead_notes, scale_tones(mode, key, lo, hi), arc_center(0))
-        notes = list(breathe(deStut)) + rest
+    notes = _polish_lead_phrasing(notes, mode, key, lo, hi, arc_center(0))
 
     # ---- percussion: the style's groove across the piece (skip the groove-build intro) ----
     perc_start = 2 if template == "groove_first" else 0
     perc = percussion_groove(pal.perc, perc_start, nU * 2 - perc_start, pal.perc_vel)
     notes += perc
 
-    meta = {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "style": style,
+    meta = _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
+                         form, nU, fat, template, perc, units, color, used_v4, dyn_bars)
+    return notes, meta
+
+
+def _polish_lead_phrasing(notes, mode, key, lo, hi, germ_center):
+    """Post-pass the LEAD line for singability, leaving every other voice untouched.
+
+    Two independent passes run in order: de-stutter (fw6) caps consecutive same-pitch
+    lead repeats at 2 (pitch-only) BEFORE breathe (fw4, the #1 lyricism lever) opens
+    comma-length rests as a function of phrase length (duration-only). Both trim within
+    a single note — onsets never move — so the 16th grid and metric conservation hold,
+    and the two passes don't interact. Returns the full note list (lead + the rest)."""
+    lead_notes = [n for n in notes if int(n[0]) == VoiceRole.LEAD]
+    if not lead_notes:
+        return notes
+    rest = [n for n in notes if int(n[0]) != VoiceRole.LEAD]
+    deStut = destutter(lead_notes, scale_tones(mode, key, lo, hi), germ_center)
+    return list(breathe(deStut)) + rest
+
+
+def _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
+                  form, num_units, fat, template, perc, units, color, used_v4, dyn_bars):
+    """Assemble the decision/structure metadata dict that travels alongside the notes
+    (consumed by the exporters and the test suite). Pure aggregation — no choices."""
+    return {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "style": style,
             "lead": gm_name(lead), "lead_prog": lead, "comp_prog": pal.comp_program,
             "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
-            "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": nU * 2,
+            "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": num_units * 2,
             "fat": fat, "arr": template, "percussion": pal.perc if perc else "none",
             "comp_pat": pal.comp_pat, "bass_pat": pal.bass_pat,
             "final_cad": units[-1].cad,
             "bar_chords": [c for _, chs, _, _ in units for c in (sym(x, mode) for x in chs)],
             "color": color, "v4": used_v4, "dyn_bars": dyn_bars}
-    return notes, meta
 
 
 def compose(value):
