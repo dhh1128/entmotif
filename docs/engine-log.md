@@ -604,3 +604,63 @@ change targets the rhythm-section groove, which the arrangement/Codex lenses cov
    maintainer; taste-heavy, so be conservative and expect a re-listen.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
    emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
+
+---
+
+## Flywheel cycle fw2 — Backlog A3: March comp fix (lighten the oom-pah "pah") (2026-06-24)
+
+**Backlog item A3** (v12 #03), under strict TDD. Picked the top unblocked Group A
+item: the march comp fix. Group A items 1 and 2 (comp/bass instrument variety +
+capability gate, and rhythm-pattern variety) were already DONE in fw1, and the
+brass-exclusion half of the march fix was already in place. The remaining,
+well-specified, low-taste-risk defect was the heavy "collection of horns" oom-pah:
+the comp "pah" on beats 2 and 4 sounded the FULL chord voicing, doubling its lowest
+voice down into the tuba's "oom" register and muddying the texture.
+
+**Change (strict TDD):**
+- First added a FAILING assertion in `experiments/engine/test_motif.py` asserting the
+  oom-pah "pah" must drop the bass-register bottom voice and sound strictly fewer
+  voices than the full voicing (verified it failed: 4 failures — "still doubles the
+  bottom voice 60" / "4 of 4 voices").
+- Then the minimal change in `src/entmotif/arrangement.py` `comp_groove()`: the
+  `oompah` and `oompah_push` patterns now use `voic[1:]` (drop the lowest voice) for
+  the "pah", so the band answers ABOVE the bass rather than on it — a thinner, crisper
+  backbeat chord. `stride` (also ragtime's keyboard bed) and tango's marcato were
+  deliberately left unchanged to avoid collateral drift.
+
+**WHY:** directly addresses the maintainer's most pointed timbral complaint while
+conserving the metric grid (`this.i:m9p3k7a2` — same onsets/durations) and the frozen
+Chooser labels.
+
+**Validation:** `test_motif.py` = 0 failures (determinism + avalanche stay green).
+Output changed intentionally for exactly one corpus input (golden score #3, the
+march); ran `test_golden.py --update`, eyeballed the diff (the "pah" now sounds 3
+voices starting at pitch 58, above the tuba oom, instead of 4 voices reaching down to
+58's octave), and confirmed both golden ABC and MIDI now green (0 failures).
+Regenerated `scores-fw2.md` (12 scores). Committed with sign-off as `4ee5a38`.
+
+**Panel grades (/100):** lyricism 74 · memorability 75 · creative-technique 72 ·
+arrangement 78 · Codex(gpt-5.5) 72.
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a
+  real ARCH-contour journey with development on return — the persistent ceiling
+  (creative-technique among the lowest). Highest-leverage open item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the comp's *pitch* relationship to the lead is
+  the next gap (the rhythm/voicing wins are audible, but the comp answers rather than
+  converses).
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- The march oom-pah "pah" lightening is **audibly landed** (arrangement highest at 78);
+  the timbral defect that drove this cycle is closed.
+
+**Chosen next-fix list (ranked):**
+1. **Melodic development + MEMORABILITY** (Backlog B4, tick `~77d7`/`~3yhb`) — apply the
+   earworm checklist: real ARCH contour, a reused multi-pitch HOOK, repetition-WITH-
+   development, short singable phrases, medium-LOW surprisal. PRIORITY per the maintainer;
+   taste-heavy, so be conservative and expect a re-listen.
+2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the
+   line's *pitches*, not just supply idiomatic rhythm under it.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
+   emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
