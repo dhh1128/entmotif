@@ -720,3 +720,65 @@ arrangement 81 · Codex(gpt-5.5) 72.
    line's *pitches*, not just supply idiomatic rhythm under it.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
    emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
+
+---
+
+## Flywheel cycle fw4 — Group B #4: BREATH / phrasing — the #1 lyricism lever (2026-06-24)
+
+**Group B #4 (melodic development + MEMORABILITY)**, under strict TDD. Group A items
+1–2 were already DONE (fw1) and A3 (march oom-pah fix) was implemented + tested (fw2),
+so this cycle took the top unblocked, maintainer-PRIORITY item — and the single biggest
+prior finding: **breath as phrasing.** The #1 lyricism finding (panel + maintainer) was
+"breath is an afterthought, not phrasing": the engine only rested at form-template
+boundaries and otherwise packed bars wall-to-wall (lead runs of 24–48 sounded notes). A
+singable line must breathe by phrase *length*, not by form structure, so the antecedent
+breathes into the consequent even mid-section.
+
+**Change (strict TDD):**
+- Added a post-render `breathe` pass over the LEAD voice (`src/entmotif/melody.py`
+  `breathe`, wired in `src/entmotif/engine.py` before percussion) that opens comma-length
+  rests as a function of phrase length so the lead never runs more than ~12 sounded notes
+  without a breath. It works by **SHORTENING a note's duration** (onsets are never moved),
+  so the bar total and the 16th grid are conserved (`this.i:m9p3k7a2`). It prefers a
+  beat-ending note (rest between phrase limbs) and the latest note in the run window (so
+  the next run stays bounded), opens a full eighth wherever a note can spare it, and falls
+  back to a sixteenth comma in a dense fast run. Comp/bass/percussion are untouched.
+
+**TDD:** wrote the failing test FIRST in `experiments/engine/test_motif.py` (lead must not
+run >12 notes without an intra-line breath gap) — verified RED (11/12 corpus pieces
+failed), then implemented to GREEN. Confirmed the test is meaningful (11/12 still fail
+with `breathe` disabled).
+
+**Validation:** `test_motif.py` = 0 failures (determinism + avalanche + all invariants
+green); `test_golden.py` updated (`--update`) — diff is lead-duration-only breaths (e.g.
+`^A4 ^D2 z2`, `^c2 z2`); comp (V:2) and bass (V:3) are byte-identical, confirming pure
+phrasing with no structural change. Both suites end green. New intent node
+`this.i:b3r8k1m7` (Breath Phrases The Line Not The Form), referenced from `melody.py` and
+`docs/flywheel.md` backlog item #4 (progress note). Regenerated `scores-fw4.md` (12 scores).
+**Still open for item #4:** ARCH contour journey, multi-pitch HOOK reuse, repetition-WITH-
+development on return, anacrusis/syncopation.
+
+**Panel grades (/100):** lyricism 76 · memorability 80 · creative-technique 68 ·
+arrangement 79 · Codex(gpt-5.5) 71.
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a
+  real ARCH-contour journey with development on return — the persistent ceiling
+  (creative-technique lowest at 68). Breath helped memorability (→80) and the line is more
+  singable, but the deeper "develop on return, don't just restate" gap remains the top item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the comp's *pitch* relationship to the lead is the
+  next gap (the rhythm/voicing wins are audible, but the comp answers rather than converses).
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- Breath-as-phrasing is **audibly landed** — the line now breathes by phrase length, not
+  just at form boundaries; the "afterthought breath / wall-to-wall bars" defect is closed.
+
+**Chosen next-fix list (ranked):**
+1. **Melodic development on return** (Group B #4, deeper half) — real ARCH contour,
+   multi-pitch HOOK reuse, repetition-WITH-development so restatements *transform*, not just
+   recur; plus anacrusis/syncopation. Highest leverage.
+2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the
+   line's *pitches*, not just supply idiomatic rhythm under it.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
+   emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
