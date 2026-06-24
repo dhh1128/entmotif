@@ -340,3 +340,58 @@ Entmotif = goal:
         musically-valid richer mapping exists. Ties together [[2p8z1m40]],
         [[k20f9a3x]], [[f7a2k930]], [[z0m4p81q]], [[d4m1z8p0]], [[c2k9p0a4]],
         [[e9k2m4p1]], [[f3a0k9m2]], [[7c4m1k0p]].
+
+    Texture Model Beyond Lead Plus Comp = decision:
+      id: p6m2v9k0
+      why: >
+        OPEN / NORTH-STAR DEBT (maintainer, 2026-06-24). The v0.x engine bakes in a
+        single HOMOPHONIC texture — one LEAD melody + a chordal COMP ("accompanying")
+        + a BASS — and that is a SIMPLIFICATION rejected by [[h0v4k7m2]]: not all
+        music is tune-plus-backing. A string quartet is four interdependent voices;
+        a fugue/invention is independent imitative lines; a chorale/hymn is
+        homorhythmic four-part harmony; much world/folk is HETEROPHONIC (simultaneous
+        variants of one line) or MONOPHONIC + drone; gamelan/polyphony don't fit
+        "lead+comp" at all. So TEXTURE itself must become a dimension (entropy-chosen,
+        conditioned on style): at least {monophonic(+drone), homophonic melody+
+        accompaniment, homorhythmic/chordal, polyphonic/contrapuntal, heterophonic},
+        and the voice model must generalize from fixed LEAD/COMP/BASS roles to N
+        Voices whose RELATIONSHIP the texture defines (equal contrapuntal voices,
+        doubling/heterophony, chordal blocks, melody+drone). The metaphor already has
+        the right primitive — Voice (AGENTS.md §4) — it is the ROLES that are
+        over-specialized. STATUS: most current idioms (ragtime, swing, blues, bossa,
+        samba, salsa, reggae, funk, gospel, march, tango) genuinely ARE homophonic,
+        so the v1 model fits them; it OVERSIMPLIFIES the art-music styles
+        (classical/baroque want counterpoint + true quartet) and BLOCKS whole
+        families (fugue, chorale, Renaissance polyphony, heterophonic world music).
+        A big v0.11+ track: add the texture dimension + a generalized N-voice model
+        with per-texture voice-leading (species-counterpoint-ish for polyphony, SATB
+        for chorale). Refines [[z0m4p81q]], [[h0v4k7m2]]; relates to [[c2k9p0a4]],
+        [[d4m1z8p0]].
+
+    Emotional Register Master Dimension = decision:
+      id: a7k0m3p9
+      why: >
+        OPEN / NORTH-STAR DEBT (maintainer, 2026-06-24): output is "emotionally
+        flat" — nothing reads as sad / mischievous / angry / tense / triumphant.
+        ROOT CAUSE: mode, tempo, register, dynamics, articulation, harmonic
+        dissonance and rhythm are each drawn INDEPENDENTLY, so their affective cues
+        never ALIGN — and affect is a GESTALT of aligned cues. FIX: add EMOTION as a
+        master dimension (a second master alongside style [[z0m4p81q]]) that is
+        entropy-chosen and then COHERENTLY conditions the affective cues in
+        Gabrielsson & Lindström's strength order: mode (major/minor) > tempo > loudness/
+        dynamics > register/pitch height > articulation (staccato/legato) >
+        timbre/brightness > harmonic dissonance/consonance > rhythmic regularity. So
+        "tense" = minor + moderate-fast + crescendo + rising register + detached +
+        dissonant color + irregular accent; "sad" = minor + slow + soft + low +
+        legato + consonant + simple; "mischievous" = major/modal + brisk + staccato +
+        leaps + bright + playful syncopation; "angry" = minor + fast + loud + wide
+        leaps + harsh; "triumphant" = major + moderate + loud + brass-ish + full.
+        Style x Emotion interact (a SAD samba vs an ANGRY samba) — emotion biases the
+        WITHIN-style choices, it does not override the idiom. CAVEAT: mode/cadence/
+        consonance affect is Western-enculturated (Smit2022, [[6b2k9p0a]]) — these are
+        cues for the typical Western listener, not universals; tempo/loudness/register
+        are more cross-cultural. Bit-bearing: emotion is a DISCRETE, recognizable
+        master choice (~2-3 bits) AND it makes every conditioned sub-cue coherent,
+        which is what makes the motif feel like SOMETHING. A big v0.11+ track with
+        [[p6m2v9k0]] (texture). Refines [[z0m4p81q]], [[7c4m1k0p]], [[h0v4k7m2]];
+        the enculturation caveat ties to [[6b2k9p0a]].

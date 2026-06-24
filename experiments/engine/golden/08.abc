@@ -1,6 +1,6 @@
 X:1
 T:EBfdlu8R27Fbx_ehrqwImnK_8Cm79sqbAQ4caaZG_LFv
-C:entmotif [swing] G# minor, 138bpm, lead=tenor-sax, perc=swing, form=period, arr=solo_bed
+C:entmotif [swing] G# minor, 138bpm, lead=jazz-guitar, perc=swing, form=period, arr=solo_bed
 M:4/4
 L:1/16
 Q:1/4=138
@@ -9,8 +9,8 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G#m" !mp! ^G4 ^d2 ^F2 =B8 | "E" ^G8 =E6 ^F2 | "C#m" !mf! =e4 =b2 ^d2 ^g8 | "D#" ^G4 =B4 ^A8 | "G#m" !f! =b2 ^c' =e ^a4 ^g4 =e3 ^f | "E" =e2 =b ^d ^g4 =e4 ^c3 ^d | "D#" !mf! =g4 ^c'2 =e2 ^a8 | "G#m" =B4 ^A4 ^G8 |]
+"G#m" !mp! ^D4 ^A2 ^C2 ^G8 | "E" =E8 ^G6 =E2 | "C#m" !mf! ^c4 ^g2 =B2 =e8 | "D#" ^G4 =B4 ^A8 | "G#m" !f! ^g2 ^g =B ^f4 ^d4 ^f3 ^d | "E" =e2 ^g =B ^f4 =e4 ^g3 =e | "D#" !mf! ^d4 ^g2 =B2 =g8 | "G#m" =B4 ^A4 ^G8 |]
 V:2
-z16 | z16 | [^C,=E,^G,=B,]2 z2 [^C,=E,^G,=B,]2 z2 [^C,=E,^G,=B,]2 z2 [^C,=E,^G,=B,]2 z2 | [^D,=G,^A,^C]2 z2 [^D,=G,^A,^C]2 z2 [^D,=G,^A,^C]2 z2 [^D,=G,^A,^C]2 z2 | [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 | [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 | z16 | z16 |]
+z16 | z16 | [^C,,=E,,^G,,=B,,]2 z2 [^C,,=E,,^G,,=B,,]2 z2 [^C,,=E,,^G,,=B,,]2 z2 [^C,,=E,,^G,,=B,,]2 z2 | [^D,,=G,,^A,,^C,]2 z2 [^D,,=G,,^A,,^C,]2 z2 [^D,,=G,,^A,,^C,]2 z2 [^D,,=G,,^A,,^C,]2 z2 | [^G,,=B,,^D,^F,]2 z2 [^G,,=B,,^D,^F,]2 z2 [^G,,=B,,^D,^F,]2 z2 [^G,,=B,,^D,^F,]2 z2 | [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 z2 [=E,,^G,,=B,,=D,]2 z2 | z16 | z16 |]
 V:3
 ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^C,,4 =E,,4 ^G,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 =G,,4 | ^G,,4 =B,,4 ^D,,4 ^G,,4 |]

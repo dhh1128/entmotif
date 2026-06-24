@@ -1,6 +1,6 @@
 X:1
 T:bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4
-C:entmotif [swing] G# minor, 184bpm, lead=vibraphone, perc=swing, form=aaba, arr=solo_bed
+C:entmotif [swing] G# minor, 184bpm, lead=accordion, perc=swing, form=aaba, arr=solo_bed
 M:4/4
 L:1/16
 Q:1/4=184
@@ -9,8 +9,8 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G#m" !mp! ^G4 =e2 ^G2 ^d8 | "E" =E2 =B2 ^G4 =B4 ^F4 | "A#" !mp! ^A4 ^f2 ^A2 =f8 | "D#" ^G4 =B4 ^A8 | "G#m" !mp! =B4 ^D2 =B2 ^D8 | "E" =B2 =E2 ^G4 =E4 ^A4 | "A#dim" !mp! ^a4 ^c'2 =e2 ^a8 | "D#" ^G4 =B4 ^A8 | "C#m" !mf! ^G8 ^c4 =B4 | "G#m" ^g2 ^a2 ^f2 ^a2 ^g6 z2 | "A#dim" !f! ^A8 =e4 ^d4 | "D#" ^a2 ^f2 ^a2 ^c'2 ^a4 z4 | "G#m" !mp! ^g4 ^c'2 =e2 ^d4 =b2 ^d2 | "E" =e4 ^c'2 =e2 ^g4 ^c'2 =e2 | "D#" !mf! ^d4 =b2 ^d2 ^a8 | "G#m" =B4 ^A4 ^G8 |]
+"G#m" !mp! ^D4 =B2 ^D2 ^G8 | "E" =E2 ^F2 ^C4 =E4 ^G4 | "A#" !mp! =F4 ^c2 =E2 ^A8 | "D#" ^G4 =B4 ^A8 | "G#m" !mp! =B4 ^D2 =B2 ^G8 | "E" =B2 ^A2 ^d4 =B4 ^G4 | "A#dim" !mp! =e4 ^g2 =B2 =e8 | "D#" ^G4 =B4 ^A8 | "C#m" !mf! =E8 ^G4 ^F4 | "G#m" =B2 ^G2 =B2 ^d2 ^g6 z2 | "A#dim" !f! =E8 ^A4 ^G4 | "D#" ^d2 =B2 ^d2 ^f2 =g4 z4 | "G#m" !mp! ^d4 ^g2 =B2 ^G4 =e2 ^G2 | "E" =B4 ^g2 =B2 ^G4 =e2 ^G2 | "A#dim" !mf! ^A4 ^f2 ^A2 =e8 | "D#" ^G4 =B4 ^A8 |]
 V:2
-z16 | z16 | [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 | [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 | [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 | [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 | [^A,^C=E]2 z2 [^A,^C=E]2 z2 [^A,^C=E]2 z2 [^A,^C=E]2 z2 | [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 | [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 | [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 | [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 | [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 | [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 | [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 | z16 | z16 |]
+z16 | z16 | [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 [^A,,=D,=F,]2 z2 | [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 | [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 [^G,=B,^D]2 z2 | [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 [=E,^G,=B,]2 z2 | [^A,^C=E]2 z2 [^A,^C=E]2 z2 [^A,^C=E]2 z2 [^A,^C=E]2 z2 | [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 [^D,=G,^A,]2 z2 | [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 [^C,=E,^G,]2 z2 | [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 | [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 [^A,,^C,=E,]2 z2 | [^D,,=G,,^A,,]2 z2 [^D,,=G,,^A,,]2 z2 [^D,,=G,,^A,,]2 z2 [^D,,=G,,^A,,]2 z2 | [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 [^G,,=B,,^D,]2 z2 | [=E,,^G,,=B,,]2 z2 [=E,,^G,,=B,,]2 z2 [=E,,^G,,=B,,]2 z2 [=E,,^G,,=B,,]2 z2 | z16 | z16 |]
 V:3
-^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^A,,4 =D,,4 =F,,4 =D,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^A,,4 ^C,,4 =E,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^C,,4 =E,,4 ^G,,4 ^G,,4 | ^G,,4 =B,,4 ^D,,4 ^G,,4 | ^A,,4 ^C,,4 =E,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 =G,,4 | ^G,,4 =B,,4 ^D,,4 ^G,,4 |]
+^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^A,,4 =D,,4 =F,,4 =D,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^A,,4 ^C,,4 =E,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^C,,4 =E,,4 ^G,,4 ^G,,4 | ^G,,4 =B,,4 ^D,,4 ^G,,4 | ^A,,4 ^C,,4 =E,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^A,,4 ^C,,4 =E,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 |]

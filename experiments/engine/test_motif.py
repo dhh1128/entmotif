@@ -54,14 +54,17 @@ for v in CORPUS:
                 check(pitch % 12 in pcs,
                       "bass downbeat non-chord-tone: %s bar%d pc%d not in %s" % (v, bar, pitch % 12, pcs))
 
-# --- round-4: final cadence resolves (last melodic note in the tonic triad) ---
+# --- v0.10: an AUTHENTIC final resolves to the tonic triad; half/deceptive finals
+#     are deliberately open (maintainer wants cadence variety, not always a full close) ---
 for v in CORPUS:
     notes, m = motif.generate(v)
-    mel = [n for n in notes if n[0] in (0, 3)]
+    if m.get("final_cad") != "authentic":
+        continue
+    mel = [n for n in notes if int(n[0]) in (0, 3)]
     last = max(mel, key=lambda n: n[3])
     tonic = [p % 12 for p in motif.cpcs("I" if m["mode"] == "major" else "i", m["mode"], m["key"])]
     check(last[1] % 12 in tonic,
-          "final unresolved: %s ends on pc%d (tonic triad %s)" % (v, last[1] % 12, tonic))
+          "authentic final unresolved: %s ends on pc%d (tonic triad %s)" % (v, last[1] % 12, tonic))
 
 # --- v0.8: lead (chan 0) present in EVERY bar (per-BAR, tighter than round-4's
 #          per-unit check) except the groove_first 2-bar intro (fixes the z16 hole) ---

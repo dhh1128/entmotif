@@ -501,3 +501,39 @@ unconsumed fingerprint bits.
 Determinism + avalanche green; both suites green on the v0.9 golden baseline.
 `scores-v0.9.md` regenerated; corpus audio rendered to
 `~/winhome/Downloads/entmotif-v0.9-listen/`. **Grades pending the maintainer's listen.**
+
+### Round 6.5 — engine v0.10 (built 2026-06-24; from the maintainer's v0.9 listen)
+
+The v0.9 listen produced a dense round of feedback (all addressed; two deep items
+recorded as intent for v0.11+). Fixes:
+- **Broad LEAD palette via the two-layer capability model** (this.i:c2k9p0a4): the
+  lead is now drawn from a wide pool (`LEAD_POOL`, ~50 timbres incl. guitar/banjo/
+  oboe/french-horn/harp/koto/shamisen/kalimba/pan-flute/vibes/contrabass-family) by a
+  CAPABILITY gate (register reach + per-style minimum **agility**) and an AFFINITY
+  weight (signature ~80% common; "weird-but-valid" ~20% rare — a koto over swing, a
+  clarinet/banjo/synth ragtime over the piano stride bed; church-organ ragtime is
+  correctly excluded by agility). Fixes "weird instruments common" + "not hearing
+  guitar/banjo/oboe/koto…". (Confirmed selection always SHA-512-driven.)
+- **Lead ≠ comp timbre** (fixes v0.9 reggae "organ comping organ huffing"); keyboard-
+  bed styles (ragtime/boogie) intentionally keep the piano bed.
+- **Percussion audible** (perc velocity 30-60 → 62-104, sits in the mix) and **bass
+  cuts through** (bass velocity → ~80-112) — fixes "no percussion / can't hear bass /
+  2-instrument feel".
+- **Lower, less-shrill register** (window dropped from tonic+19 to tonic+12; per-style
+  reg centers lowered) — fixes "shrill / all C4-C6 / too high".
+- **Cadence variety** (this round): the final cadence is entropy-chosen authentic
+  (common) / half-open / deceptive — no longer always a full close (maintainer
+  request). Test relaxed: only authentic finals must land on the tonic.
+- **Ragtime livelier** (tempos 104-140); blues comp moved on-grid (fixes #9 off-grid
+  "stutter").
+
+**Recorded as intent for the big v0.11+ tracks (north star [[h0v4k7m2]]):**
+- **Texture model beyond lead+comp** (this.i:p6m2v9k0): the homophonic melody+
+  accompaniment+bass frame is itself a simplification — a string quartet/fugue/chorale/
+  heterophony don't fit it. Needs a TEXTURE dimension + a generalized N-voice model.
+- **Emotional register master dimension** (this.i:a7k0m3p9): output is "emotionally
+  flat" because mode/tempo/register/dynamics/articulation are chosen independently;
+  add EMOTION as a master that coherently aligns those cues (sad/tense/mischievous/…).
+
+Determinism + avalanche green; both suites green on the v0.10 golden baseline;
+`scores-v0.10.md` + `~/winhome/Downloads/entmotif-v0.10-listen/` rendered.

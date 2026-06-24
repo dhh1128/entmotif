@@ -1,6 +1,6 @@
 X:1
 T:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
-C:entmotif [march] F# major, 124bpm, lead=trumpet, perc=march, form=period_tag, arr=call_resp
+C:entmotif [march] F# major, 124bpm, lead=jazz-guitar, perc=march, form=period_tag, arr=call_resp
 M:4/4
 L:1/16
 Q:1/4=124
@@ -10,10 +10,10 @@ V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"F#" !mp! ^F3 ^C ^G4 ^A8 | "D#m" ^f4 =B8 ^d4 | "B" !mp! =B16 | "C#" ^f4 ^a4 ^g4 z4 | "F#" !mf! ^f3 ^c ^g4 ^a8 | "D#m" ^f4 =B8 ^d4 | "G#m" !f! =b16 | "C#" ^f4 ^a4 ^g4 z4 | "F#" !mp! ^c3 ^G ^d4 ^f8 | "D#m" ^a4 ^d8 ^f4 | "C#" !mf! ^c16 | "F#" ^a4 ^g4 ^f8 |]
+"F#" !mp! ^C3 =B, ^C4 ^F8 | "D#m" ^d4 ^G8 ^c4 | "B" !mp! ^F16 | "C#" ^F4 ^A4 ^G4 z4 | "F#" !mf! ^c3 =B ^c4 ^f8 | "D#m" ^d4 ^G8 ^c4 | "G#m" !f! ^d16 | "C#" ^F4 ^A4 ^G4 z4 | "F#" !mp! ^F3 =F ^F4 ^A8 | "D#m" ^f4 =B8 =f4 | "C#" !mf! ^G16 | "D#m" ^G4 ^A4 ^d8 |]
 V:2
-z16 | z16 | z4 [=B,,^D,^F,=A,]3 z5 [=B,,^D,^F,=A,]3 z | z4 [^C,=F,^G,=B,]3 z5 [^C,=F,^G,=B,]3 z | z16 | z16 | z4 [^G,,=B,,^D,^F,]3 z5 [^G,,=B,,^D,^F,]3 z | z4 [^C,=F,^G,=B,]3 z5 [^C,=F,^G,=B,]3 z | z16 | z16 | z16 | z16 |]
+z16 | z16 | z4 [=B,,,^D,,^F,,=A,,]3 z5 [=B,,,^D,,^F,,=A,,]3 z | z4 [^C,,=F,,^G,,=B,,]3 z5 [^C,,=F,,^G,,=B,,]3 z | z16 | z16 | z4 [^G,,,=B,,,^D,,^F,,]3 z5 [^G,,,=B,,,^D,,^F,,]3 z | z4 [^C,,=F,,^G,,=B,,]3 z5 [^C,,=F,,^G,,=B,,]3 z | z16 | z16 | z16 | z16 |]
 V:3
-^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | =B,,4 z4 ^F,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^G,,4 z4 ^D,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 |]
+^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | =B,,4 z4 ^F,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^G,,4 z4 ^D,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^D,,4 z4 ^A,,4 z4 |]
 V:4
-z16 | z16 | =B3 =f ^A4 ^F8 | z16 | z16 | z16 | =b3 ^c' ^f4 ^d8 | z16 | z16 | z16 | ^c3 ^G ^d4 =f8 | z16 |]
+z16 | z16 | ^F3 ^G ^F4 =B,8 | z16 | z16 | z16 | ^d3 =f ^d4 =B8 | z16 | z16 | z16 | ^G3 ^F ^G4 ^c8 | z16 |]

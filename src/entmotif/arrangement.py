@@ -33,80 +33,142 @@ CLAVE, WOOD_H, WOOD_L, GUIRO, CABASA, MARACAS, SHAKER, TAMB, TRIANGLE, CUICA, VI
 # --- the 14 idioms. comp/bass/drum name a groove (below); leads/comp/bass are GM
 # programs; reg is the lead (lo,hi,center); color_w/fat_w bias harmony+voicing;
 # mode_w biases major vs minor; legato sustains the comp. -----------------------
+# reg is the lead's (lo,hi,center) — kept lower/singable (v0.10: melodies were shrill);
+# lead_w is the AFFINITY weight per lead (signature instrument common, atypical rare);
+# perc_vel is loud enough to sit IN the mix (v0.10: percussion was buried 30-50 below).
 STYLES = {
-    "classical":     dict(leads=[0, 40, 73, 68], comp=0, bass=42, comp_pat="alberti",
-                          bass_pat="root5", perc="none", perc_vel=0, reg=PitchRange(55, 86, 68),
-                          tempos=[88, 100, 112, 126], tempo_w=[3, 4, 3, 2],
+    "classical":     dict(leads=[0, 40, 73, 68], lead_w=[3, 3, 2, 2], comp=48, bass=42,
+                          comp_pat="alberti", bass_pat="root5", perc="none", perc_vel=0,
+                          reg=PitchRange(52, 79, 62), tempos=[88, 100, 112, 126], tempo_w=[3, 4, 3, 2],
                           color_w=[3, 4, 1], fat_w=[1, 3, 3, 1], mode_w=[3, 2], legato=True),
-    "baroque":       dict(leads=[6, 40, 73, 68], comp=6, bass=42, comp_pat="continuo",
-                          bass_pat="continuo", perc="none", perc_vel=0, reg=PitchRange(55, 84, 67),
-                          tempos=[72, 84, 96, 108], tempo_w=[2, 4, 3, 2],
+    "baroque":       dict(leads=[6, 40, 73, 68], lead_w=[3, 3, 2, 2], comp=6, bass=42,
+                          comp_pat="continuo", bass_pat="continuo", perc="none", perc_vel=0,
+                          reg=PitchRange(52, 79, 62), tempos=[72, 84, 96, 108], tempo_w=[2, 4, 3, 2],
                           color_w=[2, 4, 2], fat_w=[1, 3, 3, 1], mode_w=[2, 2], legato=False),
-    "ragtime":       dict(leads=[0], comp=0, bass=0, comp_pat="stride", bass_pat="stride",
-                          perc="none", perc_vel=0, reg=PitchRange(60, 90, 74),
-                          tempos=[88, 96, 104, 112], tempo_w=[2, 3, 3, 2],
+    "ragtime":       dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="stride", bass_pat="stride",
+                          perc="none", perc_vel=0, reg=PitchRange(55, 82, 65),
+                          tempos=[104, 116, 128, 140], tempo_w=[2, 3, 3, 2],
                           color_w=[2, 4, 2], fat_w=[2, 3, 2, 1], mode_w=[4, 1], legato=False),
-    "boogie_woogie": dict(leads=[0], comp=0, bass=0, comp_pat="none", bass_pat="boogie",
-                          perc="shuffle", perc_vel=46, reg=PitchRange(60, 90, 74),
+    "boogie_woogie": dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="none", bass_pat="boogie",
+                          perc="shuffle", perc_vel=92, reg=PitchRange(55, 82, 65),
                           tempos=[120, 138, 152, 168], tempo_w=[2, 3, 3, 2],
                           color_w=[1, 2, 4], fat_w=[1, 2, 3, 2], mode_w=[4, 1], legato=False),
-    "swing":         dict(leads=[66, 56, 11, 26], comp=26, bass=32, comp_pat="comp4",
-                          bass_pat="walking", perc="swing", perc_vel=60, reg=PitchRange(54, 86, 69),
-                          tempos=[120, 138, 160, 184], tempo_w=[3, 4, 3, 2],
+    "swing":         dict(leads=[66, 56, 11, 26], lead_w=[4, 4, 2, 2], comp=26, bass=32,
+                          comp_pat="comp4", bass_pat="walking", perc="swing", perc_vel=92,
+                          reg=PitchRange(52, 81, 64), tempos=[120, 138, 160, 184], tempo_w=[3, 4, 3, 2],
                           color_w=[0, 2, 4], fat_w=[0, 1, 3, 4], mode_w=[3, 2], legato=False),
-    "blues":         dict(leads=[25, 22, 18, 29], comp=18, bass=33, comp_pat="shuffle",
-                          bass_pat="shuffle", perc="shuffle", perc_vel=64, reg=PitchRange(52, 82, 64),
-                          tempos=[76, 92, 108, 120], tempo_w=[2, 4, 3, 2],
+    "blues":         dict(leads=[25, 22, 18, 29], lead_w=[3, 3, 2, 3], comp=18, bass=33,
+                          comp_pat="shuffle", bass_pat="shuffle", perc="shuffle", perc_vel=96,
+                          reg=PitchRange(48, 76, 60), tempos=[76, 92, 108, 120], tempo_w=[2, 4, 3, 2],
                           color_w=[1, 2, 4], fat_w=[0, 2, 3, 2], mode_w=[3, 3], legato=False),
-    "bossa_nova":    dict(leads=[24, 73, 11], comp=24, bass=32, comp_pat="bossa",
-                          bass_pat="twofeel", perc="bossa", perc_vel=46, reg=PitchRange(55, 84, 67),
+    "bossa_nova":    dict(leads=[24, 73, 11], lead_w=[4, 3, 2], comp=24, bass=32, comp_pat="bossa",
+                          bass_pat="twofeel", perc="bossa", perc_vel=82, reg=PitchRange(53, 80, 63),
                           tempos=[120, 132, 144], tempo_w=[3, 4, 3],
                           color_w=[0, 2, 4], fat_w=[0, 2, 3, 3], mode_w=[3, 2], legato=False),
-    "samba":         dict(leads=[73, 56, 24, 11], comp=24, bass=32, comp_pat="bossa",
-                          bass_pat="samba", perc="samba", perc_vel=62, reg=PitchRange(57, 88, 71),
-                          tempos=[152, 168, 184, 200], tempo_w=[2, 3, 3, 2],
+    "samba":         dict(leads=[73, 56, 24, 11], lead_w=[3, 3, 3, 2], comp=24, bass=32,
+                          comp_pat="bossa", bass_pat="samba", perc="samba", perc_vel=100,
+                          reg=PitchRange(55, 83, 66), tempos=[152, 168, 184, 200], tempo_w=[2, 3, 3, 2],
                           color_w=[1, 3, 3], fat_w=[1, 2, 3, 2], mode_w=[3, 2], legato=False),
-    "salsa":         dict(leads=[56, 61, 65, 73], comp=0, bass=32, comp_pat="montuno",
-                          bass_pat="tumbao", perc="salsa", perc_vel=62, reg=PitchRange(56, 88, 70),
-                          tempos=[150, 168, 184], tempo_w=[2, 3, 2],
+    "salsa":         dict(leads=[56, 61, 65, 73], lead_w=[4, 2, 3, 2], comp=0, bass=32,
+                          comp_pat="montuno", bass_pat="tumbao", perc="salsa", perc_vel=98,
+                          reg=PitchRange(54, 82, 65), tempos=[150, 168, 184], tempo_w=[2, 3, 2],
                           color_w=[1, 3, 3], fat_w=[0, 2, 3, 2], mode_w=[2, 3], legato=False),
-    "tango":         dict(leads=[21, 40, 0], comp=21, bass=43, comp_pat="marcato",
-                          bass_pat="habanera", perc="none", perc_vel=0, reg=PitchRange(52, 82, 64),
+    "tango":         dict(leads=[21, 40, 0], lead_w=[4, 3, 2], comp=21, bass=43, comp_pat="marcato",
+                          bass_pat="habanera", perc="none", perc_vel=0, reg=PitchRange(50, 77, 60),
                           tempos=[100, 116, 132], tempo_w=[3, 4, 2],
                           color_w=[2, 3, 3], fat_w=[1, 3, 3, 1], mode_w=[1, 4], legato=False),
-    "reggae":        dict(leads=[18, 27, 0], comp=18, bass=33, comp_pat="skank",
-                          bass_pat="reggae", perc="one_drop", perc_vel=58, reg=PitchRange(54, 82, 66),
+    "reggae":        dict(leads=[18, 0, 73], lead_w=[4, 2, 2], comp=27, bass=33, comp_pat="skank",
+                          bass_pat="reggae", perc="one_drop", perc_vel=94, reg=PitchRange(50, 78, 61),
                           tempos=[72, 80, 92], tempo_w=[3, 4, 2],
                           color_w=[3, 3, 1], fat_w=[2, 3, 2, 1], mode_w=[3, 2], legato=False),
-    "funk":          dict(leads=[80, 7, 65, 29], comp=7, bass=36, comp_pat="funk16",
-                          bass_pat="funk", perc="funk", perc_vel=72, reg=PitchRange(55, 86, 69),
-                          tempos=[96, 108, 116, 124], tempo_w=[2, 3, 3, 2],
+    "funk":          dict(leads=[80, 7, 65, 29], lead_w=[2, 3, 3, 3], comp=7, bass=36,
+                          comp_pat="funk16", bass_pat="funk", perc="funk", perc_vel=104,
+                          reg=PitchRange(52, 80, 63), tempos=[96, 108, 116, 124], tempo_w=[2, 3, 3, 2],
                           color_w=[1, 2, 4], fat_w=[0, 2, 3, 3], mode_w=[2, 3], legato=False),
-    "gospel":        dict(leads=[0, 19, 53, 56], comp=19, bass=33, comp_pat="comp4",
-                          bass_pat="walking", perc="backbeat", perc_vel=66, reg=PitchRange(54, 84, 66),
-                          tempos=[76, 88, 100], tempo_w=[3, 4, 3],
+    "gospel":        dict(leads=[0, 19, 53, 56], lead_w=[4, 3, 2, 2], comp=19, bass=33,
+                          comp_pat="comp4", bass_pat="walking", perc="backbeat", perc_vel=96,
+                          reg=PitchRange(52, 79, 62), tempos=[76, 88, 100], tempo_w=[3, 4, 3],
                           color_w=[1, 3, 4], fat_w=[0, 1, 3, 4], mode_w=[4, 1], legato=True),
-    "march":         dict(leads=[56, 61, 57, 71], comp=61, bass=58, comp_pat="oompah",
-                          bass_pat="stride", perc="march", perc_vel=70, reg=PitchRange(56, 86, 69),
-                          tempos=[108, 116, 124], tempo_w=[3, 4, 2],
+    "march":         dict(leads=[56, 61, 57, 71], lead_w=[4, 3, 3, 2], comp=61, bass=58,
+                          comp_pat="oompah", bass_pat="stride", perc="march", perc_vel=96,
+                          reg=PitchRange(55, 82, 66), tempos=[108, 116, 124], tempo_w=[3, 4, 2],
                           color_w=[3, 3, 1], fat_w=[1, 3, 3, 1], mode_w=[4, 1], legato=False),
 }
 STYLE_NAMES = list(STYLES.keys())
 STYLE_W = [3, 2, 3, 3, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2]         # all reachable; classics + grooves common
+KEYBOARD_BED_STYLES = {"ragtime", "boogie_woogie"}           # bed IS the keyboard (stride/ostinato): comp stays
+#   piano even when the lead is also piano (solo ragtime) — but the lead may still be a
+#   capable non-piano timbre (clarinet/banjo/synth) played OVER that piano bed.
 
 GM_NAMES = {
-    0: "piano", 6: "harpsichord", 7: "clavinet", 11: "vibraphone", 18: "rock-organ",
-    19: "church-organ", 21: "accordion", 22: "harmonica", 24: "nylon-guitar",
+    0: "piano", 4: "e-piano", 6: "harpsichord", 7: "clavinet", 8: "celesta", 9: "glockenspiel",
+    10: "music-box", 11: "vibraphone", 12: "marimba", 13: "xylophone", 16: "drawbar-organ",
+    18: "rock-organ", 19: "church-organ", 21: "accordion", 22: "harmonica", 24: "nylon-guitar",
     25: "steel-guitar", 26: "jazz-guitar", 27: "clean-guitar", 29: "od-guitar",
-    32: "acoustic-bass", 33: "fingered-bass", 36: "slap-bass", 40: "violin", 42: "cello",
-    43: "contrabass", 53: "voice-oohs", 56: "trumpet", 57: "trombone", 58: "tuba",
-    61: "brass", 65: "alto-sax", 66: "tenor-sax", 68: "oboe", 71: "clarinet", 73: "flute",
-    80: "square-lead",
+    32: "acoustic-bass", 33: "fingered-bass", 36: "slap-bass", 40: "violin", 41: "viola",
+    42: "cello", 43: "contrabass", 45: "pizz-strings", 46: "harp", 53: "voice-oohs",
+    56: "trumpet", 57: "trombone", 58: "tuba", 59: "muted-trumpet", 60: "french-horn",
+    61: "brass", 65: "alto-sax", 66: "tenor-sax", 68: "oboe", 69: "english-horn", 70: "bassoon",
+    71: "clarinet", 72: "piccolo", 73: "flute", 74: "recorder", 75: "pan-flute",
+    48: "string-ensemble", 77: "shakuhachi", 78: "whistle", 79: "ocarina",
+    80: "square-lead", 81: "saw-lead",
+    105: "banjo", 106: "shamisen", 107: "koto", 108: "kalimba", 111: "shanai", 114: "steel-drums",
 }
 
 
 def gm_name(program):
     return GM_NAMES.get(program, "prog%d" % program)
+
+
+# The broad LEAD palette (two-layer model, this.i:c2k9p0a4): the STYLE owns the bed;
+# the lead is chosen from this wide pool of melodic timbres — strings, winds, brass,
+# keys, mallets, guitars, world/folk (koto, shamisen, kalimba, banjo, shanai, pan/
+# wood flute…). program -> comfortable register CENTER (MIDI). A lead is eligible for
+# a style if its center is within ~an octave of the style's register, and gets a high
+# AFFINITY weight if it is one of that style's signature instruments, else a low base
+# weight (so "weird-but-valid" leads — koto over swing — appear rarely, not never).
+# (Oud and sitar are deferred per this.i:q9f3a7k2 / maintainer, so excluded here.)
+LEAD_POOL = {
+    0: 60, 4: 60, 6: 64, 7: 60, 8: 74, 9: 84, 10: 80, 11: 66, 12: 64, 13: 76,
+    16: 60, 18: 60, 21: 60, 22: 64, 24: 60, 25: 62, 26: 62, 27: 62, 29: 62,
+    40: 67, 41: 60, 42: 52, 45: 57, 46: 62, 53: 60, 56: 66, 57: 52, 59: 64, 60: 58,
+    61: 60, 65: 66, 66: 58, 68: 70, 69: 62, 70: 50, 71: 62, 72: 84, 73: 74, 74: 72,
+    75: 72, 77: 70, 78: 78, 79: 76, 80: 66, 81: 66, 105: 64, 106: 64, 107: 66,
+    108: 66, 111: 68, 114: 64,
+}
+LEAD_SIG_W, LEAD_BASE_W, LEAD_REACH = 16, 1, 8               # signature ~80% (typical common); weird ~20% (rare)
+
+# CAPABILITY attribute (this.i:c2k9p0a4): AGILITY 0..2 = how well a timbre carries a
+# fast/syncopated melodic line (0 = slow/sustained-only, 2 = nimble/clean-attack).
+# Default 2; only the less-agile timbres are listed. A style then REQUIRES a minimum
+# agility for its lead, so a non-piano ragtime lead is allowed ONLY if it can actually
+# play ragtime (clarinet/banjo yes; church-organ/pad no) — capability, not a hard lock.
+LEAD_AGILITY = {
+    10: 1, 16: 1, 18: 1, 19: 0, 42: 1, 53: 0, 57: 1, 60: 1, 69: 1, 70: 1,
+    75: 1, 77: 1, 78: 1, 79: 1, 108: 1, 114: 1,
+}
+STYLE_MIN_AGILE = {                                           # what the idiom demands of its lead
+    "ragtime": 2, "boogie_woogie": 2, "funk": 2, "samba": 2, "salsa": 2,
+    "swing": 1, "blues": 1, "bossa_nova": 1, "march": 1, "reggae": 1, "tango": 1,
+    "classical": 0, "baroque": 0, "gospel": 0,
+}
+
+
+def lead_choices(style):
+    """(programs, weights) for the lead. The lead is chosen by a CAPABILITY gate
+    (register reach + the style's minimum agility) AND an affinity weight (signature
+    timbres dominate; capable others reachable-but-rare). So ragtime can take a
+    clarinet or banjo lead over its piano stride bed, but not a church organ."""
+    sig = STYLES[style]["leads"]
+    sigset, center = set(sig), STYLES[style]["reg"].center
+    min_ag = STYLE_MIN_AGILE.get(style, 0)
+    progs, wts = [], []
+    for p, c in LEAD_POOL.items():
+        capable = abs(c - center) <= LEAD_REACH and LEAD_AGILITY.get(p, 2) >= min_ag
+        if p in sigset or capable:
+            progs.append(p)
+            wts.append(LEAD_SIG_W if p in sigset else LEAD_BASE_W)
+    return progs, wts
 
 
 class Palette(NamedTuple):
@@ -125,7 +187,11 @@ class Palette(NamedTuple):
 
 def palette_for(style, lead):
     s = STYLES[style]
-    return Palette(style, lead, s["comp"], s["bass"], lead, s["reg"],
+    comp = s["comp"]
+    if comp == lead and style not in KEYBOARD_BED_STYLES:    # never comp on the lead's own timbre (the v0.9
+        comp = 48 if lead != 0 else 0                        # "organ-on-organ huffing"); contrast piano<->strings
+    #   (keyboard-bed styles keep comp==piano: the stride bed needs the piano)
+    return Palette(style, lead, comp, s["bass"], lead, s["reg"],   # antiphon answers on the lead's own voice
                    s["comp_pat"], s["bass_pat"], s["perc"], s["perc_vel"], s["legato"])
 
 
@@ -209,9 +275,9 @@ def comp_groove(pat, voic, base, vel, legato):
     elif pat == "funk16":                                     # funk 16th stabs (syncopated)
         for beat in [0, 0.75, 1.5, 2.25, 3, 3.5]:
             chord(beat, 0.25, vel)
-    elif pat == "shuffle":                                    # blues shuffle chord jabs
-        for beat in [0, 1, 2, 3]:
-            chord(beat + 0.66, 0.34, vel - 6)
+    elif pat == "shuffle":                                    # blues: on-grid backbeat chord jabs (no off-grid stutter)
+        chord(1, 0.5, vel - 4)
+        chord(3, 0.5, vel - 4)
     return out
 
 
@@ -357,8 +423,8 @@ def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, comp_pat, bass_pat,
     tracks vel_base (sits with the melody); voicings voice-lead from prev_voicing.
     Returns (notes, last_voicing)."""
     out, top, voicing = [], melody_lo - 4, prev_voicing
-    comp_vel = max(52, vel_base - 12)
-    bass_vel = max(54, vel_base - 4)
+    comp_vel = max(56, vel_base - 10)
+    bass_vel = max(78, vel_base + 2)                          # bass must cut through (was buried in v0.9)
     roots = [cpcs(s, mode, key)[0] for s in chords2]
     for b, s in enumerate(chords2):
         pcs = cpcs(s, mode, key)

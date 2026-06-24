@@ -13,7 +13,8 @@ from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
     unit_dyn, line, cadence_bar, motif_shape, render_transform, choose_transform)
 from entmotif.arrangement import (
-    STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, arrange_unit, percussion_groove)
+    STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
+    arrange_unit, percussion_groove)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -30,11 +31,11 @@ def generate(value):
     S = STYLES[style]
     mode = ch.weighted("mode", ["major", "minor"], S["mode_w"])  # style-biased (tango minor, march major...)
     key = ch.int("key", 12)
-    lead = ch.choice("lead", S["leads"])
+    lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
     pal = palette_for(style, lead)
     ilo, ihi, icen = pal.range
     tonic = snap(icen, [key], ilo, ihi - 12)
-    lo, hi = max(ilo, tonic - 5), min(ihi, tonic + 19)        # ~2 octaves (wider than v0.8's ~1.5)
+    lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct, sitting LOWER (v0.9 was shrill/too high)
     base = lo + (hi - lo) // 4
     tempo = ch.weighted("tempo", S["tempos"], S["tempo_w"])   # per-style tempo range (up to 208)
     leap = ch.weighted("leap", [0, 1, 2], [3, 4, 2])
@@ -147,6 +148,7 @@ def generate(value):
             "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
             "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": nU * 2,
             "fat": fat, "arr": template, "percussion": pal.perc if perc else "none",
+            "final_cad": units[-1].cad,
             "bar_chords": [c for _, chs, _, _ in units for c in (sym(x, mode) for x in chs)],
             "color": color, "v4": used_v4, "dyn_bars": dyn_bars}
     return notes, meta

@@ -34,8 +34,13 @@ def build_form(form, res, ch, color):
                  ("contrast", ["IV", "I"], None, 0), ("contrast", ["ii", "V"], None, 0),
                  ("idea", ["I", "vi"], None, 2), ("answer", P, res, 0)]
     units = [Phrase(*u) for u in units]
-    role, _chs, _cad, dv = units[-1]                           # round 4: terminal cadence ALWAYS resolves
-    units[-1] = Phrase(role, ["V", "I"], "authentic", dv)      # (clean closure; no half/abrupt final)
+    role, _chs, _cad, dv = units[-1]
+    # Terminal cadence: usually a clean authentic close, but SOMETIMES a half-open
+    # (ends on V — a question) or deceptive (V->vi) ending (maintainer wants variety,
+    # not always a full cadence). Reopens the "incompleteness" lever deliberately.
+    final = ch.weighted("final", ["authentic", "half", "deceptive"], [4, 2, 1])
+    chords = {"authentic": ["V", "I"], "half": ["ii", "V"], "deceptive": ["V", "vi"]}[final]
+    units[-1] = Phrase(role, chords, final, dv)
     return units
 
 
