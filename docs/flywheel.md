@@ -59,12 +59,10 @@ teaching harness `import motif`).
 
 ## Backlog, ranked (update as items land / new feedback arrives)
 **A. Highest value, well-specified (do these first):**
-1. **Comp/bass INSTRUMENT variety + capability gate** (tick `~7p43`): comp/bass are
-   currently one fixed program per style (the v12 "abysmal, always rock-organ"
-   complaint). Mirror the LEAD two-layer model: a capability-tagged pool + per-style
-   affinity + a role capability gate (a reggae offbeat bass needs SHARP attack; a
-   sustained organ can't articulate it; the march "pah" should not be a stab of
-   horns — maintainer suggested tuba/low or percussion). Keep determinism.
+1. ~~**Comp/bass INSTRUMENT variety + capability gate**~~ DONE (fw1, this.i:c2k9p0a4):
+   comp/bass now mirror the LEAD two-layer model — a capability-tagged pool (ATTACK
+   0..2) + per-style affinity (signature ~80%) + a role capability gate (sharp grooves
+   reject sustained organ/pad bass; the march "pah" is a light reed, not a brass stab).
 2. **Comp/bass RHYTHM-pattern variety** (v12 #08): the groove patterns read as
    simple strong/weak alternation. Add more idiomatic + varied comp/bass rhythms per
    style (and some intra-style variation), still metric-conserving.

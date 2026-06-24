@@ -14,7 +14,7 @@ from entmotif.melody import (
     unit_dyn, line, cadence_bar, motif_shape, render_transform, choose_transform)
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
-    arrange_unit, percussion_groove)
+    comp_choices, bass_choices, arrange_unit, percussion_groove)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -32,7 +32,9 @@ def generate(value):
     mode = ch.weighted("mode", ["major", "minor"], S["mode_w"])  # style-biased (tango minor, march major...)
     key = ch.int("key", 12)
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
-    pal = palette_for(style, lead)
+    comp_prog = ch.weighted("comp", *comp_choices(style))     # rhythm-section two-layer model (c2k9p0a4): signature
+    bass_prog = ch.weighted("bass", *bass_choices(style))     # common, capability-passing alternates rare
+    pal = palette_for(style, lead, comp_prog, bass_prog)
     ilo, ihi, icen = pal.range
     tonic = snap(icen, [key], ilo, ihi - 12)
     lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct, sitting LOWER (v0.9 was shrill/too high)

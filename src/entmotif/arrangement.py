@@ -89,7 +89,7 @@ STYLES = {
                           comp_pat="comp4", bass_pat="walking", perc="backbeat", perc_vel=96,
                           reg=PitchRange(52, 79, 62), tempos=[84, 100, 120, 138], tempo_w=[3, 3, 2, 2],
                           color_w=[1, 3, 4], fat_w=[0, 1, 3, 4], mode_w=[4, 1], legato=True),
-    "march":         dict(leads=[56, 61, 57, 72, 71], lead_w=[4, 3, 3, 3, 2], comp=61, bass=58,
+    "march":         dict(leads=[56, 61, 57, 72, 71], lead_w=[4, 3, 3, 3, 2], comp=71, bass=58,
                           comp_pat="oompah", bass_pat="stride", perc="march", perc_vel=96,
                           reg=PitchRange(55, 82, 66), tempos=[108, 116, 124], tempo_w=[3, 4, 2],
                           color_w=[3, 3, 1], fat_w=[1, 3, 3, 1], mode_w=[4, 1], legato=False),
@@ -105,7 +105,8 @@ GM_NAMES = {
     10: "music-box", 11: "vibraphone", 12: "marimba", 13: "xylophone", 16: "drawbar-organ",
     18: "rock-organ", 19: "church-organ", 21: "accordion", 22: "harmonica", 24: "nylon-guitar",
     25: "steel-guitar", 26: "jazz-guitar", 27: "clean-guitar", 29: "od-guitar",
-    32: "acoustic-bass", 33: "fingered-bass", 36: "slap-bass", 40: "violin", 41: "viola",
+    32: "acoustic-bass", 33: "fingered-bass", 34: "picked-bass", 35: "fretless-bass",
+    36: "slap-bass", 40: "violin", 41: "viola",
     42: "cello", 43: "contrabass", 45: "pizz-strings", 46: "harp", 53: "voice-oohs",
     56: "trumpet", 57: "trombone", 58: "tuba", 59: "muted-trumpet", 60: "french-horn",
     61: "brass", 65: "alto-sax", 66: "tenor-sax", 68: "oboe", 69: "english-horn", 70: "bassoon",
@@ -171,6 +172,82 @@ def lead_choices(style):
     return progs, wts
 
 
+# The COMP and BASS pools (two-layer model extended to the rhythm section, c2k9p0a4 /
+# this.i:c2k9p0a4): the STYLE names a SIGNATURE comp/bass program (high affinity) but
+# the role is now drawn from a capability-tagged pool, so the same style's bed varies
+# across inputs (the v12 "abysmal, always rock-organ" complaint) instead of being one
+# fixed program. ATTACK 0..2 = how sharply a timbre can articulate an offbeat/plucked
+# groove (0 = sustained-only organ/pad/strings; 1 = moderate; 2 = sharp/plucked). A
+# style whose groove syncopates (reggae skank, funk stabs, salsa montuno) REQUIRES a
+# minimum attack, so a sustained organ is never offered for a reggae bass — capability,
+# not a hard lock; on-beat grooves (continuo, walking, oompah) still admit sustained.
+COMP_POOL = {                                                # chordal-accompaniment timbres
+    0: 60, 4: 60, 6: 64, 7: 60, 11: 66, 12: 64, 16: 60, 18: 60, 19: 60, 21: 60,
+    24: 60, 26: 62, 27: 62, 48: 60, 53: 60, 61: 60, 71: 62,
+}
+COMP_ATTACK = {16: 0, 18: 0, 19: 0, 48: 0, 53: 0, 61: 1, 21: 1, 11: 1, 71: 1}  # organs/pads/strings sustain; brass/accordion/vibe/reed medium
+BASS_POOL = {                                                # bass-register timbres
+    32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 42: 0, 43: 0, 58: 0,
+}                                                            # value is unused (center fixed C2); kept for symmetry
+BASS_ATTACK = {32: 2, 33: 2, 34: 2, 35: 1, 36: 2, 42: 1, 43: 1, 58: 1}  # plucked sharp; bowed/tuba medium
+COMP_SIG_W, COMP_BASE_W = 64, 1                              # signature ~80% (maintainer pref); alts reachable-but-rare
+BASS_SIG_W, BASS_BASE_W = 28, 1                              # bass pool is small (~7 alts) -> ~80% on the signature
+# What each groove DEMANDS of its rhythm-section timbre (min ATTACK); default 0 (on-beat).
+COMP_PAT_MIN_ATTACK = {"skank": 2, "funk16": 2, "montuno": 1, "shuffle": 1, "bossa": 1}
+BASS_PAT_MIN_ATTACK = {"reggae": 2, "funk": 2, "tumbao": 2, "samba": 1, "boogie": 1,
+                       "shuffle": 1, "walking": 1}
+# A few timbres are too high/thin to be a CONVINCING bass even though they sit in range;
+# and the march "pah" must not be a brass stab (v12 #03 "collection of horns" is ugly) —
+# so brass/trumpet are excluded from the COMP pool offered to oom-pah styles.
+COMP_NO_BRASS_PATS = {"oompah", "marcato"}
+
+
+def comp_choices(style):
+    """(programs, weights) for the comp (chordal bed): the style's signature program
+    at high affinity plus capability-passing alternates at a low base weight, so the
+    bed varies across inputs but stays idiomatic. The capability gate drops sustained
+    timbres for syncopated grooves and brass from oom-pah comps (c2k9p0a4, v12 #03)."""
+    s = STYLES[style]
+    sig, pat = s["comp"], s["comp_pat"]
+    if style in KEYBOARD_BED_STYLES:                         # the stride/ostinato bed IS the piano: no substitution
+        return [sig], [1]
+    min_at = COMP_PAT_MIN_ATTACK.get(pat, 0)
+    no_brass = pat in COMP_NO_BRASS_PATS
+    progs, wts = [], []
+    for p in COMP_POOL:
+        if no_brass and p in (56, 57, 59, 61):
+            continue
+        if COMP_ATTACK.get(p, 2) < min_at:
+            continue
+        progs.append(p)
+        wts.append(COMP_SIG_W if p == sig else COMP_BASE_W)
+    if sig not in progs:                                     # the signature is always eligible (it defines the idiom)
+        progs.insert(0, sig)
+        wts.insert(0, COMP_SIG_W)
+    return progs, wts
+
+
+def bass_choices(style):
+    """(programs, weights) for the bass: signature program (high affinity) + capability-
+    passing alternates (low base weight). A syncopated/plucked groove requires a sharp
+    attack, so a bowed contrabass or tuba is not offered for a reggae/funk bass."""
+    s = STYLES[style]
+    sig, pat = s["bass"], s["bass_pat"]
+    if style in KEYBOARD_BED_STYLES:                         # ragtime/boogie left hand is the same piano
+        return [sig], [1]
+    min_at = BASS_PAT_MIN_ATTACK.get(pat, 0)
+    progs, wts = [], []
+    for p in BASS_POOL:
+        if BASS_ATTACK.get(p, 2) < min_at:
+            continue
+        progs.append(p)
+        wts.append(BASS_SIG_W if p == sig else BASS_BASE_W)
+    if sig not in progs:
+        progs.insert(0, sig)
+        wts.insert(0, BASS_SIG_W)
+    return progs, wts
+
+
 class Palette(NamedTuple):
     style: str
     lead_program: int
@@ -185,13 +262,16 @@ class Palette(NamedTuple):
     legato: bool
 
 
-def palette_for(style, lead):
+def palette_for(style, lead, comp=None, bass=None):
+    """Assemble the palette. comp/bass default to the style signature (back-compat) but
+    are normally supplied by the engine from comp_choices/bass_choices (c2k9p0a4)."""
     s = STYLES[style]
-    comp = s["comp"]
+    comp = s["comp"] if comp is None else comp
+    bass = s["bass"] if bass is None else bass
     if comp == lead and style not in KEYBOARD_BED_STYLES:    # never comp on the lead's own timbre (the v0.9
         comp = 48 if lead != 0 else 0                        # "organ-on-organ huffing"); contrast piano<->strings
     #   (keyboard-bed styles keep comp==piano: the stride bed needs the piano)
-    return Palette(style, lead, comp, s["bass"], lead, s["reg"],   # antiphon answers on the lead's own voice
+    return Palette(style, lead, comp, bass, lead, s["reg"],   # antiphon answers on the lead's own voice
                    s["comp_pat"], s["bass_pat"], s["perc"], s["perc_vel"], s["legato"])
 
 

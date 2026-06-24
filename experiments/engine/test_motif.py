@@ -142,6 +142,48 @@ check(len(arr.STYLE_NAMES) >= 14, "fewer than 14 styles: %d" % len(arr.STYLE_NAM
 check(seen_styles == set(arr.STYLE_NAMES),
       "not every style reachable from the fingerprint: missing %s" % (set(arr.STYLE_NAMES) - seen_styles))
 
+# --- c2k9p0a4: comp/bass INSTRUMENT variety + capability gate (mirror the LEAD model).
+#     comp/bass are no longer one fixed program per style: a capability-tagged pool +
+#     per-style affinity + a role capability gate. An offbeat/plucked groove (reggae
+#     skank, funk, walking, stride...) REQUIRES a sharp-attack timbre; a sustained
+#     organ/pad can't articulate it, so it must never be offered for that role. ---
+SHARP_BASS_PATS = {"reggae", "funk", "tumbao", "samba", "boogie"}
+SHARP_COMP_PATS = {"skank", "funk16", "montuno"}
+for st in arr.STYLE_NAMES:
+    bprogs, bwts = arr.bass_choices(st)
+    cprogs, cwts = arr.comp_choices(st)
+    check(len(bprogs) == len(bwts) and len(bprogs) >= 1, "bass_choices malformed: %s" % st)
+    check(len(cprogs) == len(cwts) and len(cprogs) >= 1, "comp_choices malformed: %s" % st)
+    # capability gate: a sharp-attack groove never offers a sustained-only timbre
+    if arr.STYLES[st]["bass_pat"] in SHARP_BASS_PATS:
+        for p in bprogs:
+            check(arr.BASS_ATTACK.get(p, 2) >= 1,
+                  "sustained bass offered for sharp groove: %s prog%d (%s)" % (st, p, arr.gm_name(p)))
+    if arr.STYLES[st]["comp_pat"] in SHARP_COMP_PATS:
+        for p in cprogs:
+            check(arr.COMP_ATTACK.get(p, 2) >= 1,
+                  "sustained comp offered for sharp groove: %s prog%d (%s)" % (st, p, arr.gm_name(p)))
+
+# --- c2k9p0a4: comp/bass programs VARY across inputs within a style (not one fixed
+#     program), and the signature stays dominant (affinity). Probe many inputs. ---
+from collections import defaultdict as _ddv  # noqa: E402
+comp_seen, bass_seen = _ddv(set), _ddv(set)
+for i in range(1500):
+    _n, _m = motif.generate("cb-probe-%d" % i)
+    comp_seen[_m["style"]].add(_m["comp_prog"])
+    bass_seen[_m["style"]].add(_m["bass_prog"])
+multi_comp = sum(1 for st in comp_seen if len(comp_seen[st]) >= 2)
+multi_bass = sum(1 for st in bass_seen if len(bass_seen[st]) >= 2)
+check(multi_comp >= 8, "comp instrument barely varies: only %d styles show >=2 comp programs" % multi_comp)
+check(multi_bass >= 8, "bass instrument barely varies: only %d styles show >=2 bass programs" % multi_bass)
+
+# --- c2k9p0a4 / v12 #03: the MARCH comp "pah" must not be a brass stab ("collection of
+#     horns" oom-pah is ugly) — make it a lighter/lower voice, not brass/trumpet. ---
+march_cprogs, _ = arr.comp_choices("march")
+for p in march_cprogs:
+    check(p not in (56, 57, 59, 61),
+          "march comp is a brass stab (ugly oom-pah): prog%d (%s)" % (p, arr.gm_name(p)))
+
 # --- v0.9: harmony overhaul invariants on the corpus ---
 for v in CORPUS:
     notes, m = motif.generate(v)

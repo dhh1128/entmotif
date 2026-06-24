@@ -208,6 +208,16 @@ Entmotif = goal:
         matrix. Consequence: the lead-instrument bit yield is style-dependent
         (~log2 effective allowed-pool size). Builds on [[z0m4p81q]],
         [[b7p21m9z]]; overrides realize the strong cases noted in [[q9f3a7k2]].
+        Extended (c2k9p0a4) to the RHYTHM SECTION: comp and bass are no longer one
+        fixed program per style. Each draws from a capability-tagged pool (ATTACK
+        0..2 = how sharply a timbre articulates an offbeat/plucked groove) with
+        per-style affinity (signature ~80%, capability-passing alternates rare).
+        The gate forbids a sustained organ/pad bass for a syncopated groove
+        (reggae skank / funk stabs / salsa montuno need sharp attack) and bans
+        brass from the oom-pah comp (the march "collection of horns" was ugly ->
+        a lighter reed). Keyboard-bed styles (ragtime/boogie) keep comp==bass==
+        the piano left hand. Adds independent Chooser labels "comp"/"bass" (no
+        perturbation of existing draws — each label hashes independently).
 
     Style Inventory Size = decision:
       id: d4m1z8p0
