@@ -71,3 +71,12 @@ class Phrase(NamedTuple):
     chords: list
     cad: Optional[str]
     dev: int
+
+
+class Motif(NamedTuple):
+    """The whole rendered result for one input: the source value, the flat list of
+    NoteEvents across all voices, and the decision/structure metadata. The
+    exporters consume this (or the legacy ``(notes, meta)`` pair it wraps)."""
+    value: str
+    notes: list
+    meta: dict
