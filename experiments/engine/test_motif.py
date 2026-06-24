@@ -462,6 +462,37 @@ check(_mean(_evel["triumphant"]) > _mean(_evel["sad"]),
 check(_mean(_epitch["happy"]) > _mean(_epitch["sad"]),
       "realized register not coherent: happy %.1f !> sad %.1f" % (_mean(_epitch["happy"]), _mean(_epitch["sad"])))
 
+# --- fw8 (this.i:d2k9m4p1, the emotion->STYLE DAG edge): emotion is UPSTREAM of style;
+#     the affect tilts WHICH idiom is chosen (a tense tango / triumphant march common, a
+#     peaceful funk rare) while every style stays reachable for every emotion. ---
+# (a) pure: favoured styles lifted, all stay reachable, ordering holds.
+for emo in arr.EMOTION_NAMES:
+    sw = arr.style_weights(emo)
+    check(len(sw) == len(arr.STYLE_NAMES) and all(w > 0 for w in sw),
+          "style_weights malformed/unreachable for %s" % emo)
+    for st, w, base in zip(arr.STYLE_NAMES, sw, arr.STYLE_W):
+        check(w >= base, "style_weights dropped %s below base for %s" % (st, emo))
+def _pstyle(emo, st):
+    sw = arr.style_weights(emo); i = arr.STYLE_NAMES.index(st)
+    return sw[i] / sum(sw)
+check(_pstyle("sad", "tango") > _pstyle("happy", "tango"), "tango not lifted by sad vs happy")
+check(_pstyle("happy", "ragtime") > _pstyle("sad", "ragtime"), "ragtime not lifted by happy vs sad")
+check(_pstyle("triumphant", "march") > _pstyle("peaceful", "march"), "march not lifted by triumphant")
+# (b) realized: bucket a probe by emotion; the affect-matched styles dominate their bucket.
+from collections import defaultdict as _dds
+_byemo = _dds(lambda: _dds(int))
+for i in range(3000):
+    _n, _m = motif.generate("estyle-%d" % i)
+    _byemo[_m["emotion"]][_m["style"]] += 1
+def _share(emo, styles):
+    tot = sum(_byemo[emo].values())
+    return sum(_byemo[emo][s] for s in styles) / max(1, tot)
+for emo in arr.EMOTION_NAMES:                                 # the favoured set is over-represented in its bucket
+    fav = arr.STYLE_AFFECT[emo]
+    base_share = len(fav) / len(arr.STYLE_NAMES)
+    check(_share(emo, fav) > base_share + 0.10,
+          "emotion->style weak: %s favoured share %.2f <= base %.2f+0.10" % (emo, _share(emo, fav), base_share))
+
 # --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
 lows = []
 for v in CORPUS:

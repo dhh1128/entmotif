@@ -129,6 +129,29 @@ EMOTION_NAMES = list(EMOTIONS.keys())
 EMOTION_W = [3, 3, 2, 2, 2, 2]                               # all reachable; common affects a touch likelier
 
 
+# emotion -> the styles whose idiom CARRIES that affect well (a soft upstream DAG edge,
+# this.i:d2k9m4p1: emotion is upstream of style). Favoured styles are lifted; every style
+# stays reachable for every emotion (base STYLE_W floor), so this biases without locking —
+# a tense tango / triumphant march become common, a peaceful funk stays rare-but-possible.
+STYLE_AFFECT = {
+    "happy":      {"ragtime", "boogie_woogie", "samba", "salsa", "swing", "march", "gospel", "funk"},
+    "sad":        {"blues", "tango", "bossa_nova"},
+    "peaceful":   {"bossa_nova", "reggae", "classical", "baroque"},
+    "tense":      {"tango", "funk", "salsa"},
+    "triumphant": {"march", "gospel", "swing", "salsa", "ragtime", "classical"},
+    "tender":     {"bossa_nova", "blues", "reggae", "swing", "gospel"},
+}
+STYLE_AFFECT_BOOST = 3                                       # a style suiting the affect is ~3x likelier
+
+
+def style_weights(emotion):
+    """STYLE_W lifted toward the styles whose idiom carries `emotion` (this.i:d2k9m4p1,
+    the emotion->style DAG edge). Every style keeps its base weight, so all stay reachable
+    (entropy still picks the CDF point); the affect just tilts the distribution."""
+    fav = STYLE_AFFECT.get(emotion, set())
+    return [w * (STYLE_AFFECT_BOOST if st in fav else 1) for st, w in zip(STYLE_NAMES, STYLE_W)]
+
+
 def _combine_w(style_w, emo_w):
     """Elementwise product of two integer weight vectors — both the style and the emotion
     'vote' on the choice. Floored at 1 so no option becomes unreachable (the full range

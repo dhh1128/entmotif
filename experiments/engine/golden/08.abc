@@ -1,16 +1,16 @@
 X:1
 T:EBfdlu8R27Fbx_ehrqwImnK_8Cm79sqbAQ4caaZG_LFv
-C:entmotif [swing] G# minor, 138bpm, lead=tenor-sax, perc=swing, form=period, arr=solo_bed
+C:entmotif [tango] G# minor, 116bpm, lead=trumpet, perc=none, form=period, arr=solo_bed
 M:4/4
 L:1/16
-Q:1/4=138
+Q:1/4=116
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G#m" !mp! ^G,4 ^D2 ^F,2 =B,8 | "E" ^G,8 =E,6 ^F,2 | "C#m" !mf! ^C2 z2 ^G2 =B,2 =E8 | "D#" =B,4 ^G,4 ^A,6 z2 | "G#m" !f! ^G2 ^G =B, =E4 =B,2 z2 ^G,3 ^A, | "E" =B,2 ^F ^A, ^D4 =B,2 z2 ^G,3 ^A, | "C#m" !mf! =E4 ^G2 =B,2 =E8 | "G#m" =E4 ^C4 ^G,8 |]
+"G#m" !mp! ^G,4 ^D2 ^F,2 =B,8 | "E" ^G,8 =B,6 ^G,2 | "C#m" !mf! ^C2 z2 ^G2 =B,2 =E8 | "D#" =B,4 ^G,4 ^A,6 z2 | "G#m" !f! ^G2 ^G =B, =E4 =B,2 z2 ^D3 =B, | "E" ^G,2 ^D ^F, =B,4 ^G,2 z2 =B,3 ^G, | "C#m" !mf! =E4 ^G2 =B,2 =E8 | "G#m" =E4 ^C4 ^G,8 |]
 V:2
-[^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 | [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 | [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 | [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 | [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 | [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 | [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 | [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 |]
+z4 [^G,=B,^D]3 z5 [^G,=B,^D]3 z | z4 [=E,^G,=B,]3 z5 [=E,^G,=B,]3 z | z4 [^C=E^G]3 z5 [^C=E^G]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=B^d]3 z5 [^G=B^d]3 z | z4 [=E^G=B]3 z5 [=E^G=B]3 z | z4 [^C=E^G]3 z5 [^C=E^G]3 z | z4 [^G,=B,^D]3 z5 [^G,=B,^D]3 z |]
 V:3
-^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^C,,4 =E,,4 ^G,,4 =E,,4 | ^D,,4 =G,,4 ^A,,4 ^D,,4 | ^G,,4 =B,,4 ^D,,4 ^D,,4 | =E,,4 ^G,,4 =B,,4 =E,,4 | ^C,,4 =E,,4 ^G,,4 ^G,,4 | ^G,,4 =B,,4 ^D,,4 ^G,,4 |]
+^G,,6 ^G,,2 ^D,,4 ^D,,4 | =E,,6 =E,,2 =B,,4 =B,,4 | ^C,,6 ^C,,2 ^G,,4 ^G,,4 | ^D,,6 ^D,,2 ^A,,4 ^A,,4 | ^G,,6 ^G,,2 ^D,,4 ^D,,4 | =E,,6 =E,,2 =B,,4 =B,,4 | ^C,,6 ^C,,2 ^G,,4 ^G,,4 | ^G,,6 ^G,,2 ^D,,4 ^D,,4 |]

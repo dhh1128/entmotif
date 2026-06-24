@@ -1,19 +1,19 @@
 X:1
 T:GCKFBEIYTKP5RDBQMUTAPDCDHF2TR4LPNRGW4JBQQTQUYZP4LDKP3SGM
-C:entmotif [ragtime] G# minor, 128bpm, lead=piano, perc=none, form=period, arr=lead_counter
+C:entmotif [bossa_nova] G# major, 120bpm, lead=flute, perc=bossa, form=period, arr=lead_counter
 M:4/4
 L:1/16
-Q:1/4=128
+Q:1/4=120
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"G#m" !mp! =B,2 ^G2 =B,4 ^G6 ^C2 | "E" =B,4 ^G,8 ^C2 z2 | "C#m" !mf! =E2 ^G2 =B,4 ^G6 ^C2 | "D#" ^C4 =B,4 ^A,6 z2 | "G#m" !f! ^G ^G =B,2 ^G3 ^C =B,2 ^G,2 z2 ^C2 | "E" =B, ^G =B,2 ^G3 ^C =B,2 ^G,2 z2 ^C2 | "D#" !mf! ^A,2 ^F2 ^A,4 =G6 =B,2 | "G#m" ^C4 ^A,4 ^G,8 |]
+"G#" !mp! ^D2 ^d2 =G4 ^D6 ^G2 | "Fm" =F4 ^A8 ^G2 z2 | "A#" !mf! =d2 ^g2 =c4 ^A6 ^d2 | "D#" ^c4 =c4 ^A6 z2 | "G#" !f! ^g ^g =c2 ^G3 ^c ^G2 ^c2 z2 =c2 | "Fm" ^G ^g =c2 ^G3 ^c ^G2 ^c2 z2 =c2 | "D#" !mf! =G2 =g2 ^A4 =G6 =c2 | "G#" ^c4 ^A4 ^G8 |]
 V:2
-z4 [^G,=B,^D]3 z5 [^G,=B,^D]3 z | z4 [=E,^G,=B,]3 z5 [=E,^G,=B,]3 z | z4 [^C=E^G]3 z5 [^C=E^G]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=B^d]3 z5 [^G=B^d]3 z | z4 [=E^G=B]3 z5 [=E^G=B]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=B^d]3 z5 [^G=B^d]3 z |]
+[^G,=C^D^F]2 z4 [^G,=C^D^F]2 [^G,=C^D^F]2 z2 [^G,=C^D^F]2 z2 | [=F,^G,=C^D]2 z4 [=F,^G,=C^D]2 [=F,^G,=C^D]2 z2 [=F,^G,=C^D]2 z2 | [^A,=D=F^G]2 z4 [^A,=D=F^G]2 [^A,=D=F^G]2 z2 [^A,=D=F^G]2 z2 | [^D=G^A^c]2 z4 [^D=G^A^c]2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 | [^G=c^d^f]2 z4 [^G=c^d^f]2 [^G=c^d^f]2 z2 [^G=c^d^f]2 z2 | [=F^G=c^d]2 z4 [=F^G=c^d]2 [=F^G=c^d]2 z2 [=F^G=c^d]2 z2 | [^D=G^A^c]2 z4 [^D=G^A^c]2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 | [^G=c^d^f]2 z4 [^G=c^d^f]2 [^G=c^d^f]2 z2 [^G=c^d^f]2 z2 |]
 V:3
-^G,,4 z4 ^G,,4 z4 | =E,,4 z4 =E,,4 z4 | ^C,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 | =E,,4 z4 =E,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 |]
+^G,,8 ^D,,8 | =F,,8 =C,,8 | ^A,,8 =F,,8 | ^D,,8 ^A,,8 | ^G,,8 ^D,,8 | =F,,8 =C,,8 | ^D,,8 ^A,,8 | ^G,,8 ^D,,8 |]
 V:4
-^D,2 ^C,2 ^A,4 ^D,6 ^A,2 | =B,4 =B,8 ^F,4 | z16 | z16 | ^G,2 ^C,2 ^A,4 ^D,6 ^A,2 | =B,4 =B,8 ^F,4 | z16 | z16 |]
+=C2 =C2 ^G4 ^D6 =C2 | =F4 =C8 ^C4 | z16 | z16 | ^G2 =C2 ^G4 ^D6 =C2 | =F4 =C8 ^C4 | z16 | z16 |]

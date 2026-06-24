@@ -18,7 +18,8 @@ from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
     arrange_unit, percussion_groove, melodic_window, LEAD_RANGE,
-    EMOTIONS, EMOTION_NAMES, EMOTION_W, mode_weights, tempo_weights, color_weights)
+    EMOTIONS, EMOTION_NAMES, EMOTION_W, mode_weights, tempo_weights, color_weights,
+    style_weights)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -31,10 +32,10 @@ ANSWER_TRANSFORM_W = [3, 3, 3, 2]
 def generate(value):
     fp = fingerprint_text(value)
     ch = Chooser(fp)
-    style = ch.weighted("style", STYLE_NAMES, STYLE_W)        # the broad master dimension (idiom/groove)
+    emotion = ch.weighted("emotion", EMOTION_NAMES, EMOTION_W)  # the AFFECT master (a7k0m3p9), drawn UPSTREAM of
+    EMO = EMOTIONS[emotion]                                    # style so it can tilt the idiom (d2k9m4p1 DAG edge)
+    style = ch.weighted("style", STYLE_NAMES, style_weights(emotion))  # idiom biased toward the affect, all reachable
     S = STYLES[style]
-    emotion = ch.weighted("emotion", EMOTION_NAMES, EMOTION_W)  # the AFFECT master (a7k0m3p9): a second master
-    EMO = EMOTIONS[emotion]                                    # alongside style, conditioning the affective cues
     mode = ch.weighted("mode", ["major", "minor"], mode_weights(style, emotion))  # style idiom x emotion affect
     key = ch.int("key", 12)
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
