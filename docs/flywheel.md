@@ -51,6 +51,22 @@ teaching harness `import motif`).
    stays green): rename for clarity, extract functions, kill duplication, keep the
    musical metaphor. Commit separately.
 
+## Memorability / earworm principles — APPLY to all melodic + form work (tick ~3yhb)
+Convergent research (full synthesis + ~30 sources: `docs/memorability-research.md`
+Part B; now also scored by `prompts/teaching/rubric.md`). Target these features; they
+are the design spec for the melody/development work, not optional flavor:
+1. **Familiar ARCH contour**, peak ~2/3 through, mostly small/stepwise intervals, with
+   a FEW pointed surprises (signature leap). (We have the register arc + placed climax
+   + gap-fill/post-skip reversal — keep them; the gap is the *contour journey*.)
+2. **Distinctive recurring HOOK** (rhythm+interval, several pitches), reused per section.
+3. **Repetition WITH development** at motif/phrase/section scales (transform on return).
+4. **Medium-but-LOW surprisal** — sticky > clever (Frieler): bias the transform/contour
+   choices toward the interesting-but-predictable end.
+5. **Short, singable phrases** (~7–12 notes, ~a 10th range).
+6. Emotion (Part C) and meter clarity reinforce memorability.
+Western-conditioned caveat: mode/consonance are listener-relative; contour/interval/
+phrase-length/meter are broadly human.
+
 ## Resource discipline (this machine is RAM-limited)
 - ≤2 general-purpose subagents concurrent; ≤3–4 if extras are read-only. Prefix heavy
   shell with `nice -n 19 ionice -c 3`. Long renders/tests → redirect to a temp file.
@@ -69,9 +85,12 @@ teaching harness `import motif`).
 3. **March comp fix** (v12 #03): the brass "collection of horns" oom-pah is ugly —
    make the "pah" a lighter/lower voice or lean on tuba(bass)+percussion.
 **B. Big tracks (taste-heavy — be conservative; the maintainer re-listens):**
-4. **Melodic development variety** (tick `~77d7`): melodies "orbit the center"
-   (gravity) instead of going somewhere; restatements feel samey. Add real contour
-   journeys + varied transform SEQUENCES across a piece.
+4. **Melodic development + MEMORABILITY** (tick `~77d7`/`~3yhb`) — **PRIORITY this
+   round (maintainer): apply the earworm checklist above.** Melodies "orbit the
+   center" instead of going somewhere and restatements feel samey; build real ARCH
+   contour journeys, a reused multi-pitch HOOK, repetition-WITH-development, short
+   singable phrases, and bias toward medium-LOW surprisal — guided by the
+   "Memorability / earworm principles" section and now scored by the rubric.
 5. **Emotional register master dimension** (`this.i:a7k0m3p9`): pick an emotion, then
    coherently align mode>tempo>dynamics>register>articulation>dissonance (Gabrielsson
    & Lindström order) so motifs feel sad/tense/mischievous/triumphant, not flat.

@@ -41,6 +41,29 @@ broken rhythm (`>` `<`), tuplets (`(3`), ornaments/decorations (`!trill!`, `.`
 staccato), tied notes, multiple voices (`V:`), dynamics. The affordances of the
 notation are a checklist of options we may be ignoring.
 
+## Memorability features to assess (earworm research — inject every round)
+
+Ground your grades AND findings in the convergent research on what makes melodies
+memorable/earwormy (full synthesis + ~30 sources: `docs/memorability-research.md`
+Part B). These are **features to REWARD when present and serving the music, and to
+FLAG as missing across the batch** — they are NOT rules to demand on every single
+score (do not penalize a musical piece merely for not arching):
+
+- **Familiar ARCH contour**, peak ~2/3 through, mostly small/stepwise intervals,
+  carrying a FEW pointed surprises (a signature leap) — not a flat orbit, not chaos.
+- **A distinctive recurring HOOK** (rhythm + interval) spanning several pitches, reused.
+- **Repetition WITH development** at motif/phrase/section scales (transform on return —
+  sequence/inversion/fragment; never verbatim copy, never aimless variation).
+- **Small intervals as default + gap-fill** (a leap is answered by a step back).
+- **Medium-but-LOW surprisal** — interesting yet predictable enough to stick (for
+  *memorability* specifically, lean toward the lower end of "interesting").
+- **Short, singable phrases** (~7–12 notes, ~a 10th range).
+- **Clear, steady meter**; a groove/timbre identity that can land before the melody.
+
+Caveat: contour / interval-size / phrase-length / meter are broadly human, but
+**mode→mood and consonance→pleasure are Western-listener-conditioned** — weight them
+as such. When you flag a missing feature, say which engine rule should add it.
+
 ## Required output from every teacher
 
 1. **Grades table:** `score# | letter | /100 | one-line reason`.
