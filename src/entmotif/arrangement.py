@@ -47,7 +47,7 @@ STYLES = {
                           color_w=[2, 4, 2], fat_w=[1, 3, 3, 1], mode_w=[2, 2], legato=False),
     "ragtime":       dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="stride", bass_pat="stride",
                           perc="none", perc_vel=0, reg=PitchRange(55, 82, 65),
-                          tempos=[104, 116, 128, 140], tempo_w=[2, 3, 3, 2],
+                          tempos=[120, 132, 144, 156], tempo_w=[2, 3, 3, 2],
                           color_w=[2, 4, 2], fat_w=[2, 3, 2, 1], mode_w=[4, 1], legato=False),
     "boogie_woogie": dict(leads=[0], lead_w=[1], comp=0, bass=0, comp_pat="none", bass_pat="boogie",
                           perc="shuffle", perc_vel=92, reg=PitchRange(55, 82, 65),
@@ -89,7 +89,7 @@ STYLES = {
                           comp_pat="comp4", bass_pat="walking", perc="backbeat", perc_vel=96,
                           reg=PitchRange(52, 79, 62), tempos=[76, 88, 100], tempo_w=[3, 4, 3],
                           color_w=[1, 3, 4], fat_w=[0, 1, 3, 4], mode_w=[4, 1], legato=True),
-    "march":         dict(leads=[56, 61, 57, 71], lead_w=[4, 3, 3, 2], comp=61, bass=58,
+    "march":         dict(leads=[56, 61, 57, 72, 71], lead_w=[4, 3, 3, 3, 2], comp=61, bass=58,
                           comp_pat="oompah", bass_pat="stride", perc="march", perc_vel=96,
                           reg=PitchRange(55, 82, 66), tempos=[108, 116, 124], tempo_w=[3, 4, 2],
                           color_w=[3, 3, 1], fat_w=[1, 3, 3, 1], mode_w=[4, 1], legato=False),
@@ -399,11 +399,10 @@ def percussion_groove(pattern, bar0, nbars, vel):
             out += [_hit(CLAVE, vel - 4, base), _hit(CLAVE, vel - 4, base + B + half),
                     _hit(CLAVE, vel - 4, base + 3 * B), _hit(GUIRO, vel - 18, base + 2 * B),
                     _hit(TIMB_H, vel - 14, base + 2 * B + half)]
-        elif pattern == "march":                              # bass drum + snare ruffs + crash
+        elif pattern == "march":                              # bass drum on 1&3, snare backbeat (clean, no buzzy ruff)
             out += [_hit(KICK, vel, base), _hit(KICK, vel - 6, base + 2 * B),
-                    _hit(SNARE, vel - 6, base + B), _hit(SNARE, vel - 6, base + 3 * B)]
-            for i in (0, 1, 2, 3):
-                out.append(_hit(SNARE, vel - 22, base + 2 * B + i * (B // 4)))
+                    _hit(SNARE, vel - 4, base + B), _hit(SNARE, vel - 4, base + 3 * B),
+                    _hit(SNARE, vel - 20, base + 3 * B + B // 2)]   # one pickup into the next bar
             if first:
                 out.append(_hit(CRASH, vel, base))
         elif pattern == "hand":                               # bongos + congas
@@ -424,7 +423,7 @@ def arrange_unit(chords2, mode, key, melody_lo, bar0, fat, comp_pat, bass_pat,
     Returns (notes, last_voicing)."""
     out, top, voicing = [], melody_lo - 4, prev_voicing
     comp_vel = max(56, vel_base - 10)
-    bass_vel = max(78, vel_base + 2)                          # bass must cut through (was buried in v0.9)
+    bass_vel = min(98, max(76, vel_base))                    # audible but capped (v0.10 hit 112 -> low-register distortion)
     roots = [cpcs(s, mode, key)[0] for s in chords2]
     for b, s in enumerate(chords2):
         pcs = cpcs(s, mode, key)

@@ -118,7 +118,9 @@ def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
         figs = [(d(3), 1), (d(2), 1), (d(1), 2)]
     elif res == "deceptive":
         figs = [(d(2), 1), (d(3), 1), (d(6), 2)]
-    else:
+    elif res == "plagal":
+        figs = [(d(4), 1), (d(2), 1), (d(1), 2)]              # 4-2-1 over IV-I: resolved "amen"
+    else:                                                    # half (mid-phrase only): ends open on 2
         figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
     out, pos = [], 0.0
     for pitch, dur in figs:

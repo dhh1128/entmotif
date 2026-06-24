@@ -117,17 +117,15 @@ def generate(value):
             used_v4 = used_v4 or bool(ans)
             notes += ans
 
-        # ---- texture envelope (entry/exit schedule) ----
-        comp_on = template in ("solo_bed", "lead_counter", "call_resp")
+        # ---- texture: the groove/harmony is CONSTANT (v0.10's envelope flickered the
+        #      skank/comp on and off, breaking reggae/swing — "comes in at random",
+        #      "scraping added partway"). Only two thinning exceptions remain:
+        #      the groove_first bass-first intro, and a lead-alone opening reserved for
+        #      the homophonic art styles (classical/baroque). ----
         bass_on = True
-        if template == "groove_first":
-            comp_on = u >= 1                                  # groove builds: bass first, comp enters
-        elif template in ("solo_bed", "lead_counter") and u == 0:
-            comp_on = False                                   # lead states the germ unaccompanied first
-        elif template == "call_resp":
-            comp_on = role != "idea"
-        if nU >= 4 and u == nU - 1 and template != "groove_first":
-            comp_on = False                                   # thin the texture at the final cadence
+        comp_on = not (template == "groove_first" and u == 0)
+        if style in ("classical", "baroque") and template in ("solo_bed", "lead_counter") and u == 0:
+            comp_on = False                                   # art-style lead states the theme unaccompanied
         anotes, prev_voicing = arrange_unit(chm, mode, key, lo, bar0, fat, pal.comp_pat, pal.bass_pat,
                                             comp_on, bass_on, vel, pal.legato, prev_voicing)
         notes += anotes

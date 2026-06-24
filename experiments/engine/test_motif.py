@@ -58,13 +58,14 @@ for v in CORPUS:
 #     are deliberately open (maintainer wants cadence variety, not always a full close) ---
 for v in CORPUS:
     notes, m = motif.generate(v)
-    if m.get("final_cad") != "authentic":
+    if m.get("final_cad") not in ("authentic", "plagal"):     # deceptive (V->vi) deliberately doesn't land on I
         continue
     mel = [n for n in notes if int(n[0]) in (0, 3)]
     last = max(mel, key=lambda n: n[3])
     tonic = [p % 12 for p in motif.cpcs("I" if m["mode"] == "major" else "i", m["mode"], m["key"])]
     check(last[1] % 12 in tonic,
-          "authentic final unresolved: %s ends on pc%d (tonic triad %s)" % (v, last[1] % 12, tonic))
+          "resolved final (%s) not on tonic: %s ends on pc%d (tonic triad %s)"
+          % (m["final_cad"], v, last[1] % 12, tonic))
 
 # --- v0.8: lead (chan 0) present in EVERY bar (per-BAR, tighter than round-4's
 #          per-unit check) except the groove_first 2-bar intro (fixes the z16 hole) ---
@@ -124,16 +125,15 @@ for v in CORPUS:
     check(any(int(n[0]) == 0 and lo <= n[3] < hi for n in notes),
           "no lead activity at the climax: %s" % v)
 
-# --- v0.8: texture envelope — comp (chan 1) enters/exits (present in some units,
-#     absent in others), not a constant slab. ---
+# --- v0.11: the groove/comp is CONSTANT (present in every unit, except at most a
+#     single groove_first/art-style intro unit) — v0.10's flickering broke the groove. ---
 for v in CORPUS:
     notes, m = motif.generate(v)
     nU = m["bars"] // 2
     comp_units = sum(1 for u in range(nU)
                      if any(int(n[0]) == 1 and u * 2 * 4 * DIV <= n[3] < (u + 1) * 2 * 4 * DIV
                             for n in notes))
-    check(1 <= comp_units <= nU - 1, "no texture envelope (comp constant): %s (%d/%d)"
-          % (v, comp_units, nU))
+    check(comp_units >= nU - 1, "comp/groove not constant: %s (%d/%d units)" % (v, comp_units, nU))
 
 # --- v0.9: STYLE is a real, varied master dimension (>=14 idioms, all reachable). ---
 import entmotif.arrangement as arr  # noqa: E402
