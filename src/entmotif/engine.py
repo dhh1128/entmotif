@@ -11,7 +11,8 @@ from entmotif.entropy import Chooser, fingerprint_text
 from entmotif.theory import snap, sym
 from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
-    unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform)
+    unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform,
+    breathe)
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
@@ -141,6 +142,15 @@ def generate(value):
                                   VoiceRole.ANSWER, 72, center - 9)
             used_v4 = used_v4 or bool(cm)
             notes += cm
+
+    # ---- breath/phrasing (fw4, the #1 lyricism lever): open comma-length rests in the
+    #      LEAD as a function of phrase length so the line breathes mid-section, not only
+    #      at form boundaries. Trims durations (onsets unmoved) so the grid + metric
+    #      conservation are untouched; other voices keep their groove. ----
+    lead_notes = [n for n in notes if int(n[0]) == VoiceRole.LEAD]
+    if lead_notes:
+        rest = [n for n in notes if int(n[0]) != VoiceRole.LEAD]
+        notes = list(breathe(lead_notes)) + rest
 
     # ---- percussion: the style's groove across the piece (skip the groove-build intro) ----
     perc_start = 2 if template == "groove_first" else 0

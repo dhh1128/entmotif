@@ -110,6 +110,62 @@ def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, 
 line = generate_melodic_line   # legacy alias (call sites migrate during engine extraction)
 
 
+# --------------------------------------------------- phrasing / breath -------
+# fw4 (Group B #4, this.i:b3r8k1m7, the #1 lyricism lever): a line BREATHES by phrase
+# length, not form structure: a singable line BREATHES as a function of
+# PHRASE LENGTH, not form structure. The engine used to pack bars wall-to-wall (lead
+# runs of 24-48 sounded notes with a rest only at a form-template boundary), so the
+# antecedent never breathed into the consequent mid-section. `breathe` inserts a
+# comma-length rest after at most ~BREATH_EVERY sounded notes by SHORTENING a note
+# (onsets are never moved), so the bar's total duration and the 16th grid are
+# preserved (this.i:m9p3k7a2) — the rest is the silence the trim opens up before the
+# next onset. The breath lands on the note ending a beat (so it falls between phrase
+# limbs, not mid-figure) and only when trimming still leaves a sounding sixteenth.
+BREATH_EVERY = 9                                               # comma after ~7-12 notes (singable phrase length)
+BREATH_LEN = DIV // 2                                          # an eighth-rest comma (the breath we aim to open)
+MIN_SOUND = DIV // 4                                           # always leave >= a sixteenth sounding
+MIN_GAP = DIV // 4                                             # a real breath is at least a sixteenth of silence
+#   (a sixteenth-rest is a genuine comma in a fast sixteenth run; we open a full eighth
+#    whenever a note in the window can spare it, and fall back to a sixteenth otherwise)
+
+
+def breathe(notes, every=BREATH_EVERY):
+    """Open comma-length breaths in a single voice's line so no run of sounded notes
+    (those with no following gap) exceeds `every`. Trims a note's duration only —
+    onsets are untouched, so metric conservation and the 16th grid hold. Returns the
+    (possibly modified) note list, sorted by onset.
+
+    When overdue for a comma we breathe on a note in the recent run window that can
+    spare a full eighth (preferring one ending on a beat boundary, so the rest falls
+    between phrase limbs rather than mid-figure; then the longest). If no note can
+    spare a full eighth we take the longest one that can spare a sixteenth — that
+    note's run resets even though the gap is shorter, so the line still loosens; the
+    next overdue point opens another. Shortening minimizes the audible loss while
+    still opening a clear rest."""
+    if len(notes) <= every:
+        return notes
+    seq = sorted(notes, key=lambda n: n.start)
+    run, run_start = 0, 0
+    for i in range(len(seq) - 1):
+        gap = seq[i + 1].start - (seq[i].start + seq[i].dur)
+        if gap >= MIN_GAP:                                    # an existing breath resets the run
+            run, run_start = 0, i + 1
+            continue
+        run += 1
+        if run >= every:                                      # overdue for a comma: open a rest in the window
+            window = range(max(run_start, i - every + 1), i + 1)
+            full = [j for j in window if seq[j].dur - BREATH_LEN >= MIN_SOUND]  # can spare a full eighth
+            cands = full or [j for j in window if seq[j].dur - DIV // 4 >= MIN_SOUND]
+            if cands:
+                # prefer a beat-ending note (rest between limbs), then the LATEST one in
+                # the window — keeping the reset close to here bounds the next run by `every`.
+                j = max(cands, key=lambda j: ((seq[j].start + seq[j].dur) % DIV == 0, j))
+                trim = min(BREATH_LEN, seq[j].dur - MIN_SOUND)
+                seq[j] = seq[j]._replace(dur=seq[j].dur - trim)
+                run, run_start = i - j, j + 1                  # notes after the breath are already a fresh run
+    return seq
+
+
 def _lay_figure(figs, bar0, chan, vel):
     """Lay a sequence of ``(pitch, beats)`` onto consecutive onsets starting at
     ``bar0``, returning NoteEvents. Shared by the singable cells (`tag_call`,

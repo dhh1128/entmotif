@@ -131,6 +131,31 @@ for v in CORPUS:
             check(False, "lead dead-holds a whole bar (static, not a hook): %s bar%d pitch%d"
                   % (v, b, ld[0][1]))
 
+# --- fw4 (Group B #4, the #1 lyricism lever: "BREATH IS AN AFTERTHOUGHT, NOT PHRASING").
+#     The engine packed bars wall-to-wall (lead runs of 24-48 sounded notes with no rest;
+#     breath only landed at a form-template boundary). A singable line BREATHES as a
+#     function of PHRASE LENGTH: after at most ~12 sounded notes the line must take a
+#     comma-length rest (a sixteenth-rest comma in a fast run, a full eighth wherever
+#     a note can spare it) so the antecedent breathes into the consequent even
+#     mid-section. Assert the lead never runs more than BREATH_MAX consecutive sounded
+#     notes without an intra-line breath gap. A breath is a SHORTENED note (onsets
+#     unchanged), so metric conservation / the 16th grid are untouched. ---
+BREATH_MAX = 12
+COMMA = DIV // 4                                               # a sixteenth-rest is the minimum audible comma
+for v in CORPUS:
+    notes, m = motif.generate(v)
+    lead = sorted((n for n in notes if int(n[0]) == 0), key=lambda n: n[3])
+    run, worst = 0, 0
+    for a, b in zip(lead, lead[1:]):
+        gap = b[3] - (a[3] + a[4])
+        if gap >= COMMA:
+            run = 0
+        else:
+            run += 1
+            worst = max(worst, run + 1)                        # +1: the run includes the note we land on
+    check(worst <= BREATH_MAX,
+          "lead runs %d notes with no breath (>%d): %s — breath must phrase, not pack" % (worst, BREATH_MAX, v))
+
 # --- v0.8: unified climax — exactly ONE bar carries !f!, and it is the placed peak
 #     unit (~2/3 through, Huron arch), with lead activity there. ---
 for v in CORPUS:

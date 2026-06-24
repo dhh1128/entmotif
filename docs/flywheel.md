@@ -94,6 +94,12 @@ phrase-length/meter are broadly human.
    contour journeys, a reused multi-pitch HOOK, repetition-WITH-development, short
    singable phrases, and bias toward medium-LOW surprisal — guided by the
    "Memorability / earworm principles" section and now scored by the rubric.
+   PROGRESS (fw4, this.i:b3r8k1m7): the #1 lyricism lever — BREATH/phrasing — landed:
+   a post-render `breathe` pass opens comma-length rests in the LEAD as a function of
+   phrase length (after at most ~12 sounded notes), by shortening note durations
+   (onsets unmoved → grid + metric conservation untouched). Lead runs dropped from
+   24-48 wall-to-wall notes to <=12 between breaths. STILL OPEN: ARCH contour journey,
+   multi-pitch HOOK reuse, repetition-WITH-development, anacrusis/syncopation.
 5. **Emotional register master dimension** (`this.i:a7k0m3p9`): pick an emotion, then
    coherently align mode>tempo>dynamics>register>articulation>dissonance (Gabrielsson
    & Lindström order) so motifs feel sad/tense/mischievous/triumphant, not flat.

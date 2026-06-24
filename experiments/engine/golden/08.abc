@@ -9,7 +9,7 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"G#m" !mp! ^D4 ^A2 ^C2 ^G8 | "E" =E8 ^G6 =E2 | "C#m" !mf! ^c4 ^g2 =B2 =e8 | "D#" ^G4 =B4 ^A8 | "G#m" !f! ^g2 ^g =B ^f4 ^d4 ^f3 ^d | "E" =e2 ^g =B ^f4 =e4 ^g3 =e | "C#m" !mf! =e4 ^g2 =B2 =e8 | "G#m" ^c4 ^A4 ^G8 |]
+"G#m" !mp! ^D4 ^A2 ^C2 ^G8 | "E" =E8 ^G6 =E2 | "C#m" !mf! ^c2 z2 ^g2 =B2 =e8 | "D#" ^G4 =B4 ^A6 z2 | "G#m" !f! ^g2 ^g =B ^f4 ^d2 z2 ^f3 ^d | "E" =e2 ^g =B ^f4 =e2 z2 ^g3 =e | "C#m" !mf! =e4 ^g2 =B2 =e8 | "G#m" ^c4 ^A4 ^G8 |]
 V:2
 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 | [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 [=E,^G,=B,=D]2 z2 | [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 | [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 [^D=G^A^c]2 z2 | [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 [^G=B^d^f]2 z2 | [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 [=E^G=B=d]2 z2 | [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 [^C=E^G=B]2 z2 | [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 [^G,=B,^D^F]2 z2 |]
 V:3

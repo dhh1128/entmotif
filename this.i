@@ -418,6 +418,28 @@ Entmotif = goal:
         for chorale). Refines [[z0m4p81q]], [[h0v4k7m2]]; relates to [[c2k9p0a4]],
         [[d4m1z8p0]].
 
+    Breath Phrases The Line Not The Form = decision:
+      id: b3r8k1m7
+      why: >
+        Top lyricism finding (fw4, panel + maintainer): "breath is an afterthought,
+        not phrasing." The engine only rested where a form-template boundary landed
+        (end of bar 4/8 in a period/aaba) and otherwise packed bars wall-to-wall —
+        lead runs of 24-48 sounded notes with no rest. A singable line BREATHES as a
+        function of PHRASE LENGTH, not form structure: after at most ~12 sounded
+        notes (target a singable ~7-12) it must take a comma-length rest so the
+        antecedent breathes into the consequent even MID-section. FIX: a post-render
+        `breathe` pass over the LEAD voice (melody.py) opens a comma by SHORTENING a
+        note's duration — onsets are never moved, so the bar total and the 16th grid
+        are conserved [[m9p3k7a2]]; the rest is the silence the trim opens before the
+        next onset. It prefers a note that ends on a beat boundary (rest between
+        phrase limbs) and the latest note in the run window (so the next run is
+        bounded), opens a full eighth wherever a note can spare it and falls back to
+        a sixteenth comma in a dense fast run. ANALOG layer (note-length variation,
+        [[e9k2m4p1]]): carries no Model-B recall bits but draws fresh fingerprint
+        bits and makes the line sing. Comp/bass/percussion are untouched. The single
+        biggest lyricism lever before any pitch change. Refines [[e9k2m4p1]],
+        [[f7a2k930]]; conserves [[m9p3k7a2]]; serves [[h0v4k7m2]].
+
     Emotional Register Master Dimension = decision:
       id: a7k0m3p9
       why: >
