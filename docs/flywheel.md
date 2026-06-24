@@ -79,9 +79,12 @@ phrase-length/meter are broadly human.
    comp/bass now mirror the LEAD two-layer model — a capability-tagged pool (ATTACK
    0..2) + per-style affinity (signature ~80%) + a role capability gate (sharp grooves
    reject sustained organ/pad bass; the march "pah" is a light reed, not a brass stab).
-2. **Comp/bass RHYTHM-pattern variety** (v12 #08): the groove patterns read as
-   simple strong/weak alternation. Add more idiomatic + varied comp/bass rhythms per
-   style (and some intra-style variation), still metric-conserving.
+2. ~~**Comp/bass RHYTHM-pattern variety**~~ DONE (fw1, this.i:r4d8m1k6): each style's
+   signature comp_pat/bass_pat now names a small FAMILY of idiomatic, metric-conserving
+   variants (walking_skip, stride_octave, shuffle_jab, charleston, skank_double,
+   montuno_synco, bossa_partido...), drawn per input (signature ~70%, variants rare) via
+   new independent Chooser labels — so the same style's groove rhythm varies across
+   inputs instead of one fixed strong/weak cell.
 3. **March comp fix** (v12 #03): the brass "collection of horns" oom-pah is ugly —
    make the "pah" a lighter/lower voice or lean on tuba(bass)+percussion.
 **B. Big tracks (taste-heavy — be conservative; the maintainer re-listens):**

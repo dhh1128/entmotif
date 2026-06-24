@@ -248,6 +248,53 @@ def bass_choices(style):
     return progs, wts
 
 
+# --- RHYTHM-pattern variety (A2, v12 #08, this.i:r4d8m1k6) ------------------------
+# The two-layer model (signature common, alternates rare) extended from INSTRUMENT to
+# the groove's RHYTHM: each style's signature comp/bass pattern names a small FAMILY of
+# idiomatic, metric-CONSERVING variants (this.i:m9p3k7a2 — every variant fills exactly
+# the bar). The fingerprint draws a variant per input, so the same style's groove rhythm
+# differs across inputs (the v12 "simple strong/weak alternation" complaint) while the
+# signature stays dominant (PAT_SIG_W) and every variant stays inside the idiom. A base
+# pattern with no listed family is its own only member. Keys are the style-declared
+# comp_pat/bass_pat; values are (variant_names, affinity_weights).
+PAT_SIG_W, PAT_VAR_W = 5, 2                                  # signature ~70%; each variant reachable-but-rarer
+COMP_PAT_VARIANTS = {
+    "alberti":  (["alberti", "alberti_up"],          [PAT_SIG_W, PAT_VAR_W]),
+    "continuo": (["continuo", "continuo_synco"],     [PAT_SIG_W, PAT_VAR_W]),
+    "comp4":    (["comp4", "charleston"],            [PAT_SIG_W, PAT_VAR_W]),
+    "oompah":   (["oompah", "oompah_push"],          [PAT_SIG_W, PAT_VAR_W]),
+    "bossa":    (["bossa", "bossa_partido"],         [PAT_SIG_W, PAT_VAR_W]),
+    "montuno":  (["montuno", "montuno_synco"],       [PAT_SIG_W, PAT_VAR_W]),
+    "skank":    (["skank", "skank_double"],          [PAT_SIG_W, PAT_VAR_W]),
+    "funk16":   (["funk16", "funk16_synco"],         [PAT_SIG_W, PAT_VAR_W]),
+    "shuffle":  (["shuffle", "shuffle_jab"],         [PAT_SIG_W, PAT_VAR_W]),
+}
+BASS_PAT_VARIANTS = {
+    "root5":    (["root5", "root5_arp"],             [PAT_SIG_W, PAT_VAR_W]),
+    "walking":  (["walking", "walking_skip"],        [PAT_SIG_W, PAT_VAR_W]),
+    "stride":   (["stride", "stride_octave"],        [PAT_SIG_W, PAT_VAR_W]),
+    "boogie":   (["boogie", "boogie_shuffle"],       [PAT_SIG_W, PAT_VAR_W]),
+    "shuffle":  (["shuffle", "shuffle_walk"],        [PAT_SIG_W, PAT_VAR_W]),
+    "reggae":   (["reggae", "reggae_drop"],          [PAT_SIG_W, PAT_VAR_W]),
+    "tumbao":   (["tumbao", "tumbao_anticipate"],    [PAT_SIG_W, PAT_VAR_W]),
+    "habanera": (["habanera", "habanera_dotted"],    [PAT_SIG_W, PAT_VAR_W]),
+}
+
+
+def comp_pat_choices(style):
+    """(variant_names, weights) for the comp rhythm: the style's signature comp_pat at
+    high affinity plus its idiomatic, metric-conserving variants at a low base weight."""
+    base = STYLES[style]["comp_pat"]
+    return COMP_PAT_VARIANTS.get(base, ([base], [1]))
+
+
+def bass_pat_choices(style):
+    """(variant_names, weights) for the bass rhythm: signature bass_pat (high affinity)
+    plus its idiomatic, metric-conserving variants (low base weight)."""
+    base = STYLES[style]["bass_pat"]
+    return BASS_PAT_VARIANTS.get(base, ([base], [1]))
+
+
 class Palette(NamedTuple):
     style: str
     lead_program: int
@@ -262,17 +309,21 @@ class Palette(NamedTuple):
     legato: bool
 
 
-def palette_for(style, lead, comp=None, bass=None):
-    """Assemble the palette. comp/bass default to the style signature (back-compat) but
-    are normally supplied by the engine from comp_choices/bass_choices (c2k9p0a4)."""
+def palette_for(style, lead, comp=None, bass=None, comp_pat=None, bass_pat=None):
+    """Assemble the palette. comp/bass (instrument) and comp_pat/bass_pat (groove rhythm)
+    default to the style signature (back-compat) but are normally supplied by the engine
+    from comp_choices/bass_choices (c2k9p0a4) and comp_pat_choices/bass_pat_choices
+    (rhythm variety, r4d8m1k6)."""
     s = STYLES[style]
     comp = s["comp"] if comp is None else comp
     bass = s["bass"] if bass is None else bass
+    comp_pat = s["comp_pat"] if comp_pat is None else comp_pat
+    bass_pat = s["bass_pat"] if bass_pat is None else bass_pat
     if comp == lead and style not in KEYBOARD_BED_STYLES:    # never comp on the lead's own timbre (the v0.9
         comp = 48 if lead != 0 else 0                        # "organ-on-organ huffing"); contrast piano<->strings
     #   (keyboard-bed styles keep comp==piano: the stride bed needs the piano)
     return Palette(style, lead, comp, bass, lead, s["reg"],   # antiphon answers on the lead's own voice
-                   s["comp_pat"], s["bass_pat"], s["perc"], s["perc_vel"], s["legato"])
+                   comp_pat, bass_pat, s["perc"], s["perc_vel"], s["legato"])
 
 
 def programs_of(palette):
@@ -334,32 +385,54 @@ def comp_groove(pat, voic, base, vel, legato):
         seq = [bot, top, mid, top]
         for i in range(8):
             out.append(NoteEvent(VoiceRole.COMP, seq[i % 4], vel - 8, base + i * (B // 2), B // 2 - 4))
+    elif pat == "alberti_up":                                  # ascending Alberti variant (bot-mid-top-mid)
+        seq = [bot, mid, top, mid]
+        for i in range(8):
+            out.append(NoteEvent(VoiceRole.COMP, seq[i % 4], vel - 8, base + i * (B // 2), B // 2 - 4))
     elif pat == "continuo":                                   # baroque chord on each beat
         for beat in range(BEATS_PER_BAR):
             chord(beat, 1)
+    elif pat == "continuo_synco":                             # baroque: sustained 1, syncopated push to 2& and 4
+        chord(0, 1.5); chord(1.5, 0.5); chord(2, 1); chord(3, 1)
     elif pat == "comp4":                                      # swing/gospel light 4-to-the-bar chunks
         for beat in range(BEATS_PER_BAR):
             chord(beat, 0.5, vel - 6)
+    elif pat == "charleston":                                 # the classic jazz Charleston: 1 + and-of-2
+        chord(0, 1, vel - 4); chord(1.5, 0.5, vel - 4); chord(2.5, 1.5, vel - 8)
     elif pat in ("stride", "oompah", "marcato"):              # chord "pah" on the backbeats (2 & 4)
         chord(1, 0.75, vel - 2)
         chord(3, 0.75, vel - 2)
+    elif pat == "oompah_push":                                # oom-pah with an extra anticipating "pah" (1& 2 3& 4)
+        chord(1, 0.5, vel - 2); chord(2.5, 0.5, vel - 4); chord(3, 0.75, vel - 2)
     elif pat == "bossa":                                      # nylon-guitar syncopation
         for beat, dur in [(0, 0.5), (1.5, 0.5), (2, 0.5), (3, 0.5)]:
             chord(beat, dur, vel - 4)
-    elif pat == "montuno":                                    # salsa piano: arpeggiated offbeats
+    elif pat == "bossa_partido":                              # partido-alto: anticipated 1& and 3&
+        for beat, dur in [(0, 0.5), (1.5, 0.5), (2.5, 0.5), (3, 0.5)]:
+            chord(beat, dur, vel - 4)
+    elif pat in ("montuno", "montuno_synco"):                 # salsa piano: arpeggiated offbeats
         seq = voic + voic[-2::-1]
-        for i, beat in enumerate([0.5, 1, 1.5, 2.5, 3, 3.5]):
+        beats = [0.5, 1, 1.5, 2.5, 3, 3.5] if pat == "montuno" else [0, 0.5, 1.5, 2, 3, 3.5]
+        for i, beat in enumerate(beats):
             out.append(NoteEvent(VoiceRole.COMP, seq[i % len(seq)], vel - 4,
                                  base + int(beat * B), B // 2 - 4))
     elif pat == "skank":                                      # reggae offbeat stabs
         for beat in [0.5, 1.5, 2.5, 3.5]:
             chord(beat, 0.4, vel - 2)
+    elif pat == "skank_double":                               # double skank: a quick pair on each off-beat
+        for beat in [0.5, 0.75, 1.5, 1.75, 2.5, 2.75, 3.5, 3.75]:
+            chord(beat, 0.2, vel - 4)
     elif pat == "funk16":                                     # funk 16th stabs (syncopated)
         for beat in [0, 0.75, 1.5, 2.25, 3, 3.5]:
+            chord(beat, 0.25, vel)
+    elif pat == "funk16_synco":                               # funk: a different 16th stab placement
+        for beat in [0.25, 0.75, 1.25, 2, 2.75, 3.25]:
             chord(beat, 0.25, vel)
     elif pat == "shuffle":                                    # blues: on-grid backbeat chord jabs (no off-grid stutter)
         chord(1, 0.5, vel - 4)
         chord(3, 0.5, vel - 4)
+    elif pat == "shuffle_jab":                                # blues: backbeats plus a pickup jab into 3
+        chord(1, 0.5, vel - 4); chord(2.5, 0.5, vel - 8); chord(3, 0.5, vel - 4)
     return out
 
 
@@ -378,19 +451,33 @@ def bass_groove(pat, pcs, next_root_pc, base, vel):
                                 ((36 + next_root_pc) - _bn(pcs, r)) % 12))
     if pat == "root5":
         note("root", 0, 2); note("fifth", 2, 2)
+    elif pat == "root5_arp":                                  # root-fifth arpeggiated to quarters
+        for i, r in enumerate(["root", "fifth", "root", "fifth"]):
+            note(r, i, 1)
     elif pat == "continuo":                                   # baroque walking quarters
         for i, r in enumerate(["root", "third", "fifth", "third"]):
             note(r, i, 1)
     elif pat == "stride":                                     # "oom" on 1 & 3 (ragtime/march)
         note("root", 0, 1); note("fifth", 2, 1)
+    elif pat == "stride_octave":                              # stride with an octave leap on the "oom"s
+        note("root", 0, 1); note(pcs[0] + 12, 2, 1)
     elif pat == "walking":                                    # jazz walking, last beat aims at next root
         for i, r in enumerate(["root", "third", "fifth", aim]):
+            note(r, i, 1)
+    elif pat == "walking_skip":                               # walking with a fifth-skip on beat 3
+        for i, r in enumerate(["root", "fifth", "third", aim]):
             note(r, i, 1)
     elif pat == "boogie":                                     # eighth-note ostinato
         for i, r in enumerate(["root", "third", "fifth", "sixth", "b7", "sixth", "fifth", "third"]):
             note(r, i * 0.5, 0.5)
+    elif pat == "boogie_shuffle":                             # boogie outlining root-3-5-6-5-3 (rocking)
+        for i, r in enumerate(["root", "third", "fifth", "sixth", "fifth", "third", "fifth", "sixth"]):
+            note(r, i * 0.5, 0.5)
     elif pat == "shuffle":                                    # blues shuffle bass
         for i, r in enumerate(["root", "fifth", "sixth", "fifth"]):
+            note(r, i, 1)
+    elif pat == "shuffle_walk":                               # shuffle that walks up root-5-6-b7
+        for i, r in enumerate(["root", "fifth", "sixth", "b7"]):
             note(r, i, 1)
     elif pat == "twofeel":                                    # bossa two-feel
         note("root", 0, 2); note("fifth", 2, 2)
@@ -398,10 +485,16 @@ def bass_groove(pat, pcs, next_root_pc, base, vel):
         note("root", 0, 1.5); note("fifth", 1.5, 0.5); note("root", 2, 1.5); note("fifth", 3.5, 0.5)
     elif pat == "tumbao":                                     # salsa anticipated bass
         note("root", 0, 1); note("root", 1.5, 0.5); note("fifth", 2.5, 0.5); note(aim, 3, 1)
+    elif pat == "tumbao_anticipate":                          # tumbao with the bombo accent on 2& and the &-of-4
+        note("root", 0, 1.5); note("fifth", 1.5, 0.5); note("root", 2.5, 0.5); note(aim, 3, 1)
     elif pat == "habanera":                                   # tango habanera cell
         note("root", 0, 1.5); note("root", 1.5, 0.5); note("fifth", 2, 1); note("fifth", 3, 1)
+    elif pat == "habanera_dotted":                            # habanera with a dotted second half
+        note("root", 0, 1.5); note("root", 1.5, 0.5); note("fifth", 2, 1.5); note(aim, 3.5, 0.5)
     elif pat == "reggae":                                     # spacious, syncopated
         note("root", 0, 1); note("root", 1.5, 0.5); note("fifth", 2.5, 1)
+    elif pat == "reggae_drop":                                # reggae with a one-drop emphasis on beat 3
+        note("root", 0, 1); note("fifth", 2, 1); note("root", 3, 1)
     elif pat == "funk":                                       # syncopated 16ths + octave pop
         note("root", 0, 0.5); note("root", 0.75, 0.25); note(pcs[0] + 12, 1.5, 0.25)
         note("fifth", 2, 0.5); note("root", 2.75, 0.25); note(aim, 3.5, 0.5)

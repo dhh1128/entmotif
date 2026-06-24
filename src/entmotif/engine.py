@@ -14,7 +14,8 @@ from entmotif.melody import (
     unit_dyn, line, cadence_bar, motif_shape, render_transform, choose_transform)
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
-    comp_choices, bass_choices, arrange_unit, percussion_groove)
+    comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
+    arrange_unit, percussion_groove)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -34,7 +35,9 @@ def generate(value):
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
     comp_prog = ch.weighted("comp", *comp_choices(style))     # rhythm-section two-layer model (c2k9p0a4): signature
     bass_prog = ch.weighted("bass", *bass_choices(style))     # common, capability-passing alternates rare
-    pal = palette_for(style, lead, comp_prog, bass_prog)
+    comp_pat = ch.weighted("comp_pat", *comp_pat_choices(style))  # RHYTHM-pattern variety (A2, r4d8m1k6): signature
+    bass_pat = ch.weighted("bass_pat", *bass_pat_choices(style))  # groove common, idiomatic variants rare
+    pal = palette_for(style, lead, comp_prog, bass_prog, comp_pat, bass_pat)
     ilo, ihi, icen = pal.range
     tonic = snap(icen, [key], ilo, ihi - 12)
     lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct, sitting LOWER (v0.9 was shrill/too high)
@@ -148,6 +151,7 @@ def generate(value):
             "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
             "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": nU * 2,
             "fat": fat, "arr": template, "percussion": pal.perc if perc else "none",
+            "comp_pat": pal.comp_pat, "bass_pat": pal.bass_pat,
             "final_cad": units[-1].cad,
             "bar_chords": [c for _, chs, _, _ in units for c in (sym(x, mode) for x in chs)],
             "color": color, "v4": used_v4, "dyn_bars": dyn_bars}

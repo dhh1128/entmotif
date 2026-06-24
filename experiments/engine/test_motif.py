@@ -184,6 +184,51 @@ for p in march_cprogs:
     check(p not in (56, 57, 59, 61),
           "march comp is a brass stab (ugly oom-pah): prog%d (%s)" % (p, arr.gm_name(p)))
 
+# --- A2 (v12 #08, this.i:r4d8m1k6): comp/bass RHYTHM-pattern variety. The groove is
+#     no longer one fixed rhythm per style: each style's signature comp/bass pattern
+#     belongs to a small family of idiomatic, metric-CONSERVING variants, chosen by
+#     the fingerprint (signature dominant, variants reachable-but-rare). So the same
+#     style's groove rhythm differs across inputs instead of always strong/weak. ---
+#  (a) every declared variant conserves the bar's total duration (this.i:m9p3k7a2) and
+#      stays on the 16th grid; the signature base pattern is always in its own family.
+_VOIC = arr.voice_chord([0, 4, 7], 1, 72)
+_BAR = 4 * DIV
+for base, variants in arr.COMP_PAT_VARIANTS.items():
+    pats, wts = variants
+    check(base in pats, "comp base pattern not in its own family: %s" % base)
+    check(len(pats) == len(wts) and len(pats) >= 1, "COMP_PAT_VARIANTS malformed: %s" % base)
+    for pat in pats:
+        ev = arr.comp_groove(pat, _VOIC, 0, 80, False)
+        for n in ev:
+            check(n[3] % (DIV // 4) == 0, "comp variant %s off-grid onset %d" % (pat, n[3]))
+            check(n[3] + n[4] <= _BAR + 1, "comp variant %s overruns the bar" % pat)
+for base, variants in arr.BASS_PAT_VARIANTS.items():
+    pats, wts = variants
+    check(base in pats, "bass base pattern not in its own family: %s" % base)
+    check(len(pats) == len(wts) and len(pats) >= 1, "BASS_PAT_VARIANTS malformed: %s" % base)
+    for pat in pats:
+        ev = arr.bass_groove(pat, [0, 4, 7], 7, 0, 80)
+        tot = 0
+        for n in ev:
+            check(n[3] % (DIV // 4) == 0, "bass variant %s off-grid onset %d" % (pat, n[3]))
+            check(n[3] + n[4] <= _BAR + arr.SUSTAIN_GAP + 1, "bass variant %s overruns the bar" % pat)
+        check(any(n[3] == 0 for n in ev), "bass variant %s has no downbeat note" % pat)
+#  (b) at least one variant exists beyond the signature for several styles, and the
+#      rendered comp/bass rhythm actually VARIES across inputs within a style.
+multi_fam_comp = sum(1 for b in arr.COMP_PAT_VARIANTS if len(arr.COMP_PAT_VARIANTS[b][0]) >= 2)
+multi_fam_bass = sum(1 for b in arr.BASS_PAT_VARIANTS if len(arr.BASS_PAT_VARIANTS[b][0]) >= 2)
+check(multi_fam_comp >= 4, "too few comp pattern families have a variant: %d" % multi_fam_comp)
+check(multi_fam_bass >= 4, "too few bass pattern families have a variant: %d" % multi_fam_bass)
+_cpat_seen, _bpat_seen = _ddv(set), _ddv(set)
+for i in range(1500):
+    _n, _m = motif.generate("rhythm-probe-%d" % i)
+    _cpat_seen[_m["style"]].add(_m.get("comp_pat"))
+    _bpat_seen[_m["style"]].add(_m.get("bass_pat"))
+multi_cpat = sum(1 for st in _cpat_seen if len(_cpat_seen[st]) >= 2)
+multi_bpat = sum(1 for st in _bpat_seen if len(_bpat_seen[st]) >= 2)
+check(multi_cpat >= 4, "comp rhythm barely varies: only %d styles show >=2 comp patterns" % multi_cpat)
+check(multi_bpat >= 4, "bass rhythm barely varies: only %d styles show >=2 bass patterns" % multi_bpat)
+
 # --- v0.9: harmony overhaul invariants on the corpus ---
 for v in CORPUS:
     notes, m = motif.generate(v)

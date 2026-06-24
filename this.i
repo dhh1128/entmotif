@@ -219,6 +219,28 @@ Entmotif = goal:
         the piano left hand. Adds independent Chooser labels "comp"/"bass" (no
         perturbation of existing draws — each label hashes independently).
 
+    Rhythm Pattern Variety = decision:
+      id: r4d8m1k6
+      why: >
+        The two-layer "signature common, alternates rare" model [[c2k9p0a4]],
+        first applied to the rhythm section's INSTRUMENT, is now extended to its
+        RHYTHM. v12 #08 complaint: the comp/bass grooves read as a single
+        strong/weak alternation per style. Fix: each style's signature comp_pat /
+        bass_pat names a small FAMILY of idiomatic, metric-CONSERVING variants
+        (COMP_PAT_VARIANTS / BASS_PAT_VARIANTS in arrangement.py) — e.g. swing
+        walking <-> walking_skip, ragtime/march stride <-> stride_octave, blues
+        shuffle <-> shuffle_jab, jazz comp4 <-> charleston, reggae skank <->
+        skank_double, salsa montuno <-> montuno_synco, bossa <-> bossa_partido.
+        The fingerprint draws a variant per input (new independent Chooser labels
+        "comp_pat"/"bass_pat", so existing draws are unperturbed); the signature
+        keeps ~70% affinity (PAT_SIG_W) and each variant is reachable-but-rarer.
+        Every variant fills exactly one bar on the 16th grid [[m9p3k7a2]] and
+        stays inside the idiom (capability gate still keys off the BASE pattern,
+        since variants share its attack demands). Result: the same style's groove
+        rhythm differs across inputs instead of being one fixed cell, consuming
+        more of the hash with musically-valid choices [[h0v4k7m2]]. Refines
+        [[c2k9p0a4]]; conserves [[m9p3k7a2]].
+
     Style Inventory Size = decision:
       id: d4m1z8p0
       why: >
