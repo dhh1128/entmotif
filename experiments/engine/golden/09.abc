@@ -1,9 +1,9 @@
 X:1
 T:did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK
-C:entmotif [blues] C# major, 108bpm, lead=muted-trumpet, perc=shuffle, form=period, arr=solo_bed
+C:entmotif [blues] C# major, 120bpm, lead=muted-trumpet, perc=shuffle, form=period, arr=solo_bed
 M:4/4
 L:1/16
-Q:1/4=108
+Q:1/4=120
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"

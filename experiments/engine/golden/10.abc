@@ -1,9 +1,9 @@
 X:1
 T:addr1q9c0sj9wp29txqlt0qkc4cz76d5szl4xqgmgpw70ay9zkmskq7stm5kkjjjvrjz9p3kgxx0plzkphkn2yepg6w2zjphshtm0rl
-C:entmotif [blues] G major, 120bpm, lead=harmonica, perc=shuffle, form=aaba, arr=solo_bed
+C:entmotif [blues] G major, 108bpm, lead=harmonica, perc=shuffle, form=aaba, arr=solo_bed
 M:4/4
 L:1/16
-Q:1/4=120
+Q:1/4=108
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"

@@ -101,6 +101,66 @@ KEYBOARD_BED_STYLES = {"ragtime", "boogie_woogie"}           # bed IS the keyboa
 #   piano even when the lead is also piano (solo ragtime) — but the lead may still be a
 #   capable non-piano timbre (clarinet/banjo/synth) played OVER that piano bed.
 
+# --- EMOTION: the second master dimension (this.i:a7k0m3p9, the DAG d2k9m4p1) ---------
+# Entropy picks an emotion, which then COHERENTLY conditions the affective cues in
+# Gabrielsson & Lindstrom precedence (mode > tempo > register > dynamics > articulation >
+# dissonance — docs/memorability-research.md Part C). It biases the WITHIN-style choices
+# without overriding the idiom: a SAD samba is still a samba, just minor/slower/softer/
+# lower/legato. The cues redundantly reinforce ONE affect, which is what makes a motif
+# feel like SOMETHING instead of emotionally flat. Style and emotion are orthogonal
+# masters; both feed the downstream cues (emotion->style priors are a documented next
+# step — for now emotion is an independent draw that conditions the sub-cues).
+# Fields:
+#   mode_w  : multiplicative bias on [major, minor] (combined with the style's mode_w)
+#   tempo   : -1 slower / 0 neutral / +1 faster end of the style's (ascending) tempo band
+#   reg     : register shift in semitones (high/low), applied WITHIN the instrument window
+#   dyn     : velocity offset (loud/soft)
+#   artic   : -1 legato (sustained) / +1 staccato (detached) / 0 neutral -> the comp legato
+#   color_w : multiplicative bias on [plain, color1, color2] dissonance (with style color_w)
+EMOTIONS = {
+    "happy":      dict(mode_w=[3, 1], tempo=+1, reg=+3, dyn=+8,  artic=+1, color_w=[2, 2, 1]),
+    "sad":        dict(mode_w=[1, 3], tempo=-1, reg=-3, dyn=-12, artic=-1, color_w=[2, 2, 1]),
+    "peaceful":   dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-10, artic=-1, color_w=[3, 2, 1]),
+    "tense":      dict(mode_w=[1, 3], tempo=+1, reg=+2, dyn=-2,  artic=+1, color_w=[1, 2, 3]),
+    "triumphant": dict(mode_w=[3, 1], tempo=0,  reg=+2, dyn=+12, artic=0,  color_w=[1, 2, 2]),
+    "tender":     dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-8,  artic=-1, color_w=[2, 2, 1]),
+}
+EMOTION_NAMES = list(EMOTIONS.keys())
+EMOTION_W = [3, 3, 2, 2, 2, 2]                               # all reachable; common affects a touch likelier
+
+
+def _combine_w(style_w, emo_w):
+    """Elementwise product of two integer weight vectors — both the style and the emotion
+    'vote' on the choice. Floored at 1 so no option becomes unreachable (the full range
+    stays reachable; entropy still picks the CDF point — this.i:7c4m1k0p)."""
+    return [max(1, a * b) for a, b in zip(style_w, emo_w)]
+
+
+def mode_weights(style, emotion):
+    """[major, minor] weights conditioned on BOTH style idiom and emotion affect."""
+    return _combine_w(STYLES[style]["mode_w"], EMOTIONS[emotion]["mode_w"])
+
+
+def color_weights(style, emotion):
+    """[plain, color1, color2] dissonance weights conditioned on style + emotion."""
+    return _combine_w(STYLES[style]["color_w"], EMOTIONS[emotion]["color_w"])
+
+
+def tempo_weights(style, emotion):
+    """Bias the style's tempo band toward the emotion's ENERGY: a faster emotion lifts the
+    weight of the upper tempos, a slower one the lower tempos. The band itself (the idiom's
+    plausible tempos) is unchanged — only the distribution over it shifts."""
+    base = STYLES[style]["tempo_w"]
+    t, n = EMOTIONS[emotion]["tempo"], len(STYLES[style]["tempos"])
+    if t == 0 or n == 1:
+        return list(base)
+    out = []
+    for i, w in enumerate(base):                            # tempos are ascending; ramp the multiplier
+        lift = i if t > 0 else (n - 1 - i)                  # faster -> favor high i; slower -> favor low i
+        out.append(max(1, w * (1 + lift)))
+    return out
+
+
 GM_NAMES = {
     0: "piano", 4: "e-piano", 6: "harpsichord", 7: "clavinet", 8: "celesta", 9: "glockenspiel",
     10: "music-box", 11: "vibraphone", 12: "marimba", 13: "xylophone", 16: "drawbar-organ",

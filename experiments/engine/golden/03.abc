@@ -1,9 +1,9 @@
 X:1
 T:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
-C:entmotif [march] F# major, 124bpm, lead=trombone, perc=march, form=period_tag, arr=call_resp
+C:entmotif [march] F# major, 116bpm, lead=trombone, perc=march, form=period_tag, arr=call_resp
 M:4/4
 L:1/16
-Q:1/4=124
+Q:1/4=116
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"

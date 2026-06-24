@@ -411,6 +411,57 @@ for v in CORPUS:
         _suited += 1
 check(_suited >= 9, "too few corpus leads style-suited: %d/12 (want >=9)" % _suited)
 
+# --- fw7 (this.i:a7k0m3p9, EMOTION as the upstream master in the DAG d2k9m4p1): pick an
+#     emotion, then COHERENTLY condition the affective cues (Gabrielsson precedence:
+#     mode > tempo > register > dynamics > articulation > dissonance) so a motif feels
+#     sad/happy/tense instead of emotionally flat. Emotion biases WITHIN-style choices,
+#     it does not override the idiom (a sad samba is still a samba). ---
+# (a) EMOTION is a reachable master and travels in the meta.
+_emos_seen = {motif.generate("emo-probe-%d" % i)[1].get("emotion") for i in range(3000)}
+check(len(arr.EMOTION_NAMES) >= 5, "fewer than 5 emotions: %d" % len(arr.EMOTION_NAMES))
+check(_emos_seen == set(arr.EMOTION_NAMES),
+      "not every emotion reachable: missing %s" % (set(arr.EMOTION_NAMES) - _emos_seen))
+# (b) the CONDITIONAL distributions order correctly (pure functions; cue precedence).
+def _pminor(st, emo):
+    w = arr.mode_weights(st, emo); return w[1] / sum(w)
+def _wmean_tempo(st, emo):
+    ts, w = arr.STYLES[st]["tempos"], arr.tempo_weights(st, emo)
+    return sum(t * x for t, x in zip(ts, w)) / sum(w)
+def _pcolor2(st, emo):
+    w = arr.color_weights(st, emo); return w[2] / sum(w)
+for st in arr.STYLE_NAMES:
+    check(_pminor(st, "sad") > _pminor(st, "happy"),
+          "mode not conditioned: P(minor|sad) !> P(minor|happy) for %s" % st)
+    check(_pcolor2(st, "tense") >= _pcolor2(st, "happy"),
+          "dissonance not conditioned: P(color2|tense) < P(color2|happy) for %s" % st)
+    if len(arr.STYLES[st]["tempos"]) > 1:
+        check(_wmean_tempo(st, "happy") > _wmean_tempo(st, "sad"),
+              "tempo not conditioned: mean(happy) !> mean(sad) for %s" % st)
+# the emotion table itself ranks energy/register/loudness as the precedence demands
+check(arr.EMOTIONS["happy"]["reg"] > arr.EMOTIONS["sad"]["reg"], "happy register !> sad")
+check(arr.EMOTIONS["triumphant"]["dyn"] > arr.EMOTIONS["sad"]["dyn"], "triumphant !louder than sad")
+# (c) REALIZED coherence: bucket a wide probe by chosen emotion; the aggregate cues align
+#     (style is drawn independently of emotion, so the idiom confound averages out).
+from collections import defaultdict as _dde
+_etempo, _evel, _epitch = _dde(list), _dde(list), _dde(list)
+for i in range(2400):
+    n, m = motif.generate("emoreal-%d" % i)
+    e = m.get("emotion")
+    if e is None:
+        continue
+    _etempo[e].append(m["tempo"])
+    lead = [x for x in n if int(x[0]) == 0]
+    if lead:
+        _evel[e].append(max(x[2] for x in lead))
+        _epitch[e].append(sum(x[1] for x in lead) / len(lead))
+def _mean(xs): return sum(xs) / len(xs) if xs else 0
+check(_mean(_etempo["happy"]) > _mean(_etempo["sad"]),
+      "realized tempo not coherent: happy %.0f !> sad %.0f" % (_mean(_etempo["happy"]), _mean(_etempo["sad"])))
+check(_mean(_evel["triumphant"]) > _mean(_evel["sad"]),
+      "realized loudness not coherent: triumphant %.0f !> sad %.0f" % (_mean(_evel["triumphant"]), _mean(_evel["sad"])))
+check(_mean(_epitch["happy"]) > _mean(_epitch["sad"]),
+      "realized register not coherent: happy %.1f !> sad %.1f" % (_mean(_epitch["happy"]), _mean(_epitch["sad"])))
+
 # --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
 lows = []
 for v in CORPUS:

@@ -17,7 +17,8 @@ from entmotif.theory import scale_tones
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
-    arrange_unit, percussion_groove, melodic_window, LEAD_RANGE)
+    arrange_unit, percussion_groove, melodic_window, LEAD_RANGE,
+    EMOTIONS, EMOTION_NAMES, EMOTION_W, mode_weights, tempo_weights, color_weights)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -32,7 +33,9 @@ def generate(value):
     ch = Chooser(fp)
     style = ch.weighted("style", STYLE_NAMES, STYLE_W)        # the broad master dimension (idiom/groove)
     S = STYLES[style]
-    mode = ch.weighted("mode", ["major", "minor"], S["mode_w"])  # style-biased (tango minor, march major...)
+    emotion = ch.weighted("emotion", EMOTION_NAMES, EMOTION_W)  # the AFFECT master (a7k0m3p9): a second master
+    EMO = EMOTIONS[emotion]                                    # alongside style, conditioning the affective cues
+    mode = ch.weighted("mode", ["major", "minor"], mode_weights(style, emotion))  # style idiom x emotion affect
     key = ch.int("key", 12)
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
     comp_prog = ch.weighted("comp", *comp_choices(style))     # rhythm-section two-layer model (c2k9p0a4): signature
@@ -43,10 +46,11 @@ def generate(value):
     ilo, ihi, icen = melodic_window(pal.range, lead)          # window = style register ∩ instrument tessitura
     #   (this.i:d2k9m4p1: the lead's register is conditioned on the CHOSEN instrument, so
     #   the line never sits below a flute / above a trombone — pure, draws no entropy)
+    icen = min(ihi, max(ilo, icen + EMO["reg"]))              # emotion biases register high/low WITHIN that window
     tonic = snap(icen, [key], ilo, ihi - 12)
     lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct within the instrument's playable range
     base = lo + (hi - lo) // 4
-    tempo = ch.weighted("tempo", S["tempos"], S["tempo_w"])   # per-style tempo range (up to 208)
+    tempo = ch.weighted("tempo", S["tempos"], tempo_weights(style, emotion))  # band biased by emotion energy
     leap = ch.weighted("leap", [0, 1, 2], [3, 4, 2])
     tendency = ch.weighted("tend", [-1, 0, 1], [2, 3, 2])
     resolution = ch.weighted("res", ["authentic", "deceptive", "half"], [3, 2, 2])
@@ -55,7 +59,12 @@ def generate(value):
     # comp/bass GROOVE is fixed by the style (cohesion) — not a separate entropy draw.
     template = ch.weighted("arr", ["solo_bed", "lead_counter", "call_resp", "groove_first"],
                            [3, 2, 2, 1])
-    color = ch.weighted("color", [0, 1, 2], S["color_w"])     # harmonic adventurousness, style-biased
+    color = ch.weighted("color", [0, 1, 2], color_weights(style, emotion))  # dissonance: style x emotion
+    legato = pal.legato                                       # articulation cue (a7k0m3p9): emotion overrides the
+    if EMO["artic"] < 0:                                      # comp's sustain — legato (sad/tender/peaceful) or
+        legato = True                                         # staccato (happy/tense); neutral keeps the idiom default
+    elif EMO["artic"] > 0:
+        legato = False
     sig = ch.choice("sig", SIG_STEPS[leap])                   # signature opening interval
 
     idea = [ch.choice("hook", HOOKS), ch.choice("im1", FIGURES)]
@@ -108,7 +117,7 @@ def generate(value):
         bar0 = u * 2
         center = arc_center(u)
         dyn = unit_dyn(u, nU, peak)
-        vel = DYN_VEL[dyn]
+        vel = max(40, min(120, DYN_VEL[dyn] + EMO["dyn"]))    # emotion shifts the whole dynamic arc loud/soft
         dyn_bars[bar0] = dyn
         at_peak = (u == peak)
         cr_answer = template == "call_resp" and role == "answer"
@@ -139,7 +148,7 @@ def generate(value):
         if style in ("classical", "baroque") and template in ("solo_bed", "lead_counter") and u == 0:
             comp_on = False                                   # art-style lead states the theme unaccompanied
         anotes, prev_voicing = arrange_unit(chm, mode, key, lo, bar0, fat, pal.comp_pat, pal.bass_pat,
-                                            comp_on, bass_on, vel, pal.legato, prev_voicing)
+                                            comp_on, bass_on, vel, legato, prev_voicing)
         notes += anotes
 
         if template == "lead_counter" and role == "idea":     # DEVELOPED counter on V:4 = inversion of the germ
@@ -157,7 +166,7 @@ def generate(value):
     notes += perc
 
     meta = _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
-                         form, nU, fat, template, perc, units, color, used_v4, dyn_bars)
+                         form, nU, fat, template, perc, units, color, used_v4, dyn_bars, emotion)
     return notes, meta
 
 
@@ -178,10 +187,11 @@ def _polish_lead_phrasing(notes, mode, key, lo, hi, germ_center):
 
 
 def _compose_meta(mode, key, tonic, tempo, style, lead, pal, leap, resolution,
-                  form, num_units, fat, template, perc, units, color, used_v4, dyn_bars):
+                  form, num_units, fat, template, perc, units, color, used_v4, dyn_bars, emotion):
     """Assemble the decision/structure metadata dict that travels alongside the notes
     (consumed by the exporters and the test suite). Pure aggregation — no choices."""
     return {"mode": mode, "key": key, "tonic": tonic, "tempo": tempo, "style": style,
+            "emotion": emotion,
             "lead": gm_name(lead), "lead_prog": lead, "comp_prog": pal.comp_program,
             "bass_prog": pal.bass_program, "ans_prog": pal.answer_program,
             "leap": LEAP_NAMES[leap], "res": resolution, "form": form, "bars": num_units * 2,

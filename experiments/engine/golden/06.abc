@@ -1,19 +1,19 @@
 X:1
 T:GCKFBEIYTKP5RDBQMUTAPDCDHF2TR4LPNRGW4JBQQTQUYZP4LDKP3SGM
-C:entmotif [ragtime] G# major, 160bpm, lead=piano, perc=none, form=period, arr=lead_counter
+C:entmotif [ragtime] G# minor, 128bpm, lead=piano, perc=none, form=period, arr=lead_counter
 M:4/4
 L:1/16
-Q:1/4=160
+Q:1/4=128
 V:1 name="lead"
 V:2 name="comp"
 V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"G#" !mp! ^D2 ^d2 =G4 ^D6 ^G2 | "Fm" =F4 ^A8 ^G2 z2 | "A#" !mf! =d2 ^g2 =c4 ^A6 ^d2 | "D#" ^c4 =c4 ^A6 z2 | "G#" !f! ^g ^g =c2 ^G3 ^c ^G2 ^c2 z2 =c2 | "Fm" ^G ^g =c2 ^G3 ^c ^G2 ^c2 z2 =c2 | "D#" !mf! =G2 =g2 ^A4 =G6 =c2 | "G#" ^c4 ^A4 ^G8 |]
+"G#m" !mp! =B,2 ^G2 =B,4 ^G6 ^C2 | "E" =B,4 ^G,8 ^C2 z2 | "C#m" !mf! =E2 ^G2 =B,4 ^G6 ^C2 | "D#" ^C4 =B,4 ^A,6 z2 | "G#m" !f! ^G ^G =B,2 ^G3 ^C =B,2 ^G,2 z2 ^C2 | "E" =B, ^G =B,2 ^G3 ^C =B,2 ^G,2 z2 ^C2 | "D#" !mf! ^A,2 ^F2 ^A,4 =G6 =B,2 | "G#m" ^C4 ^A,4 ^G,8 |]
 V:2
-z4 [^G,=C^D]3 z5 [^G,=C^D]3 z | z4 [=F,^G,=C]3 z5 [=F,^G,=C]3 z | z4 [^A,=D=F]3 z5 [^A,=D=F]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=c^d]3 z5 [^G=c^d]3 z | z4 [=F^G=c]3 z5 [=F^G=c]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=c^d]3 z5 [^G=c^d]3 z |]
+z4 [^G,=B,^D]3 z5 [^G,=B,^D]3 z | z4 [=E,^G,=B,]3 z5 [=E,^G,=B,]3 z | z4 [^C=E^G]3 z5 [^C=E^G]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=B^d]3 z5 [^G=B^d]3 z | z4 [=E^G=B]3 z5 [=E^G=B]3 z | z4 [^D=G^A]3 z5 [^D=G^A]3 z | z4 [^G=B^d]3 z5 [^G=B^d]3 z |]
 V:3
-^G,,4 z4 ^G,,4 z4 | =F,,4 z4 =F,,4 z4 | ^A,,4 z4 ^A,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 | =F,,4 z4 =F,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 |]
+^G,,4 z4 ^G,,4 z4 | =E,,4 z4 =E,,4 z4 | ^C,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 | =E,,4 z4 =E,,4 z4 | ^D,,4 z4 ^D,,4 z4 | ^G,,4 z4 ^G,,4 z4 |]
 V:4
-^G,2 =G,2 ^D4 ^G6 ^D2 | ^G4 ^D8 =F4 | z16 | z16 | ^G2 ^G,2 =F4 ^G6 ^D2 | ^G4 ^D8 =F4 | z16 | z16 |]
+^D,2 ^C,2 ^A,4 ^D,6 ^A,2 | =B,4 =B,8 ^F,4 | z16 | z16 | ^G,2 ^C,2 ^A,4 ^D,6 ^A,2 | =B,4 =B,8 ^F,4 | z16 | z16 |]
