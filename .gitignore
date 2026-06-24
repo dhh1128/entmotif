@@ -162,3 +162,7 @@ cython_debug/
 
 /.tick
 .tick.lock
+
+# Corpus mining: raw downloads are NEVER committed (license discipline — see data/README.md).
+# Only data/vendor/ (small permissive corpora) and data/features/ (derived stats) are tracked.
+/data/raw/

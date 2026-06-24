@@ -1,0 +1,80 @@
+{
+  "description": "P(mode) overall and conditioned on genre (major/minor/modal)",
+  "distribution": {
+    "by_genre": {
+      "ashover": {
+        "major": 1.0
+      },
+      "hpps": {
+        "major": 1.0
+      },
+      "jigs": {
+        "major": 1.0
+      },
+      "morris": {
+        "major": 1.0
+      },
+      "playford": {
+        "major": 1.0
+      },
+      "reelsa-c": {
+        "major": 1.0
+      },
+      "reelsd-g": {
+        "major": 1.0
+      },
+      "reelsh-l": {
+        "major": 1.0
+      },
+      "reelsm-q": {
+        "major": 1.0
+      },
+      "reelsr-t": {
+        "major": 1.0
+      },
+      "reelsu-z": {
+        "major": 1.0
+      },
+      "slip": {
+        "major": 1.0
+      },
+      "waltzes": {
+        "major": 1.0
+      },
+      "xmas": {
+        "major": 1.0
+      }
+    },
+    "by_genre_support": {
+      "ashover": 46,
+      "hpps": 65,
+      "jigs": 340,
+      "morris": 31,
+      "playford": 15,
+      "reelsa-c": 81,
+      "reelsd-g": 84,
+      "reelsh-l": 90,
+      "reelsm-q": 80,
+      "reelsr-t": 92,
+      "reelsu-z": 34,
+      "slip": 11,
+      "waltzes": 52,
+      "xmas": 13
+    },
+    "n": 1034,
+    "overall": {
+      "major": 1.0
+    }
+  },
+  "feature": "mode",
+  "provenance": {
+    "dataset": "nottingham",
+    "limit": null,
+    "n_tunes_loaded": 1034,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "mode"
+  ]
+}

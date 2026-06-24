@@ -1,0 +1,111 @@
+{
+  "description": "P(mode) overall and conditioned on genre (major/minor/modal)",
+  "distribution": {
+    "by_genre": {
+      "barndance": {
+        "dorian": 0.0455,
+        "major": 0.8159,
+        "minor": 0.1243,
+        "mixolydian": 0.0144
+      },
+      "hornpipe": {
+        "dorian": 0.0766,
+        "major": 0.7955,
+        "minor": 0.0942,
+        "mixolydian": 0.0336
+      },
+      "jig": {
+        "dorian": 0.1379,
+        "major": 0.6254,
+        "minor": 0.1547,
+        "mixolydian": 0.082
+      },
+      "march": {
+        "dorian": 0.1043,
+        "major": 0.6526,
+        "minor": 0.1382,
+        "mixolydian": 0.1049
+      },
+      "mazurka": {
+        "dorian": 0.0533,
+        "major": 0.732,
+        "minor": 0.2045,
+        "mixolydian": 0.0103
+      },
+      "polka": {
+        "dorian": 0.118,
+        "major": 0.706,
+        "minor": 0.1389,
+        "mixolydian": 0.0371
+      },
+      "reel": {
+        "dorian": 0.1748,
+        "major": 0.5901,
+        "minor": 0.1554,
+        "mixolydian": 0.0797
+      },
+      "slide": {
+        "dorian": 0.1375,
+        "major": 0.7242,
+        "minor": 0.0739,
+        "mixolydian": 0.0644
+      },
+      "slip jig": {
+        "dorian": 0.1401,
+        "major": 0.5604,
+        "minor": 0.2257,
+        "mixolydian": 0.0739
+      },
+      "strathspey": {
+        "dorian": 0.1566,
+        "major": 0.5787,
+        "minor": 0.1566,
+        "mixolydian": 0.1081
+      },
+      "three-two": {
+        "dorian": 0.1074,
+        "major": 0.5298,
+        "minor": 0.3126,
+        "mixolydian": 0.0501
+      },
+      "waltz": {
+        "dorian": 0.0672,
+        "major": 0.6769,
+        "minor": 0.221,
+        "mixolydian": 0.035
+      }
+    },
+    "by_genre_support": {
+      "barndance": 1738,
+      "hornpipe": 3746,
+      "jig": 13849,
+      "march": 1802,
+      "mazurka": 582,
+      "polka": 4204,
+      "reel": 19948,
+      "slide": 1164,
+      "slip jig": 1963,
+      "strathspey": 1360,
+      "three-two": 419,
+      "waltz": 3946
+    },
+    "n": 54721,
+    "overall": {
+      "dorian": 0.1359,
+      "major": 0.64,
+      "minor": 0.1555,
+      "mixolydian": 0.0686
+    }
+  },
+  "feature": "mode",
+  "provenance": {
+    "dataset": "thesession",
+    "limit": null,
+    "n_tunes_loaded": 54721,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "mode"
+  ]
+}

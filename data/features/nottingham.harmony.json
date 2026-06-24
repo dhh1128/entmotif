@@ -1,0 +1,79 @@
+{
+  "description": "chord root-motion and quality transition distributions from inline chord symbols",
+  "distribution": {
+    "n_progressions": 1021,
+    "quality_overall": {
+      "aug": 0.0075,
+      "dom7": 0.2152,
+      "maj": 0.6144,
+      "min": 0.1622,
+      "min7": 0.0006
+    },
+    "quality_transition": {
+      "aug": {
+        "aug": 0.0539,
+        "dom7": 0.1863,
+        "maj": 0.4804,
+        "min": 0.2794
+      },
+      "dom7": {
+        "aug": 0.0076,
+        "dom7": 0.1193,
+        "maj": 0.7892,
+        "min": 0.0839
+      },
+      "maj": {
+        "aug": 0.0073,
+        "dom7": 0.2186,
+        "maj": 0.6263,
+        "min": 0.1473,
+        "min7": 0.0006
+      },
+      "min": {
+        "aug": 0.0075,
+        "dom7": 0.3765,
+        "maj": 0.2857,
+        "min": 0.3284,
+        "min7": 0.0019
+      },
+      "min7": {
+        "aug": 0.1176,
+        "dom7": 0.2941,
+        "maj": 0.2353,
+        "min": 0.3529
+      }
+    },
+    "quality_transition_support": {
+      "aug": 204,
+      "dom7": 5759,
+      "maj": 15785,
+      "min": 4266,
+      "min7": 17
+    },
+    "root_motion_semitones": {
+      "0": 0.1663,
+      "1": 0.0035,
+      "10": 0.0393,
+      "11": 0.0019,
+      "2": 0.1035,
+      "3": 0.0099,
+      "4": 0.0062,
+      "5": 0.4145,
+      "6": 0.0003,
+      "7": 0.2124,
+      "8": 0.006,
+      "9": 0.0362
+    }
+  },
+  "feature": "harmony",
+  "provenance": {
+    "dataset": "nottingham",
+    "limit": null,
+    "n_tunes_loaded": 1034,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "chords"
+  ]
+}

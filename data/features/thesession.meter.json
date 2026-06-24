@@ -1,0 +1,78 @@
+{
+  "description": "P(meter) overall and conditioned on genre",
+  "distribution": {
+    "by_genre": {
+      "barndance": {
+        "4/4": 1.0
+      },
+      "hornpipe": {
+        "4/4": 1.0
+      },
+      "jig": {
+        "6/8": 1.0
+      },
+      "march": {
+        "4/4": 1.0
+      },
+      "mazurka": {
+        "3/4": 1.0
+      },
+      "polka": {
+        "2/4": 1.0
+      },
+      "reel": {
+        "4/4": 1.0
+      },
+      "slide": {
+        "12/8": 1.0
+      },
+      "slip jig": {
+        "9/8": 1.0
+      },
+      "strathspey": {
+        "4/4": 1.0
+      },
+      "three-two": {
+        "3/2": 1.0
+      },
+      "waltz": {
+        "3/4": 1.0
+      }
+    },
+    "by_genre_support": {
+      "barndance": 1738,
+      "hornpipe": 3746,
+      "jig": 13849,
+      "march": 1802,
+      "mazurka": 582,
+      "polka": 4204,
+      "reel": 19948,
+      "slide": 1164,
+      "slip jig": 1963,
+      "strathspey": 1360,
+      "three-two": 419,
+      "waltz": 3946
+    },
+    "n": 54721,
+    "overall": {
+      "12/8": 0.0213,
+      "2/4": 0.0768,
+      "3/2": 0.0077,
+      "3/4": 0.0827,
+      "4/4": 0.5225,
+      "6/8": 0.2531,
+      "9/8": 0.0359
+    }
+  },
+  "feature": "meter",
+  "provenance": {
+    "dataset": "thesession",
+    "limit": null,
+    "n_tunes_loaded": 54721,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "meter"
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "description": "chord root-motion and quality transition distributions from inline chord symbols",
+  "distribution": {
+    "n_progressions": 4827,
+    "quality_overall": {
+      "aug": 0.0003,
+      "dim": 0.0016,
+      "dom7": 0.0559,
+      "maj": 0.6914,
+      "maj7": 0.0023,
+      "min": 0.235,
+      "min7": 0.0136
+    },
+    "quality_transition": {
+      "aug": {
+        "dom7": 0.0312,
+        "maj": 0.6875,
+        "min": 0.1875,
+        "min7": 0.0938
+      },
+      "dim": {
+        "dim": 0.0656,
+        "dom7": 0.071,
+        "maj": 0.6011,
+        "min": 0.2077,
+        "min7": 0.0546
+      },
+      "dom7": {
+        "dim": 0.0019,
+        "dom7": 0.0823,
+        "maj": 0.7063,
+        "maj7": 0.0031,
+        "min": 0.1936,
+        "min7": 0.0128
+      },
+      "maj": {
+        "aug": 0.0002,
+        "dim": 0.0015,
+        "dom7": 0.0519,
+        "maj": 0.7359,
+        "maj7": 0.0014,
+        "min": 0.1978,
+        "min7": 0.0112
+      },
+      "maj7": {
+        "aug": 0.0039,
+        "dim": 0.0039,
+        "dom7": 0.0938,
+        "maj": 0.457,
+        "maj7": 0.082,
+        "min": 0.1172,
+        "min7": 0.2422
+      },
+      "min": {
+        "aug": 0.0003,
+        "dim": 0.0016,
+        "dom7": 0.0654,
+        "maj": 0.5755,
+        "maj7": 0.003,
+        "min": 0.3426,
+        "min7": 0.0118
+      },
+      "min7": {
+        "aug": 0.0044,
+        "dim": 0.0013,
+        "dom7": 0.1256,
+        "maj": 0.5121,
+        "maj7": 0.0209,
+        "min": 0.1834,
+        "min7": 0.1523
+      }
+    },
+    "quality_transition_support": {
+      "aug": 32,
+      "dim": 183,
+      "dom7": 6477,
+      "maj": 77808,
+      "maj7": 256,
+      "min": 26388,
+      "min7": 1576
+    },
+    "root_motion_semitones": {
+      "0": 0.1233,
+      "1": 0.0103,
+      "10": 0.1005,
+      "11": 0.0073,
+      "2": 0.1462,
+      "3": 0.0328,
+      "4": 0.0148,
+      "5": 0.2918,
+      "6": 0.0016,
+      "7": 0.2039,
+      "8": 0.023,
+      "9": 0.0446
+    }
+  },
+  "feature": "harmony",
+  "provenance": {
+    "dataset": "thesession",
+    "limit": null,
+    "n_tunes_loaded": 54721,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "chords"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "description": "P(pitch | GM program): per-instrument tessitura percentiles from real parts",
+  "distribution": {
+    "by_program": {
+      "0": {
+        "center": 62.0,
+        "hi": 83.0,
+        "lo": 38.0,
+        "n_notes": 285638,
+        "percentiles": {
+          "p25": 52.0,
+          "p5": 38.0,
+          "p50": 62.0,
+          "p75": 72.0,
+          "p95": 83.0
+        }
+      }
+    },
+    "n_tunes": 1078
+  },
+  "feature": "register",
+  "provenance": {
+    "dataset": "emopia",
+    "limit": null,
+    "n_tunes_loaded": 1078,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "notes"
+  ]
+}

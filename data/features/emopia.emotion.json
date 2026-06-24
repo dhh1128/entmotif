@@ -1,0 +1,160 @@
+{
+  "description": "P(tempo|emotion), P(mode|emotion), P(velocity|emotion), P(register|emotion), P(density|emotion)",
+  "distribution": {
+    "by_emotion": {
+      "Q1": {
+        "mode": {
+          "major": 0.624,
+          "minor": 0.376
+        },
+        "note_density_per_beat": {
+          "p25": 3.27,
+          "p5": 2.39,
+          "p50": 4.07,
+          "p75": 5.05,
+          "p95": 6.59
+        },
+        "register_midi": {
+          "p25": 59.63,
+          "p5": 54.72,
+          "p50": 63.03,
+          "p75": 65.35,
+          "p95": 69.32
+        },
+        "support": 250,
+        "tempo_bpm": {
+          "p25": 120.0,
+          "p5": 120.0,
+          "p50": 120.0,
+          "p75": 120.0,
+          "p95": 120.0
+        },
+        "velocity": {
+          "p25": 69.91,
+          "p5": 60.21,
+          "p50": 76.73,
+          "p75": 86.07,
+          "p95": 95.17
+        }
+      },
+      "Q2": {
+        "mode": {
+          "major": 0.1208,
+          "minor": 0.8792
+        },
+        "note_density_per_beat": {
+          "p25": 3.59,
+          "p5": 2.16,
+          "p50": 4.96,
+          "p75": 6.11,
+          "p95": 7.91
+        },
+        "register_midi": {
+          "p25": 56.06,
+          "p5": 50.24,
+          "p50": 60.61,
+          "p75": 64.4,
+          "p95": 70.41
+        },
+        "support": 265,
+        "tempo_bpm": {
+          "p25": 120.0,
+          "p5": 120.0,
+          "p50": 120.0,
+          "p75": 120.0,
+          "p95": 120.0
+        },
+        "velocity": {
+          "p25": 72.13,
+          "p5": 58.65,
+          "p50": 79.42,
+          "p75": 85.69,
+          "p95": 96.51
+        }
+      },
+      "Q3": {
+        "mode": {
+          "major": 0.2727,
+          "minor": 0.7273
+        },
+        "note_density_per_beat": {
+          "p25": 1.63,
+          "p5": 0.85,
+          "p50": 2.19,
+          "p75": 2.81,
+          "p95": 4.36
+        },
+        "register_midi": {
+          "p25": 58.51,
+          "p5": 53.07,
+          "p50": 62.62,
+          "p75": 68.19,
+          "p95": 77.17
+        },
+        "support": 253,
+        "tempo_bpm": {
+          "p25": 120.0,
+          "p5": 120.0,
+          "p50": 120.0,
+          "p75": 120.0,
+          "p95": 120.0
+        },
+        "velocity": {
+          "p25": 47.36,
+          "p5": 36.99,
+          "p50": 54.56,
+          "p75": 61.72,
+          "p95": 73.15
+        }
+      },
+      "Q4": {
+        "mode": {
+          "major": 0.5258,
+          "minor": 0.4742
+        },
+        "note_density_per_beat": {
+          "p25": 1.71,
+          "p5": 1.09,
+          "p50": 2.14,
+          "p75": 2.78,
+          "p95": 4.22
+        },
+        "register_midi": {
+          "p25": 58.32,
+          "p5": 53.71,
+          "p50": 60.73,
+          "p75": 64.1,
+          "p95": 68.93
+        },
+        "support": 310,
+        "tempo_bpm": {
+          "p25": 120.0,
+          "p5": 120.0,
+          "p50": 120.0,
+          "p75": 120.0,
+          "p95": 120.0
+        },
+        "velocity": {
+          "p25": 46.7,
+          "p5": 39.6,
+          "p50": 51.93,
+          "p75": 58.67,
+          "p95": 70.58
+        }
+      }
+    },
+    "n": 1078
+  },
+  "feature": "emotion",
+  "provenance": {
+    "dataset": "emopia",
+    "limit": null,
+    "n_tunes_loaded": 1078,
+    "note": "Derived aggregate statistics — not a redistribution of the source corpus.",
+    "tool": "tools/mining/mine.py"
+  },
+  "requires": [
+    "emotion",
+    "notes"
+  ]
+}
