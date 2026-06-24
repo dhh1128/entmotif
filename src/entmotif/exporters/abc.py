@@ -22,13 +22,18 @@ def abc_pitch(m):
     return acc + letter + "," * (4 - octv)
 
 
+def _sixteenths(ticks):
+    """Tick duration -> count of sixteenth notes (the ABC unit note length L:1/16)."""
+    return int(round(ticks / (DIV // 4)))
+
+
 def _dtok(ticks):
-    n = int(round(ticks / (DIV // 4)))
+    n = _sixteenths(ticks)
     return str(n) if n != 1 else ""
 
 
 def _rest(ticks):
-    n = int(round(ticks / (DIV // 4)))
+    n = _sixteenths(ticks)
     return ("z" + (str(n) if n != 1 else "")) if n >= 1 else ""
 
 

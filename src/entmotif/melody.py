@@ -11,7 +11,7 @@ MelodyContext parameter object. Bundling it now would be churn — Phase 2 repla
 this rhythm model wholesale, which is the right moment to introduce the context.
 """
 from entmotif.model import DIV, BEATS_PER_BAR, NoteEvent
-from entmotif.theory import cpcs, snap, step, scale_tones, degree
+from entmotif.theory import cpcs, snap, snap_chord_tone, step, scale_tones, degree
 
 FIGURES = [
     [1, 1, 2], [2, 1, 1], [1, 2, 1], [1.5, 0.5, 2], [2, 1.5, 0.5],
@@ -98,11 +98,9 @@ def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, 
                 k += 1
                 if beat in (0.0, 2.0):
                     s = snap(cur, cp, lo, hi)
-                    if notes and s == notes[-1][1]:
-                        alt = [m for m in scale_tones(mode, key, lo, hi)
-                               if m % 12 in [p % 12 for p in cp] and m != s]
-                        if alt:
-                            s = min(alt, key=lambda m: abs(m - cur))
+                    if notes:
+                        s = snap_chord_tone(cur, cp, scale_tones(mode, key, lo, hi),
+                                            s, notes[-1][1])
                     cur = s
             notes.append(NoteEvent(chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
             pos += dur
@@ -110,6 +108,18 @@ def generate_melodic_line(figs, chords2, mode, key, base, lo, hi, bar0, center, 
 
 
 line = generate_melodic_line   # legacy alias (call sites migrate during engine extraction)
+
+
+def _lay_figure(figs, bar0, chan, vel):
+    """Lay a sequence of ``(pitch, beats)`` onto consecutive onsets starting at
+    ``bar0``, returning NoteEvents. Shared by the singable cells (`tag_call`,
+    `cadence_bar`) that fill a bar from a fixed pitch/duration figure."""
+    out, pos = [], 0.0
+    for pitch, dur in figs:
+        out.append(NoteEvent(chan, pitch, vel,
+                             int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
+        pos += dur
+    return out
 
 
 def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
@@ -127,11 +137,7 @@ def tag_call(center, chords2_sym, mode, key, lo, hi, bar0, chan, vel):
     if nbr == tag:                                            # at the ceiling: lean down instead
         nbr = step(tag, -1, mode, key, lo, hi)
     figs = [(tag, 1), (nbr, 1), (tag, 2)]                     # call: tone, neighbour, settle back (no dead hold)
-    out, pos = [], 0.0
-    for pitch, dur in figs:
-        out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
-        pos += dur
-    return out
+    return _lay_figure(figs, bar0, chan, vel)
 
 
 def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
@@ -144,11 +150,7 @@ def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
         figs = [(d(4), 1), (d(2), 1), (d(1), 2)]              # 4-2-1 over IV-I: resolved "amen"
     else:                                                    # half (mid-phrase only): ends open on 2
         figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
-    out, pos = [], 0.0
-    for pitch, dur in figs:
-        out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
-        pos += dur
-    return out
+    return _lay_figure(figs, bar0, chan, vel)
 
 
 # --------------------------------------------------- motivic transformation --
@@ -238,10 +240,8 @@ def render_transform(shape, op, mode, key, lo, hi, bar0, chords2, chan, vel,
             b = min(int(pos // BEATS_PER_BAR), len(chords2) - 1)
             cp = cpcs(chords2[b], mode, key)
             s = snap(pitch, cp, lo, hi)
-            if notes and s == notes[-1].pitch:               # anti-repeat on strong beats
-                alt = [m for m in scale if m % 12 in [p % 12 for p in cp] and m != s]
-                if alt:
-                    s = min(alt, key=lambda m: abs(m - pitch))
+            if notes:                                         # anti-repeat on strong beats
+                s = snap_chord_tone(pitch, cp, scale, s, notes[-1].pitch)
             pitch = s
             idx = _nearest_index(scale, pitch)
         notes.append(NoteEvent(chan, pitch, vel,

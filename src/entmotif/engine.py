@@ -6,7 +6,7 @@ antiphon/counter, and comp+bass into one note list with a register + dynamic arc
 (placed climax ~2/3 through). :func:`compose` returns a :class:`Motif`;
 :func:`generate` is the legacy ``(notes, meta)`` adapter the tests/exporters use.
 """
-from entmotif.model import DIV, BEATS_PER_BAR, VoiceRole, NoteEvent, Motif
+from entmotif.model import DIV, BEATS_PER_BAR, VoiceRole, NoteEvent, Motif, climax_unit
 from entmotif.entropy import Chooser, fingerprint_text
 from entmotif.theory import snap, sym
 from entmotif.melody import (
@@ -59,7 +59,7 @@ def generate(value):
 
     units = build_form(form, resolution, ch, color)
     nU = len(units)
-    peak = max(1, ((nU - 1) * 2 + 1) // 3)                    # placed climax ~2/3 through (Huron arch), integer
+    peak = climax_unit(nU)                                    # placed climax ~2/3 through (Huron arch)
     span = max(1, max(peak, nU - 1 - peak))                   # integer (no float register arc)
 
     def arc_center(u):                                        # register arc: peaks (=hi-2) at the climax unit
@@ -71,6 +71,29 @@ def generate(value):
     germ_notes = line(idea, g_chm, mode, key, base, lo, hi, 0, arc_center(0), tendency, leap, ch,
                       "idea", 0, False, sig, VoiceRole.LEAD, DYN_VEL[unit_dyn(0, nU, peak)])
     germ_shape = motif_shape(germ_notes, mode, key, lo, hi)
+
+    def render_lead(u, role, chm, cad, bar0, center, vel, at_peak, cr_answer):
+        """The lead line for one unit: state the germ, transform it on a restatement,
+        call+cadence over an antiphony bar, or sound a contrasting idea."""
+        if template == "groove_first" and u == 0:
+            return []
+        if role == "idea":
+            if u == 0:                                        # state the germ
+                return list(germ_notes)
+            op = choose_transform(ch, "xform%d" % u)          # RESTATEMENT = explicit operation on the germ
+            return render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
+                                    VoiceRole.LEAD, vel, center, climax=at_peak)
+        if role == "answer":
+            if cr_answer:                                     # lead CALLS through the antiphony bar (singable
+                mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel)
+                #   figure, not a dead whole-bar hold — fw3, the "static held-note" fix)
+                return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
+            op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
+            mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, [chm[0]],
+                                   VoiceRole.LEAD, vel, center, climax=at_peak)
+            return mel + cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
+        return line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
+                    "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6))
 
     dyn_bars = {}
     notes, used_v4, prev_voicing = [], False, None
@@ -84,28 +107,7 @@ def generate(value):
         at_peak = (u == peak)
         cr_answer = template == "call_resp" and role == "answer"
 
-        if template == "groove_first" and u == 0:
-            mel = []
-        elif role == "idea":
-            if u == 0:                                        # state the germ
-                mel = list(germ_notes)
-            else:                                             # RESTATEMENT = explicit operation on the germ
-                op = choose_transform(ch, "xform%d" % u)
-                mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
-                                       VoiceRole.LEAD, vel, center, climax=at_peak)
-        elif role == "answer":
-            if cr_answer:                                     # lead CALLS through the antiphony bar (singable
-                mel = tag_call(center, chm[0], mode, key, lo, hi, bar0, VoiceRole.LEAD, vel)
-                #   figure, not a dead whole-bar hold — fw3, the "static held-note" fix)
-                mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
-            else:                                             # consequent = RECOGNIZABLE germ restatement, then cadence
-                op = ch.weighted("xform%d" % u, ANSWER_TRANSFORMS, ANSWER_TRANSFORM_W)
-                mel = render_transform(germ_shape, op, mode, key, lo, hi, bar0, [chm[0]],
-                                       VoiceRole.LEAD, vel, center, climax=at_peak)
-                mel += cadence_bar(cad, key, mode, lo, hi, bar0 + 1, VoiceRole.LEAD, vel)
-        else:                                                 # contrast = a genuinely new, contrasting idea
-            mel = line(other, chm, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-                       "other", 0, False, None, VoiceRole.LEAD, max(40, vel - 6))
+        mel = render_lead(u, role, chm, cad, bar0, center, vel, at_peak, cr_answer)
 
         if u != nU - 1 and mel:                               # breath: trim the LAST note (phrase boundary only)
             br = ch.choice("breath%d" % u, BREATHS)

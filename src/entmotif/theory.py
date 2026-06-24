@@ -41,6 +41,19 @@ def snap(target, pcs, lo, hi):
     return min(c, key=lambda m: abs(m - target))
 
 
+def snap_chord_tone(target, cp, scale, snapped, prev_pitch):
+    """Land a strong beat on a chord tone, avoiding a dead repeat of the previous
+    note. ``snapped`` is the already-snapped candidate (``snap(target, cp, ...)``);
+    if it equals ``prev_pitch`` we substitute the nearest OTHER chord tone drawn
+    from ``scale``. Pure; shared by the melody line and the transform renderer."""
+    if snapped != prev_pitch:
+        return snapped
+    alt = [m for m in scale if m % 12 in [p % 12 for p in cp] and m != snapped]
+    if alt:
+        return min(alt, key=lambda m: abs(m - target))
+    return snapped
+
+
 def step(cur, delta, mode, key, lo, hi):
     L = scale_tones(mode, key, lo, hi)
     if not L:

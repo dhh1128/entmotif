@@ -17,6 +17,12 @@ BEATS_PER_BAR = 4               # 4/4 throughout
 WEIGHT_SCALE = 1_000_000        # fixed-point resolution for weighted choice
 
 
+def climax_unit(num_units):
+    """The unit index that carries the placed climax: ~2/3 of the way through, the
+    Huron arch peak. Integer-only so the register/dynamic arch is platform-stable."""
+    return max(1, ((num_units - 1) * 2 + 1) // 3)
+
+
 class VoiceRole(IntEnum):
     """The instrument lines. The *value* IS the MIDI channel, so a VoiceRole drops
     in anywhere the bare channel int was used — it compares, sorts, hashes and
