@@ -29,7 +29,6 @@ Run:  python3 motif.py   |   Test:  python3 test_motif.py
 """
 
 import hashlib
-import math
 import os
 import struct
 import sys
@@ -38,6 +37,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from entmotif.model import (  # noqa: E402
     DIV, BEATS_PER_BAR, WEIGHT_SCALE, NoteEvent, VoiceRole, PitchRange, Development, Phrase)
 from entmotif.theory import *  # noqa: E402,F401,F403
+from entmotif.melody import *  # noqa: E402,F401,F403
 
 COMP_PROGRAM = 48               # GM "String Ensemble" — the comp voice (channel 1)
 BASS_PROGRAM = 32               # GM "Acoustic Bass" — the bass voice (channel 2)
@@ -48,39 +48,13 @@ BLOCK_VEL, STAB_VEL, ARP_VEL, ALBERTI_VEL = 34, 42, 40, 38
 # bass figuration velocities
 PEDAL_VEL, WALK_VEL, ROOT_VEL, FIFTH_VEL = 56, 56, 60, 50
 
-FIGURES = [
-    [1, 1, 2], [2, 1, 1], [1, 2, 1], [1.5, 0.5, 2], [2, 1.5, 0.5],
-    [0.5, 0.5, 1, 2], [1, 0.5, 0.5, 2], [0.5, 0.5, 1, 1, 1], [1, 1, 0.5, 0.5, 1],
-    [0.75, 0.25, 1, 1, 1], [0.5, 0.5, 0.5, 0.5, 2], [2, 0.5, 0.5, 1],
-]
-HOOKS = [                                                      # signature idea-bar rhythms (dotted/syncopated)
-    [1.5, 0.5, 1, 1], [0.5, 1.5, 1, 1], [1, 0.5, 0.5, 2],
-    [0.75, 0.25, 1, 2], [0.5, 0.5, 1, 1.5, 0.5], [2, 0.5, 0.5, 1],
-]
-SIG_STEPS = {0: [2, -2, 3, -3], 1: [3, 4, -3, 5, -4], 2: [4, 5, 7, -5, -4]}
-BREATHS = [0, 0, 0.5, 1, 1, 1.5]
 TEMPOS = [60, 72, 84, 96, 108, 120, 138, 160, 184]
 TEMPO_W = [1, 2, 3, 4, 4, 3, 2, 2, 1]
-MAXLEAP = {0: 3, 1: 5, 2: 8}
-SIGMA = {0: 1.0, 1: 1.8, 2: 3.0}
 LEADS = [0, 73, 40, 56, 12]
 LEAD_NAMES = {0: "piano", 73: "flute", 40: "violin", 56: "trumpet", 12: "marimba"}
 LEAD_RANGE = {0: PitchRange(50, 81, 64), 73: PitchRange(62, 88, 76), 40: PitchRange(55, 86, 69),
               56: PitchRange(54, 80, 67), 12: PitchRange(53, 84, 72)}
 ANSWER_INSTR = {0: 40, 73: 56, 40: 73, 56: 73, 12: 56}
-LEAP_NAMES = {0: "stepwise", 1: "moderate", 2: "jumpy"}
-DYN_VEL = {"p": 62, "mp": 78, "mf": 94, "f": 110, "ff": 120}   # dynamic mark -> MIDI velocity
-
-
-def unit_dyn(u, nU, peak):
-    """Dynamic arc: ramp into the placed climax, settle at the final cadence."""
-    if u == peak:
-        return "f"
-    if u == nU - 1:
-        return "mf"
-    if u < peak:
-        return "mf" if u == peak - 1 else "mp"
-    return "mp"
 
 
 class Chooser:
@@ -105,67 +79,6 @@ class Chooser:
             if r <= acc:
                 return o
         return opts[-1]
-
-
-def gravity_delta(cur, center, tendency, prevd, leap, ch, label):
-    drift = max(-2, min(2, round((center - cur) / 3.0))) + tendency
-    if abs(prevd) >= 3:
-        drift += -2 * (1 if prevd > 0 else -1)
-    ml, sig = MAXLEAP[leap], SIGMA[leap]
-    opts = [d for d in range(-ml, ml + 1) if d != 0]
-    wts = [math.exp(-((d - drift) ** 2) / (2 * sig * sig)) for d in opts]
-    return ch.weighted(label, opts, wts)
-
-
-# --------------------------------------------------------------- melody ------
-def line(figs, chords2, mode, key, base, lo, hi, bar0, center, tendency, leap, ch,
-         tag, offset, invert, sig, chan, vel):
-    notes, cur, pos, k, prevd = [], None, 0.0, 0, 0
-    for b, fig in enumerate(figs):
-        cp = cpcs(chords2[b], mode, key)
-        for dur in fig:
-            beat = pos - b * BEATS_PER_BAR
-            if cur is None:
-                cur = snap(base, cp, lo, hi)
-                if offset:
-                    cur = snap(step(cur, offset, mode, key, lo, hi), cp, lo, hi)
-            else:
-                if k == 0 and sig is not None:                # signature opening leap (hook)
-                    d = -sig if invert else sig
-                else:
-                    d = gravity_delta(cur, center, tendency, prevd, leap, ch,
-                                      "%s_d%d" % (tag, k))
-                    if invert:
-                        d = -d
-                cur = step(cur, d, mode, key, lo, hi)
-                prevd = d
-                k += 1
-                if beat in (0.0, 2.0):
-                    s = snap(cur, cp, lo, hi)
-                    if notes and s == notes[-1][1]:
-                        alt = [m for m in scale_tones(mode, key, lo, hi)
-                               if m % 12 in [p % 12 for p in cp] and m != s]
-                        if alt:
-                            s = min(alt, key=lambda m: abs(m - cur))
-                    cur = s
-            notes.append(NoteEvent(chan, cur, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
-            pos += dur
-    return notes
-
-
-def cadence_bar(res, key, mode, lo, hi, bar0, chan, vel):
-    d = lambda n: degree(n, key, mode, lo, hi)
-    if res == "authentic":
-        figs = [(d(3), 1), (d(2), 1), (d(1), 2)]
-    elif res == "deceptive":
-        figs = [(d(2), 1), (d(3), 1), (d(6), 2)]
-    else:
-        figs = [(d(1), 1), (d(3), 1), (d(2), 2)]
-    out, pos = [], 0.0
-    for pitch, dur in figs:
-        out.append(NoteEvent(chan, pitch, vel, int((bar0 * BEATS_PER_BAR + pos) * DIV), int(dur * DIV)))
-        pos += dur
-    return out
 
 
 # ------------------------------------------------------------ arrangement ----
