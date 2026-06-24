@@ -10,10 +10,10 @@ V:3 name="bass"
 V:4 name="answer/counter"
 K:C
 V:1
-"F#" !mp! ^C3 =B, ^C4 ^F8 | "D#m" ^d4 ^G8 ^c4 | "B" !mp! ^F4 ^G2 z2 ^F8 | "C#" ^F4 =B4 ^G4 z4 | "F#" !mf! ^c3 =B ^c4 ^f8 | "D#m" ^d4 ^G8 ^c4 | "G#m" !f! ^d4 =f2 z2 ^d8 | "C#" ^A4 ^F4 ^G4 z4 | "F#" !mp! ^F3 =F ^F4 ^A8 | "D#m" ^f4 =B8 =f4 | "C#" !mf! ^G4 ^A2 z2 ^G8 | "F#" ^c4 ^D4 ^F8 |]
+"F#" !mp! ^A,3 ^G, ^A,4 ^F8 | "D#m" ^A,4 ^C8 =B,4 | "B" !mp! ^D4 =F2 z2 ^D8 | "C#" ^F4 =B4 ^G4 z4 | "F#" !mf! ^A3 ^G ^A4 ^F8 | "D#m" ^A,4 ^C8 =B,4 | "G#m" !f! =B4 ^A2 z2 =B8 | "C#" ^A4 ^F4 ^G4 z4 | "F#" !mp! ^C3 =B, ^C4 ^A8 | "D#m" ^D4 ^F8 =F4 | "C#" !mf! ^C4 ^D2 z2 ^C8 | "F#" =B4 ^D4 ^F8 |]
 V:2
 z4 [^A,^C=E]3 z5 [^A,^C=E]3 z | z4 [^F,^A,^C]3 z5 [^F,^A,^C]3 z | z4 [^D^F=A]3 z5 [^D^F=A]3 z | z4 [=F^G=B]3 z5 [=F^G=B]3 z | z4 [^A^c=e]3 z5 [^A^c=e]3 z | z4 [^F^A^c]3 z5 [^F^A^c]3 z | z4 [=B^d^f]3 z5 [=B^d^f]3 z | z4 [=f^g=b]3 z5 [=f^g=b]3 z | z4 [^a^c'=e']3 z5 [^a^c'=e']3 z | z4 [^f^a^c']3 z5 [^f^a^c']3 z | z4 [=f^g=b]3 z5 [=f^g=b]3 z | z4 [^a^c'=e']3 z5 [^a^c'=e']3 z |]
 V:3
 ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | =B,,4 z4 ^F,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^G,,4 z4 ^D,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 | ^D,,4 z4 ^A,,4 z4 | ^C,,4 z4 ^G,,4 z4 | ^F,,4 z4 ^C,,4 z4 |]
 V:4
-z16 | z16 | ^F3 ^G ^F4 =B,8 | z16 | z16 | z16 | ^d3 =f ^d4 =B8 | z16 | z16 | z16 | ^G3 ^F ^G4 ^c8 | z16 |]
+z16 | z16 | =B,3 ^C =B,4 ^D8 | z16 | z16 | z16 | =B3 =B ^A4 =B,8 | z16 | z16 | z16 | =F3 ^D =F4 ^G8 | z16 |]

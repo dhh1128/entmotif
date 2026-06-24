@@ -360,6 +360,24 @@ for v in CORPUS:
     if m["percussion"] != "none":
         check(any(int(n[0]) == 9 for n in notes), "percussion declared but absent: %s (%s)" % (v, m["percussion"]))
 
+# --- fw7 (this.i:d2k9m4p1, the conditional-DAG register fix): the lead's register is
+#     CONDITIONED ON THE CHOSEN INSTRUMENT. The melodic window is the INTERSECTION of the
+#     style register and the instrument's real tessitura, so every note sounded on the
+#     lead program — the LEAD voice (chan 0) AND the antiphon/counter ANSWER voice
+#     (chan 3), which share the lead's timbre — lies within that instrument's playable
+#     range. Named failures: a flute salsa / a piccolo march whose line sat one-to-two
+#     octaves BELOW the instrument's range. Probe the corpus + a wide spread of inputs. ---
+_LEAD_RANGE_PROBE = CORPUS + ["probe-%d" % i for i in range(0, 4000, 3)]
+for v in _LEAD_RANGE_PROBE:
+    notes, m = motif.generate(v)
+    prog = m["lead_prog"]
+    rng = arr.LEAD_RANGE[prog]
+    for n in notes:
+        if int(n[0]) in (0, 3):                               # LEAD + ANSWER both sound on the lead instrument
+            check(rng.lo <= n[1] <= rng.hi,
+                  "lead %s note %d outside its tessitura [%d,%d]: %s"
+                  % (arr.gm_name(prog), n[1], rng.lo, rng.hi, v))
+
 # --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
 lows = []
 for v in CORPUS:

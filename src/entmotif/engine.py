@@ -17,7 +17,7 @@ from entmotif.theory import scale_tones
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
     comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
-    arrange_unit, percussion_groove)
+    arrange_unit, percussion_groove, melodic_window, LEAD_RANGE)
 from entmotif.form import build_form
 
 # Answers stay RECOGNIZABLE: the consequent is a small sequence / fragment / restate of
@@ -40,9 +40,11 @@ def generate(value):
     comp_pat = ch.weighted("comp_pat", *comp_pat_choices(style))  # RHYTHM-pattern variety (A2, r4d8m1k6): signature
     bass_pat = ch.weighted("bass_pat", *bass_pat_choices(style))  # groove common, idiomatic variants rare
     pal = palette_for(style, lead, comp_prog, bass_prog, comp_pat, bass_pat)
-    ilo, ihi, icen = pal.range
+    ilo, ihi, icen = melodic_window(pal.range, lead)          # window = style register ∩ instrument tessitura
+    #   (this.i:d2k9m4p1: the lead's register is conditioned on the CHOSEN instrument, so
+    #   the line never sits below a flute / above a trombone — pure, draws no entropy)
     tonic = snap(icen, [key], ilo, ihi - 12)
-    lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct, sitting LOWER (v0.9 was shrill/too high)
+    lo, hi = max(ilo, tonic - 7), min(ihi, tonic + 12)        # ~1.5 oct within the instrument's playable range
     base = lo + (hi - lo) // 4
     tempo = ch.weighted("tempo", S["tempos"], S["tempo_w"])   # per-style tempo range (up to 208)
     leap = ch.weighted("leap", [0, 1, 2], [3, 4, 2])
@@ -141,8 +143,9 @@ def generate(value):
         notes += anotes
 
         if template == "lead_counter" and role == "idea":     # DEVELOPED counter on V:4 = inversion of the germ
-            cm = render_transform(germ_shape, "invert", mode, key, lo - 7, hi - 9, bar0, chm,
-                                  VoiceRole.ANSWER, 72, center - 9)
+            clo = max(LEAD_RANGE[lead].lo, lo - 7)             # counter sits ~an octave below the lead but never
+            cm = render_transform(germ_shape, "invert", mode, key, clo, hi - 9, bar0, chm,  # below the instrument
+                                  VoiceRole.ANSWER, 72, center - 9)                         # floor (d2k9m4p1)
             used_v4 = used_v4 or bool(cm)
             notes += cm
 

@@ -125,20 +125,62 @@ def gm_name(program):
 # The broad LEAD palette (two-layer model, this.i:c2k9p0a4): the STYLE owns the bed;
 # the lead is chosen from this wide pool of melodic timbres — strings, winds, brass,
 # keys, mallets, guitars, world/folk (koto, shamisen, kalimba, banjo, shanai, pan/
-# wood flute…). program -> comfortable register CENTER (MIDI). A lead is eligible for
-# a style if its center is within ~an octave of the style's register, and gets a high
-# AFFINITY weight if it is one of that style's signature instruments, else a low base
-# weight (so "weird-but-valid" leads — koto over swing — appear rarely, not never).
+# wood flute…). program -> the instrument's real, comfortable TESSITURA (lo, hi,
+# center) in MIDI — a piccolo lives an octave above a flute, a cello two below.
+# The center is the gravitational middle of the line; lo/hi are the playable bounds.
+# The melodic window is then the INTERSECTION of the style register and this tessitura
+# (this.i:d2k9m4p1 — register conditioned on the chosen INSTRUMENT) so the line never
+# sits below a flute / above a bassoon. A lead is eligible for a style if its center is
+# within ~an octave of the style's register, and gets a high AFFINITY weight if it is
+# one of that style's signature instruments, else a low base weight (so "weird-but-
+# valid" leads — koto over swing — appear rarely, not never).
 # (Oud and sitar are deferred per this.i:q9f3a7k2 / maintainer, so excluded here.)
-LEAD_POOL = {
-    0: 60, 4: 60, 6: 64, 7: 60, 8: 74, 9: 84, 10: 80, 11: 66, 12: 64, 13: 76,
-    16: 60, 18: 60, 21: 60, 22: 64, 24: 60, 25: 62, 26: 62, 27: 62, 29: 62,
-    40: 67, 41: 60, 42: 52, 45: 57, 46: 62, 53: 60, 56: 66, 57: 52, 59: 64, 60: 58,
-    61: 60, 65: 66, 66: 58, 68: 70, 69: 62, 70: 50, 71: 62, 72: 84, 73: 74, 74: 72,
-    75: 72, 77: 70, 78: 78, 79: 76, 80: 66, 81: 66, 105: 64, 106: 64, 107: 66,
-    108: 66, 111: 68, 114: 64,
+LEAD_RANGE = {
+    0: PitchRange(48, 84, 60), 4: PitchRange(48, 84, 60), 6: PitchRange(53, 86, 64),
+    7: PitchRange(48, 79, 60), 8: PitchRange(60, 96, 74), 9: PitchRange(72, 98, 84),
+    10: PitchRange(72, 96, 80), 11: PitchRange(53, 84, 66), 12: PitchRange(48, 84, 64),
+    13: PitchRange(65, 96, 76), 16: PitchRange(48, 79, 60), 18: PitchRange(48, 79, 60),
+    21: PitchRange(53, 84, 60), 22: PitchRange(55, 84, 64), 24: PitchRange(52, 79, 60),
+    25: PitchRange(52, 79, 62), 26: PitchRange(52, 79, 62), 27: PitchRange(52, 79, 62),
+    29: PitchRange(52, 81, 62), 40: PitchRange(55, 91, 67), 41: PitchRange(48, 84, 60),
+    42: PitchRange(36, 72, 52), 45: PitchRange(48, 84, 57), 46: PitchRange(48, 84, 62),
+    53: PitchRange(50, 74, 60), 56: PitchRange(54, 82, 66), 57: PitchRange(40, 72, 52),
+    59: PitchRange(54, 82, 64), 60: PitchRange(41, 77, 58), 61: PitchRange(48, 79, 60),
+    65: PitchRange(49, 81, 66), 66: PitchRange(44, 76, 58), 68: PitchRange(58, 88, 70),
+    69: PitchRange(52, 81, 62), 70: PitchRange(34, 72, 50), 71: PitchRange(50, 84, 62),
+    72: PitchRange(74, 102, 84), 73: PitchRange(60, 91, 74), 74: PitchRange(60, 88, 72),
+    75: PitchRange(60, 88, 72), 77: PitchRange(58, 84, 70), 78: PitchRange(66, 96, 78),
+    79: PitchRange(62, 88, 76), 80: PitchRange(52, 84, 66), 81: PitchRange(52, 84, 66),
+    105: PitchRange(52, 79, 64), 106: PitchRange(52, 79, 64), 107: PitchRange(53, 81, 66),
+    108: PitchRange(53, 84, 66), 111: PitchRange(58, 84, 68), 114: PitchRange(52, 81, 64),
 }
+# program -> comfortable register CENTER (the capability-gate key). Derived from the
+# tessitura above so the center stays a single source of truth.
+LEAD_POOL = {p: r.center for p, r in LEAD_RANGE.items()}
 LEAD_SIG_W, LEAD_BASE_W, LEAD_REACH = 16, 1, 8               # signature ~80% (typical common); weird ~20% (rare)
+
+MIN_MELODIC_SPAN = 13                                        # the lead window is >= an octave+1 so the tonic snap
+#   (which needs hi-12 >= lo) and the ~1.5-octave contour have room even when the style
+#   register and the instrument tessitura barely overlap (a piccolo in a low-register style).
+
+
+def melodic_window(style_reg, program):
+    """The lead's playing window = the INTERSECTION of the style register (a soft idiom
+    preference) and the chosen instrument's real tessitura (a HARD physical bound), so
+    the line never sits outside what the instrument can play (this.i:d2k9m4p1 — register
+    conditioned on the instrument; the named flute-salsa / piccolo-march "below its
+    range" failures). When the two barely overlap, the instrument range wins (it is the
+    hard limit) and we open a >= MIN_MELODIC_SPAN window inside it, placed toward the
+    style's center. Pure — draws no entropy; the Chooser sequence is unperturbed."""
+    r = LEAD_RANGE[program]
+    lo, hi = max(style_reg.lo, r.lo), min(style_reg.hi, r.hi)
+    if hi - lo < MIN_MELODIC_SPAN:                           # too thin: honor the instrument's hard range
+        center = min(max(style_reg.center, r.lo), r.hi)      # aim at the style center, clamped into the instrument
+        lo = max(r.lo, center - MIN_MELODIC_SPAN // 2)
+        hi = min(r.hi, lo + MIN_MELODIC_SPAN)
+        lo = max(r.lo, hi - MIN_MELODIC_SPAN)                # re-anchor if hi hit the instrument ceiling
+    center = min(max(style_reg.center, lo), hi)
+    return PitchRange(lo, hi, center)
 
 # CAPABILITY attribute (this.i:c2k9p0a4): AGILITY 0..2 = how well a timbre carries a
 # fast/syncopated melodic line (0 = slow/sustained-only, 2 = nimble/clean-attack).
