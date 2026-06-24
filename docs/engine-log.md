@@ -664,3 +664,59 @@ arrangement 78 · Codex(gpt-5.5) 72.
    line's *pitches*, not just supply idiomatic rhythm under it.
 3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
    emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
+
+---
+
+## Flywheel cycle fw3 — Group B #4: kill dead whole-bar lead holds (memorability) (2026-06-24)
+
+**Group B #4 (melodic development + MEMORABILITY)**, under strict TDD. Group A items
+1–3 were already DONE (fw1: comp/bass instrument variety + capability gate, rhythm-
+pattern variety; fw2: march oom-pah lightening), so this cycle took the maintainer-
+priority Group B #4 via the most well-specified convergent panel finding: **"static
+held-note bars (`=E16` / `=B16` / `^F16`) read as filler, not hook."** Root cause: the
+call/response **"tag" bar** in `engine.py` emitted ONE pitch sustained for the whole
+bar while V:4 answered — the sole source of all 8 whole-bar single-pitch lead bars in
+the corpus (the 3 `call_resp` inputs).
+
+**Change (strict TDD):**
+- First added a FAILING assertion to `experiments/engine/test_motif.py` forbidding the
+  lead from dead-holding a whole bar anywhere except the placed climax (failed on all
+  relevant bars: 7 reported, climax bar excluded).
+- Then the minimal fix: a new `melody.tag_call` helper
+  (`src/entmotif/melody.py`) builds a singable CALL gesture instead of a dead sustain —
+  chord tone, upper scale neighbour, settle back (1+1+2 beats, metric-conserving per
+  `this.i:m9p3k7a2`, consonant chord tones at the seams). Wired into the `cr_answer`
+  branch of `engine.generate` (`src/entmotif/engine.py`), removing the now-unused
+  `cpcs` import there.
+
+**Result:** e.g. score 3 bars that were `^F16` / `^d16` / `^G16` are now `^F4 ^G4 ^F8`
+/ `^d4 =f4 ^d8` / `^G4 ^A4 ^G8` — the line keeps moving. `test_motif.py` = 0 failures
+(determinism, avalanche, metric conservation, climax, all prior invariants green);
+`test_golden.py` rebaselined (`--update`) for scores 2/3/5 (exactly the `call_resp`
+inputs) and re-run green. Scores regenerated to `scores-fw3.md`. Committed with
+sign-off; sha `800d4db`.
+
+**Panel grades (/100):** lyricism 76 · memorability 79 · creative-technique 73 ·
+arrangement 81 · Codex(gpt-5.5) 72.
+
+**Convergent findings (merged across graders):**
+- The melody/lead still **restates a cell and orbits the tonic** rather than going on a
+  real ARCH-contour journey with development on return — the persistent ceiling
+  (creative-technique lowest at 73). Killing the dead holds helped memorability (→79),
+  but the deeper "develop on return, don't just restate" gap remains the top item.
+- **Harmony/comp is still mechanical** relative to the line: it does not yet decorate,
+  reinforce, or counterpoint the melody — the comp's *pitch* relationship to the lead is
+  the next gap (rhythm/voicing wins are audible, but the comp answers rather than converses).
+- **Emotional flatness**: mode/tempo/register/dynamics/articulation are still chosen
+  independently, so motifs don't cohere around a feeling.
+- The dead whole-bar lead holds that drove this cycle are **closed** — the tag bar now
+  sings a CALL gesture; the "filler, not hook" defect is gone (arrangement highest at 81).
+
+**Chosen next-fix list (ranked):**
+1. **Melodic development on return** (Group B #4, deeper half) — the line still restates
+   a cell and orbits the tonic; apply the earworm checklist's real ARCH contour +
+   repetition-WITH-development so restatements *transform*, not just recur. Highest leverage.
+2. **Harmony↔melody relationship** — make the comp decorate/reinforce/counterpoint the
+   line's *pitches*, not just supply idiomatic rhythm under it.
+3. **Emotional register master dimension** (Backlog B5, `this.i:a7k0m3p9`) — pick an
+   emotion, then align mode>tempo>dynamics>register>articulation>dissonance coherently.
