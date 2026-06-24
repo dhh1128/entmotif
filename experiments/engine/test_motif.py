@@ -493,6 +493,43 @@ for emo in arr.EMOTION_NAMES:                                 # the favoured set
     check(_share(emo, fav) > base_share + 0.10,
           "emotion->style weak: %s favoured share %.2f <= base %.2f+0.10" % (emo, _share(emo, fav), base_share))
 
+# --- fw8 (this.i:d2k9m4p1, emotion-conditioned GROOVE + DEVELOPMENT): the affect also
+#     shapes HOW the groove syncopates and HOW the germ develops on restatement — a tense
+#     affect leans syncopated + angular (invert/fragment), a sad/peaceful one steadier +
+#     gentle (sequence/augment). Emotion conditions the variant/transform draws. ---
+# (a) pure: groove-variant mass tilts with the emotion's groove energy.
+def _var_share(fn, st, emo):
+    names, wts = fn(st, emo)
+    return None if len(wts) < 2 else sum(wts[1:]) / sum(wts)
+for st in arr.STYLE_NAMES:
+    ct, cs = _var_share(arr.comp_pat_weights, st, "tense"), _var_share(arr.comp_pat_weights, st, "sad")
+    if ct is not None:
+        check(ct > cs, "comp groove not conditioned: %s tense %.2f !> sad %.2f" % (st, ct, cs))
+    bt, bs = _var_share(arr.bass_pat_weights, st, "tense"), _var_share(arr.bass_pat_weights, st, "sad")
+    if bt is not None:
+        check(bt > bs, "bass groove not conditioned: %s tense %.2f !> sad %.2f" % (st, bt, bs))
+# (b) pure: development character tilts with the emotion's angular cue.
+def _grp_mass(w, grp): return sum(x for t, x in zip(_mel.TRANSFORMS, w) if t in grp) / sum(w)
+_wa, _wg, _wn = _mel.transform_weights(+1), _mel.transform_weights(-1), _mel.transform_weights(0)
+check(_grp_mass(_wa, _mel.TRANSFORM_ANGULAR) > _grp_mass(_wn, _mel.TRANSFORM_ANGULAR),
+      "angular development not lifted for a tense affect")
+check(_grp_mass(_wg, _mel.TRANSFORM_GENTLE) > _grp_mass(_wn, _mel.TRANSFORM_GENTLE),
+      "gentle development not lifted for a sad affect")
+check(_mel.transform_weights(0)[0] == _mel.TRANSFORM_W[0], "identity weight changed (must stay rare)")
+# (c) realized: a busy-groove affect uses a non-signature groove variant more often.
+_busy = {e for e in arr.EMOTION_NAMES if arr.EMOTIONS[e]["groove"] > 0}
+_calm = {e for e in arr.EMOTION_NAMES if arr.EMOTIONS[e]["groove"] < 0}
+_bv = _bt = _cv = _ct = 0
+for i in range(3000):
+    _n, _m = motif.generate("groovecond-%d" % i)
+    _isvar = _m["comp_pat"] != arr.STYLES[_m["style"]]["comp_pat"]
+    if _m["emotion"] in _busy:
+        _bt += 1; _bv += _isvar
+    elif _m["emotion"] in _calm:
+        _ct += 1; _cv += _isvar
+check(_bt and _ct and _bv / _bt > _cv / _ct + 0.05,
+      "realized comp groove not conditioned: busy %.3f !> calm %.3f +0.05" % (_bv / max(1, _bt), _cv / max(1, _ct)))
+
 # --- v0.9: register varies across inputs (not all stuck in one ~C4-C6 window) ---
 lows = []
 for v in CORPUS:

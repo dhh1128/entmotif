@@ -117,13 +117,15 @@ KEYBOARD_BED_STYLES = {"ragtime", "boogie_woogie"}           # bed IS the keyboa
 #   dyn     : velocity offset (loud/soft)
 #   artic   : -1 legato (sustained) / +1 staccato (detached) / 0 neutral -> the comp legato
 #   color_w : multiplicative bias on [plain, color1, color2] dissonance (with style color_w)
+#   groove  : -1 simpler/steadier / 0 / +1 busier-syncopated groove variant (d2k9m4p1)
+#   angular : -1 gentle (sequence/augment) / 0 / +1 angular (invert/fragment/diminish) development
 EMOTIONS = {
-    "happy":      dict(mode_w=[3, 1], tempo=+1, reg=+3, dyn=+8,  artic=+1, color_w=[2, 2, 1]),
-    "sad":        dict(mode_w=[1, 3], tempo=-1, reg=-3, dyn=-12, artic=-1, color_w=[2, 2, 1]),
-    "peaceful":   dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-10, artic=-1, color_w=[3, 2, 1]),
-    "tense":      dict(mode_w=[1, 3], tempo=+1, reg=+2, dyn=-2,  artic=+1, color_w=[1, 2, 3]),
-    "triumphant": dict(mode_w=[3, 1], tempo=0,  reg=+2, dyn=+12, artic=0,  color_w=[1, 2, 2]),
-    "tender":     dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-8,  artic=-1, color_w=[2, 2, 1]),
+    "happy":      dict(mode_w=[3, 1], tempo=+1, reg=+3, dyn=+8,  artic=+1, color_w=[2, 2, 1], groove=+1, angular=0),
+    "sad":        dict(mode_w=[1, 3], tempo=-1, reg=-3, dyn=-12, artic=-1, color_w=[2, 2, 1], groove=-1, angular=-1),
+    "peaceful":   dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-10, artic=-1, color_w=[3, 2, 1], groove=-1, angular=-1),
+    "tense":      dict(mode_w=[1, 3], tempo=+1, reg=+2, dyn=-2,  artic=+1, color_w=[1, 2, 3], groove=+1, angular=+1),
+    "triumphant": dict(mode_w=[3, 1], tempo=0,  reg=+2, dyn=+12, artic=0,  color_w=[1, 2, 2], groove=0,  angular=0),
+    "tender":     dict(mode_w=[2, 2], tempo=-1, reg=-1, dyn=-8,  artic=-1, color_w=[2, 2, 1], groove=-1, angular=-1),
 }
 EMOTION_NAMES = list(EMOTIONS.keys())
 EMOTION_W = [3, 3, 2, 2, 2, 2]                               # all reachable; common affects a touch likelier
@@ -432,6 +434,30 @@ def bass_pat_choices(style):
     plus its idiomatic, metric-conserving variants (low base weight)."""
     base = STYLES[style]["bass_pat"]
     return BASS_PAT_VARIANTS.get(base, ([base], [1]))
+
+
+def _ramp_weights(wts, direction):
+    """Tilt an ordered weight vector: +1 lifts the LATER entries, -1 the EARLIER ones,
+    0 leaves it. The pattern families list the signature/steady variant first and the
+    busier/syncopated variants later, so direction=+1 favours syncopation, -1 simplicity.
+    Floored at 1 so every variant stays reachable (entropy still picks the CDF point)."""
+    n = len(wts)
+    if direction == 0 or n == 1:
+        return list(wts)
+    return [max(1, w * (1 + (i if direction > 0 else n - 1 - i))) for i, w in enumerate(wts)]
+
+
+def comp_pat_weights(style, emotion):
+    """Comp groove variants reweighted by the emotion's groove energy (this.i:d2k9m4p1 —
+    a tense/happy affect leans syncopated, a sad/peaceful one steadier)."""
+    names, wts = comp_pat_choices(style)
+    return names, _ramp_weights(wts, EMOTIONS[emotion]["groove"])
+
+
+def bass_pat_weights(style, emotion):
+    """Bass groove variants reweighted by the emotion's groove energy (see comp_pat_weights)."""
+    names, wts = bass_pat_choices(style)
+    return names, _ramp_weights(wts, EMOTIONS[emotion]["groove"])
 
 
 class Palette(NamedTuple):

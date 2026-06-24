@@ -9,7 +9,7 @@ V:2 name="comp"
 V:3 name="bass"
 K:C
 V:1
-"Gm" !mp! ^A,6 =G,2 ^A,4 =G,4 | "D#" ^A,2 =G,2 ^A,2 =C2 ^A,6 z2 | "Cm" !mp! =C6 =A,2 =C4 =A,4 | "D" =G,4 ^A,4 =A,6 z2 | "Gm" !mp! =G6 ^D2 =G4 ^D4 | "D#" =G2 ^D2 =G2 =G2 ^D2 z6 | "Adim" !mp! ^D6 =C2 ^D4 =C4 | "D" =C4 ^A,4 =A,6 z2 | "Cm" !mf! =C2 =D2 =G4 ^D8 | "Gm" =D2 =F2 =D4 =G4 z4 | "Adim" !f! =A,2 =F2 =G4 ^D8 | "D" ^F2 ^D2 =G4 ^F6 z2 | "Gm" !mp! =D6 ^A,2 =D =D6 ^A,- | "D#" ^A, =D =D4 z2 ^A,2 =D =D5 | "D" !mf! ^F6 =D2 ^F4 =D4 | "Gm" =C4 =A,2 z2 =G,8 |]
+"Gm" !mp! ^A,6 =G,2 ^A,4 =G,4 | "D#" ^A,2 =G,2 ^A,2 =C2 ^A,6 z2 | "Cm" !mp! =C6 =A,2 =C4 =A,4 | "D" =G,4 ^A,4 =A,6 z2 | "Gm" !mp! ^A,6 =D2 ^A,4 =D4 | "D#" ^A,2 =D2 ^A,2 =A,2 ^A,2 z6 | "Adim" !mp! ^D6 =C2 ^D4 =C4 | "D" =C4 ^A,4 =A,6 z2 | "Cm" !mf! =C2 =D2 =G4 ^D8 | "Gm" =D2 =F2 =D4 =G4 z4 | "Adim" !f! =A,2 =F2 =G4 ^D8 | "D" ^F2 ^D2 =G4 ^F8 | "Gm" !mp! =D10 z2 ^A,4 | "D#" ^D8 ^A,8 | "D" !mf! ^F6 =D2 ^F4 =D4 | "Gm" =C4 =A,2 z2 =G,8 |]
 V:2
 z4 [=G,^A,=D=F]3 z5 [=G,^A,=D=F]3 z | z4 [^D,=G,^A,^C]3 z5 [^D,=G,^A,^C]3 z | z4 [=C^D=G^A]3 z5 [=C^D=G^A]3 z | z4 [=D^F=A=c]3 z5 [=D^F=A=c]3 z | z4 [=G^A=d=f]3 z5 [=G^A=d=f]3 z | z4 [^D=G^A^c]3 z5 [^D=G^A^c]3 z | z4 [=A,=C^D=G]3 z5 [=A,=C^D=G]3 z | z4 [=D^F=A=c]3 z5 [=D^F=A=c]3 z | z4 [=C^D=G^A]3 z5 [=C^D=G^A]3 z | z4 [=G,^A,=D=F]3 z5 [=G,^A,=D=F]3 z | z4 [=A,=C^D=G]3 z5 [=A,=C^D=G]3 z | z4 [=D^F=A=c]3 z5 [=D^F=A=c]3 z | z4 [=G^A=d=f]3 z5 [=G^A=d=f]3 z | z4 [^D=G^A^c]3 z5 [^D=G^A^c]3 z | z4 [=D^F=A=c]3 z5 [=D^F=A=c]3 z | z4 [=G^A=d=f]3 z5 [=G^A=d=f]3 z |]
 V:3

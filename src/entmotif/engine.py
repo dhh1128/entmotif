@@ -12,11 +12,11 @@ from entmotif.theory import snap, sym
 from entmotif.melody import (
     FIGURES, HOOKS, SIG_STEPS, BREATHS, LEAP_NAMES, DYN_VEL,
     unit_dyn, line, cadence_bar, tag_call, motif_shape, render_transform, choose_transform,
-    breathe, destutter)
+    transform_weights, breathe, destutter)
 from entmotif.theory import scale_tones
 from entmotif.arrangement import (
     STYLES, STYLE_NAMES, STYLE_W, palette_for, gm_name, lead_choices,
-    comp_choices, bass_choices, comp_pat_choices, bass_pat_choices,
+    comp_choices, bass_choices, comp_pat_weights, bass_pat_weights,
     arrange_unit, percussion_groove, melodic_window, LEAD_RANGE,
     EMOTIONS, EMOTION_NAMES, EMOTION_W, mode_weights, tempo_weights, color_weights,
     style_weights)
@@ -41,8 +41,8 @@ def generate(value):
     lead = ch.weighted("lead", *lead_choices(style))          # broad pool; signature common, weird-valid rare
     comp_prog = ch.weighted("comp", *comp_choices(style))     # rhythm-section two-layer model (c2k9p0a4): signature
     bass_prog = ch.weighted("bass", *bass_choices(style))     # common, capability-passing alternates rare
-    comp_pat = ch.weighted("comp_pat", *comp_pat_choices(style))  # RHYTHM-pattern variety (A2, r4d8m1k6): signature
-    bass_pat = ch.weighted("bass_pat", *bass_pat_choices(style))  # groove common, idiomatic variants rare
+    comp_pat = ch.weighted("comp_pat", *comp_pat_weights(style, emotion))  # RHYTHM variety (r4d8m1k6), now also
+    bass_pat = ch.weighted("bass_pat", *bass_pat_weights(style, emotion))  # emotion-conditioned: busy affect -> syncopated
     pal = palette_for(style, lead, comp_prog, bass_prog, comp_pat, bass_pat)
     ilo, ihi, icen = melodic_window(pal.range, lead)          # window = style register ∩ instrument tessitura
     #   (this.i:d2k9m4p1: the lead's register is conditioned on the CHOSEN instrument, so
@@ -66,6 +66,7 @@ def generate(value):
         legato = True                                         # staccato (happy/tense); neutral keeps the idiom default
     elif EMO["artic"] > 0:
         legato = False
+    xform_w = transform_weights(EMO["angular"])               # development character conditioned on affect
     sig = ch.choice("sig", SIG_STEPS[leap])                   # signature opening interval
 
     idea = [ch.choice("hook", HOOKS), ch.choice("im1", FIGURES)]
@@ -94,7 +95,7 @@ def generate(value):
         if role == "idea":
             if u == 0:                                        # state the germ
                 return list(germ_notes)
-            op = choose_transform(ch, "xform%d" % u)          # RESTATEMENT = explicit operation on the germ
+            op = choose_transform(ch, "xform%d" % u, xform_w)  # RESTATEMENT = affect-conditioned op on the germ
             return render_transform(germ_shape, op, mode, key, lo, hi, bar0, chm,
                                     VoiceRole.LEAD, vel, center, climax=at_peak)
         if role == "answer":
@@ -132,7 +133,7 @@ def generate(value):
         notes += mel
 
         if cr_answer:                                         # antiphonal DEVELOPED response on V:4 (germ transform)
-            op = choose_transform(ch, "ans%d" % u)
+            op = choose_transform(ch, "ans%d" % u, xform_w)
             ans = render_transform(germ_shape, op if op != "identity" else "fragment",
                                    mode, key, lo, hi, bar0, [chm[0]],
                                    VoiceRole.ANSWER, max(40, vel - 18), center)

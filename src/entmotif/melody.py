@@ -312,6 +312,23 @@ TRANSFORMS = ["identity", "seq+2", "seq-2", "seq+3", "seq-3",
 TRANSFORM_W = [1, 3, 3, 2, 2, 3, 2, 2, 2]                      # identity rare; sequence/inversion favored
 _SEQ_SHIFT = {"seq+2": 2, "seq-2": -2, "seq+3": 3, "seq-3": -3}
 
+# Development character conditioned on emotion (this.i:d2k9m4p1 / a7k0m3p9): an ANGULAR
+# affect (tense) develops the germ by inversion/fragmentation/diminution (restless,
+# broken); a GENTLE affect (sad/peaceful/tender) prefers sequence + augmentation (smooth,
+# stretched). identity stays rare regardless (never a verbatim restatement).
+TRANSFORM_ANGULAR = {"invert", "fragment", "diminish"}
+TRANSFORM_GENTLE = {"seq+2", "seq-2", "seq+3", "seq-3", "augment"}
+TRANSFORM_EMPHASIS = 3                                         # how strongly the affect lifts its preferred group
+
+
+def transform_weights(angular):
+    """TRANSFORM_W tilted by an `angular` cue: +1 lifts the angular ops, -1 the gentle
+    ops, 0 leaves the base. Every op stays reachable (entropy picks the CDF point)."""
+    if angular == 0:
+        return list(TRANSFORM_W)
+    pref = TRANSFORM_ANGULAR if angular > 0 else TRANSFORM_GENTLE
+    return [w * TRANSFORM_EMPHASIS if t in pref else w for t, w in zip(TRANSFORMS, TRANSFORM_W)]
+
 
 def _nearest_index(scale, pitch):
     return min(range(len(scale)), key=lambda i: abs(scale[i] - pitch))
@@ -335,8 +352,8 @@ def motif_shape(germ_notes, mode, key, lo, hi):
     return deltas, durs
 
 
-def choose_transform(ch, label):
-    return ch.weighted(label, TRANSFORMS, TRANSFORM_W)
+def choose_transform(ch, label, weights=None):
+    return ch.weighted(label, TRANSFORMS, TRANSFORM_W if weights is None else weights)
 
 
 def _q16(beats):
