@@ -1,5 +1,12 @@
 # entmotif — session handoff / project orientation (2026-06-24)
 
+> **CONTINUING THE ENGINE? Read `docs/flywheel.md` — the self-contained operating
+> manual for the improve→grade→refactor loop** (sacred invariants, TDD discipline,
+> metric conservation, the ranked backlog, the teacher-panel mechanics, refactor
+> cadence). It exists so no session has to be re-taught (e.g. TDD). `AGENTS.md` is
+> authoritative; `this.i` holds the design intent; `docs/engine-log.md` is the
+> round-by-round report card.
+
 A fresh session can continue from here. **Everything important is on disk** — this
 file points to it; the artifacts are the source of truth (this is a date-stamped
 snapshot and may go stale, so trust the files it names over this summary).
